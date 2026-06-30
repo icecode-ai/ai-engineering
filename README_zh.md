@@ -1,0 +1,108 @@
+# AI Engineering
+
+> 语言：[English](README.md) | [中文](README_zh.md)
+
+为 AI Agent 提供一套端到端工作流
+
+- Git 多仓库管理
+- 只读依赖隔离
+- 增强 OpenSpec 工作流
+- 集成 Superpowers 插件
+
+## 安装
+
+### Claude Code
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_CLAUDE.md
+```
+
+### OpenCode
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_OPENCODE.md
+```
+
+### Qoder
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_QODER.md
+```
+
+安装完成后，请**重启 Agent**，并执行 `/ai-env-init` 命令完成环境初始化。
+
+## 项目结构
+
+执行 `/ai-env-init` 后，在你的项目中生成以下目录结构：
+
+```text
+{project}/                            # 主项目根目录
+├── AGENTS.md                         # 主项目指导文件
+├── ai/                               # AI 工作目录，过程产物输出
+│   ├── archetypes/                   # PRD、启始 Prompt、原型等入口 (用户唯一干预路径)
+│   │   └── {user}/{seq}/{prd}.md
+│   ├── changes/                      # 变更目录 (explore/propose 产出)
+│   │   └── archives/                 # 归档目录 (archive 产出)
+│   ├── memories/                     # AI 记忆目录 (auto-memory 产出)
+│   │   └── {memory}.md
+│   └── specs/                        # 规格目录 (archive 产出，归档后同步到此)
+│       └── {spec}/
+├── modules/                          # 模块目录，AI 最终产物输出
+│   └── {module}/                     # 模块 git 库
+│       └── AGENTS.md
+└── readonly-dependencies/            # 只读依赖目录 (AI 只读不写)
+    └── {dependency}/                 # 依赖 git 库
+```
+
+## 流程
+
+增强 OpenSpec 工作流，执行过程集成 Superpowers 插件，实现从探索想法到归档的完整闭环。
+
+```
+1. explore  →  2. propose  →  3. apply  →  4. archive
+```
+
+1. **explore** — 探索想法，调研问题，明确需求
+2. **propose** — 提出变更，一步生成全部产物
+3. **apply** — 按 TDD 实现任务、审查、验证
+4. **archive** — 归档已完成变更，同步规格
+
+```bash
+USER> /ai-spec-explore @ai/archetypes/tom/0/prd.md
+AI>   已进入探索模式，正在分析 PRD 并梳理需求...
+USER> /ai-spec-apply
+```
+
+## 命令
+
+四大类命令，覆盖环境、模块、Spec 工作流与 Git 操作。
+
+### 环境指令
+
+- **`/ai-env-init`** — 初始化或更新项目环境，创建标准目录结构并生成指导文件
+
+### 模块和依赖指令
+
+- **`/ai-module-add`** — 新增模块（git 仓库）到 modules/ 目录
+- **`/ai-module-remove`** — 从 modules/ 目录中删除模块
+- **`/ai-dependency-add`** — 新增依赖（git 仓库）到 readonly-dependencies/ 目录
+- **`/ai-dependency-remove`** — 从 readonly-dependencies/ 目录中删除依赖
+
+### Spec 指令
+
+- **`/ai-spec-explore`** — 进入探索模式，梳理想法、调研问题、明确需求
+- **`/ai-spec-propose`** — 提出新变更，一步创建并生成全部产物
+- **`/ai-spec-apply`** — 按照 spec 变更实现任务，融入 TDD 与代码审查
+- **`/ai-spec-archive`** — 归档已完成的变更
+- **`/ai-spec-sync`** — 将 spec 内容同步到相关 module 模块
+
+### Git 指令
+
+- **`/ai-git-checkout`** — 拉取主项目、模块或依赖的指定分支
+- **`/ai-git-pull`** — 拉取全部、主项目、模块或依赖的最新内容
+- **`/ai-git-push`** — 提交并推送全部、主项目或模块的 Git 更改
+- **`/ai-git-merge`** — 将主干代码合并到当前分支，支持全部、主项目、模块、依赖
+
+---
+
+AI Engineering - MIT

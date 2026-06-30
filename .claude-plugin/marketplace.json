@@ -1,0 +1,12 @@
+{
+  "name": "ai-engineering-marketplace",
+  "owner": {
+    "name": "doersoul"
+  },
+  "plugins": [
+    {
+      "name": "ai-engineering",
+      "source": "."
+    }
+  ]
+}

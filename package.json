@@ -1,0 +1,7 @@
+{
+  "name": "ai-engineering",
+  "description": "AI Engineering",
+  "type": "module",
+  "main": ".opencode/plugins/ai-engineering.js",
+  "version": "0.0.1"
+}

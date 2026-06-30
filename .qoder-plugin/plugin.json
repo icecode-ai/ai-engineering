@@ -1,0 +1,11 @@
+{
+  "name": "ai-engineering",
+  "description": "AI Engineering",
+  "author": {
+    "name": "doersoul"
+  },
+  "repository": "https://github.com/doersoul/ai-engineering.git",
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "version": "0.0.1"
+}

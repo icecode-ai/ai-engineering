@@ -1,0 +1,2521 @@
+<html lang="zh">
+<head>
+    <link id="giscus-css" rel="stylesheet" href="https://giscus.app/default.css">
+    <script src="https://pagead2.googlesyndication.com/pagead/managed/js/adsense/m202606180101/show_ads_impl_fy2021.js?bust=31099320"></script>
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-CT8E5N460D" type="text/javascript"></script>
+    <script type="text/javascript">window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments)
+    }
+
+    gtag("js", new Date), gtag("config", "G-CT8E5N460D")</script>
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Bruce">
+    <meta name="description"
+          content="2026 年 Claude Code、OpenSpec、Superpowers 到底要不要一起上？实测后给出 trade-off 判断框架：三件套何时值回票价，何时只是徒增开销，以及每个工具真正独占的能力是什么。">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="Bruce AI 工程笔记">
+    <meta name="theme-color" content="#494f5c">
+    <meta name="msapplication-TileColor" content="#494f5c">
+    <meta itemprop="name" content="Claude Code + OpenSpec + Superpowers：三件套到底是刚需还是过度工程？">
+    <meta itemprop="description"
+          content="2026 年 Claude Code、OpenSpec、Superpowers 到底要不要一起上？实测后给出 trade-off 判断框架：三件套何时值回票价，何时只是徒增开销，以及每个工具真正独占的能力是什么。">
+    <meta itemprop="datePublished" content="2026-04-09T10:00:00+08:00">
+    <meta itemprop="dateModified" content="2026-04-09T10:00:00+08:00">
+    <meta itemprop="wordCount" content="1817">
+    <meta itemprop="image"
+          content="http://www.heyuan110.com/posts/ai/2026-04-09-claude-code-openspec-superpowers/cover.webp">
+    <meta itemprop="keywords"
+          content="Claude Code OpenSpec Superpowers,OpenSpec 教程,Superpowers 使用指南,AI 编程工作流,spec-driven development 中文,Claude Code 协同开发,OpenSpec vs Superpowers">
+    <meta property="og:url" content="http://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/">
+    <meta property="og:site_name" content="Bruce AI 工程笔记">
+    <meta property="og:title" content="Claude Code + OpenSpec + Superpowers：三件套到底是刚需还是过度工程？">
+    <meta property="og:description"
+          content="2026 年 Claude Code、OpenSpec、Superpowers 到底要不要一起上？实测后给出 trade-off 判断框架：三件套何时值回票价，何时只是徒增开销，以及每个工具真正独占的能力是什么。">
+    <meta property="og:locale" content="zh">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-04-09T10:00:00+08:00">
+    <meta property="article:modified_time" content="2026-04-09T10:00:00+08:00">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="OpenSpec">
+    <meta property="article:tag" content="Superpowers">
+    <meta property="article:tag" content="AI Development">
+    <meta property="article:tag" content="Spec-Driven Development">
+    <meta property="og:image"
+          content="http://www.heyuan110.com/posts/ai/2026-04-09-claude-code-openspec-superpowers/cover.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image"
+          content="http://www.heyuan110.com/posts/ai/2026-04-09-claude-code-openspec-superpowers/cover.webp">
+    <meta name="twitter:title" content="Claude Code + OpenSpec + Superpowers：三件套到底是刚需还是过度工程？">
+    <meta name="twitter:description"
+          content="2026 年 Claude Code、OpenSpec、Superpowers 到底要不要一起上？实测后给出 trade-off 判断框架：三件套何时值回票价，何时只是徒增开销，以及每个工具真正独占的能力是什么。">
+    <title>Claude Code + OpenSpec + Superpowers：三件套到底是刚需还是过度工程？</title>
+    <link rel="stylesheet dns-prefetch preconnect preload prefetch" as="style" media="screen"
+          href="https://www.heyuan110.com/css/style.min.5726739d15aad15f98f2bcc074550796b8d07107a51426efae169c351d8a7499.css"
+          integrity="sha256-VyZznRWq0V+Y8rzAdFUHlrjQcQelFCbvrhacNR2KdJk=" crossorigin="anonymous">
+    <meta name="google-adsense-account" content="ca-pub-2215311867116766">
+    <script async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2215311867116766"
+            crossorigin="anonymous" type="text/javascript" data-checked-head="true"></script>
+    <link rel="canonical" href="https://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/">
+    <meta name="keywords"
+          content="Claude Code OpenSpec Superpowers,OpenSpec 教程,Superpowers 使用指南,AI 编程工作流,spec-driven development 中文,Claude Code 协同开发,OpenSpec vs Superpowers">
+    <meta property="og:site_name" content="Bruce AI 工程笔记">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="article:published_time" content="2026-04-09T10:00:00+08:00">
+    <meta property="article:modified_time" content="2026-04-09T10:00:00+08:00">
+    <meta property="article:author" content="Bruce">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="OpenSpec">
+    <meta property="article:tag" content="Superpowers">
+    <meta property="article:tag" content="AI Development">
+    <meta property="article:tag" content="Spec-Driven Development">
+    <link rel="alternate" hreflang="zh"
+          href="https://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/">
+    <link rel="alternate" hreflang="en"
+          href="https://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/">
+    <link rel="alternate" hreflang="x-default"
+          href="https://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/">
+    <script type="application/ld+json">{
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "Posts",
+        "author": {
+            "@type": "Person",
+            "name": "Bruce"
+        },
+        "dateModified": "2026-04-09T10:00:00+08:00",
+        "datePublished": "2026-04-09T10:00:00+08:00",
+        "description": "2026 年 Claude Code、OpenSpec、Superpowers 到底要不要一起上？实测后给出 trade-off 判断框架：三件套何时值回票价，何时只是徒增开销，以及每个工具真正独占的能力是什么。",
+        "headline": "Claude Code + OpenSpec + Superpowers：三件套到底是刚需还是过度工程？",
+        "image": {
+            "@type": "ImageObject",
+            "height": 630,
+            "url": "http://www.heyuan110.com/posts/ai/2026-04-09-claude-code-openspec-superpowers/cover.webp",
+            "width": 1200
+        },
+        "inLanguage": "zh-CN",
+        "keywords": "Claude Code OpenSpec Superpowers, OpenSpec 教程, Superpowers 使用指南, AI 编程工作流, spec-driven development 中文, Claude Code 协同开发, OpenSpec vs Superpowers",
+        "mainEntityOfPage": {
+            "@id": "https://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/",
+            "@type": "WebPage"
+        },
+        "url": "https://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/",
+        "wordCount": 1817
+    }</script>
+    <script type="application/ld+json">{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "OpenSpec 管'做什么'——把需求转成可追溯的规范文档（proposal、spec、design、tasks）。Superpowers 管'怎么做'——强制执行 TDD、代码审查、子代理并行开发等工程纪律。前者是蓝图，后者是施工规范，解决完全不同的问题。"
+                },
+                "name": "OpenSpec 和 Superpowers 有什么区别？"
+            },
+            {
+                "@type": "Question",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "如果你的任务不到 4 小时，用全套反而更慢——光 OpenSpec 的 propose→apply→archive 走完就要 30-60 分钟。建议：快速原型只用 Claude Code，中型任务加 Superpowers，大型/团队项目才上全套。"
+                },
+                "name": "三个工具一起用会不会太重？"
+            },
+            {
+                "@type": "Question",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "npm install -g @fission-ai/openspec@latest，然后在项目目录运行 openspec init。需要 Node.js 20.19.0+。初始化时选择你使用的 AI 工具（Claude Code、Cursor 等）。"
+                },
+                "name": "OpenSpec 怎么安装？"
+            },
+            {
+                "@type": "Question",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "可以。单独用 Superpowers 完全够应付个人或一次性项目——它的 brainstorming / writing-plans 会把设计和计划落到 docs/superpowers/specs/ 和 /plans/，并不是网上说的'关掉对话就全忘'。它真正缺的是 Delta/Archive 多轮归档能力。单独用 OpenSpec 适合需要版本化 spec、但不依赖 Claude Code 子代理和 TDD 纪律的场景。两者结合的价值主要体现在'同一个功能要反复迭代'的团队项目。"
+                },
+                "name": "Superpowers 和 OpenSpec 可以分开用吗？"
+            },
+            {
+                "@type": "Question",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "工具能大幅降低编码门槛，但你仍需能看懂生成的代码、理解架构决策、识别安全问题。建议初学者先单独学 Claude Code，熟练后再逐步加入 Superpowers 和 OpenSpec。"
+                },
+                "name": "这套工作流适合初学者吗？"
+            }
+        ]
+    }</script>
+    <script type="application/ld+json">{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "item": "http://www.heyuan110.com/",
+                "name": "Home",
+                "position": 1
+            },
+            {
+                "@type": "ListItem",
+                "item": "http://www.heyuan110.com/posts/",
+                "name": "Posts",
+                "position": 2
+            },
+            {
+                "@type": "ListItem",
+                "item": "https://www.heyuan110.com/zh/posts/ai/2026-04-09-claude-code-openspec-superpowers/",
+                "name": "Claude Code + OpenSpec + Superpowers：三件套到底是刚需还是过度工程？",
+                "position": 3
+            }
+        ]
+    }</script>
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="alternate" type="application/rss+xml" title="Bruce AI 工程笔记 RSS Feed"
+          href="https://www.heyuan110.com/index.xml">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://www.heyuan110.com/sitemap.xml">
+    <link rel="llms" href="/llms.txt" type="text/plain" title="LLMs.txt">
+    <meta http-equiv="origin-trial"
+          content="AlK2UR5SkAlj8jjdEc9p3F3xuFYlF6LYjAML3EOqw1g26eCwWPjdmecULvBH5MVPoqKYrOfPhYVL71xAXI1IBQoAAAB8eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3NTgwNjcxOTksImlzU3ViZG9tYWluIjp0cnVlfQ==">
+    <meta http-equiv="origin-trial"
+          content="Amm8/NmvvQfhwCib6I7ZsmUxiSCfOxWxHayJwyU1r3gRIItzr7bNQid6O8ZYaE1GSQTa69WwhPC9flq/oYkRBwsAAACCeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3NTgwNjcxOTksImlzU3ViZG9tYWluIjp0cnVlfQ==">
+    <meta http-equiv="origin-trial"
+          content="A9nrunKdU5m96PSN1XsSGr3qOP0lvPFUB2AiAylCDlN5DTl17uDFkpQuHj1AFtgWLxpLaiBZuhrtb2WOu7ofHwEAAACKeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+    <meta http-equiv="origin-trial"
+          content="A93bovR+QVXNx2/38qDbmeYYf1wdte9EO37K9eMq3r+541qo0byhYU899BhPB7Cv9QqD7wIbR1B6OAc9kEfYCA4AAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+    <meta http-equiv="origin-trial"
+          content="A1S5fojrAunSDrFbD8OfGmFHdRFZymSM/1ss3G+NEttCLfHkXvlcF6LGLH8Mo5PakLO1sCASXU1/gQf6XGuTBgwAAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+    <style id="monica-reading-highlight-style">
+        .monica-reading-highlight {
+            animation: fadeInOut 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% {
+                background-color: transparent;
+            }
+            30%, 70% {
+                background-color: rgba(2, 118, 255, 0.20);
+            }
+        }
+    </style>
+</head>
+<body id="page" monica-id="ofpnmcalabcbjgholdjcjblkibolbppb" monica-version="9.0.17">
+<main class="site-main section-inner animated fadeIn faster">
+    <article class="thin">
+        <div class="content">
+            <h2 id="claude-codeopenspecsuperpowers-各自要解决的三个坑">Claude Code、OpenSpec、Superpowers 各自要解决的三个坑<a
+                    href="#claude-codeopenspecsuperpowers-%e5%90%84%e8%87%aa%e8%a6%81%e8%a7%a3%e5%86%b3%e7%9a%84%e4%b8%89%e4%b8%aa%e5%9d%91"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h2>
+            <p>如果你用过 Claude Code 或类似的 AI
+                编程工具，下面三个场景一定不陌生。这篇文章的核心就是把每个坑对应到真正能解决它的那个工具——并且拆穿"一个工具搞定所有坑"的常见误区。</p>
+            <p><strong>场景一：AI 做的不是你想要的。</strong> 你说"加个用户登录功能"，AI 给你做了 Session 认证——但你要的是
+                JWT。你说"扫码支付"，AI 直接对接了真实支付 SDK——你只是想做个演示。每次返工都在烧 Token
+                和时间，而且你往往要到看完代码才发现方向错了。</p>
+            <p><strong>场景二：AI 跳过测试直接写代码。</strong> Claude Code 能力很强，但它的默认行为是"收到需求就动手"。不创建
+                Git 分支、不写测试、不做代码审查——能出活，但出了事你根本不知道哪里有问题。搞砸了还不好回滚，因为它直接改的是你的主分支。
+            </p>
+            <p><strong>场景三：多次迭代后，早期决策被盖掉。</strong> 为什么选了 bcrypt 而不是 argon2？为什么接口前缀是
+                <code>/api</code> 而不是 <code>/v1</code>？只用 Claude Code 裸跑时聊天窗口一关就没了；加上 Superpowers 能把
+                design doc 落到磁盘上（好一点），但<strong>下一次 brainstorming 会直接覆盖
+                    design.md，不是版本化归档</strong>。三轮迭代以后，最初的权衡理由已经被新的设计覆盖，谁都说不清当初为什么做了那个选择。
+            </p>
+            <p>这三个坑不是靠写更好的 prompt 能解决的——它们需要<strong>不同层面的工具</strong>来分别应对：裸用 Claude
+                Code 扛不住场景一；Superpowers 把场景二闭环掉；只有 OpenSpec 的 Delta/Archive 机制能真正闭环场景三。这才是
+                Claude Code + OpenSpec + Superpowers 三件套组合的底层逻辑。</p>
+            <h2 id="第一层认识这三个工具">第一层：认识这三个工具<a
+                    href="#%e7%ac%ac%e4%b8%80%e5%b1%82%e8%ae%a4%e8%af%86%e8%bf%99%e4%b8%89%e4%b8%aa%e5%b7%a5%e5%85%b7"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h2>
+            <h3 id="claude-code住在终端里的-ai-程序员">Claude Code：住在终端里的 AI 程序员<a
+                    href="#claude-code%e4%bd%8f%e5%9c%a8%e7%bb%88%e7%ab%af%e9%87%8c%e7%9a%84-ai-%e7%a8%8b%e5%ba%8f%e5%91%98"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p><a href="https://code.claude.com/docs/">Claude Code</a> 是 Anthropic 公司推出的命令行 AI 编程工具。和
+                ChatGPT 网页版或 Cursor 编辑器不同，Claude Code 工作在终端中——它能直接读取你的项目文件、理解代码结构、执行
+                shell 命令、写代码、跑测试、管理 Git。你可以让它自主完成"创建项目→写代码→跑测试→提交代码"的全流程，而不只是在聊天框里给你贴代码片段。
+            </p>
+            <p>它很强，但也有上面说的那些问题：需求理解可能有偏差、不一定遵守工程纪律、决策不留痕。所以它需要搭档。</p>
+            <p><strong>前提</strong>：需要 Claude 付费订阅（Pro / Max / Team / Enterprise 任一档都行）。具体价格会变，以 <a
+                    href="https://www.anthropic.com/pricing">anthropic.com/pricing</a> 为准。免费版不支持。</p>
+            <h3 id="openspec把一句话需求变成四份标准文档">OpenSpec：把一句话需求变成四份标准文档<a
+                    href="#openspec%e6%8a%8a%e4%b8%80%e5%8f%a5%e8%af%9d%e9%9c%80%e6%b1%82%e5%8f%98%e6%88%90%e5%9b%9b%e4%bb%bd%e6%a0%87%e5%87%86%e6%96%87%e6%a1%a3"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p><a href="https://openspec.dev/">OpenSpec</a> 是 Fission AI
+                团队开发的开源框架，专门解决<strong>场景一</strong>的问题。它的核心理念是"Spec-Driven
+                Development"——在写任何代码之前，先把需求变成结构化的规范文档。</p>
+            <p>你说"我要一个用户登录功能"，OpenSpec 帮你展开成：</p>
+            <ul>
+                <li><strong>proposal.md</strong>：为什么做、做什么、<strong>不做什么</strong>（Out of Scope
+                    是最关键的部分——明确不做什么，才能防止 AI 自作主张）
+                </li>
+                <li><strong>specs/</strong>：行为规格（每个功能用 GIVEN/WHEN/THEN 描述预期行为）</li>
+                <li><strong>design.md</strong>：技术选型和决策理由（选了什么、为什么选、放弃了什么）</li>
+                <li><strong>tasks.md</strong>：任务清单（拆成 2-5 分钟可完成的具体步骤）</li>
+            </ul>
+            <p>OpenSpec 不绑定任何 AI 工具，支持 20+ 个编程助手。但和 Claude Code 配合效果最好，因为 Claude Code 的子代理能力可以按
+                tasks.md 并行执行任务。</p>
+            <h3 id="superpowers给-ai-套上工程纪律的技能框架">Superpowers：给 AI 套上工程纪律的技能框架<a
+                    href="#superpowers%e7%bb%99-ai-%e5%a5%97%e4%b8%8a%e5%b7%a5%e7%a8%8b%e7%ba%aa%e5%be%8b%e7%9a%84%e6%8a%80%e8%83%bd%e6%a1%86%e6%9e%b6"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p><a href="https://github.com/obra/superpowers">Superpowers</a> 是 Jesse Vincent 和 Prime Radiant
+                团队开发的开源技能框架（GitHub 14 万+ 星），专门解决<strong>场景二</strong>的问题。它不是独立工具，而是一组安装到
+                Claude Code 里的"技能"，让 Claude Code 自动遵循专业软件工程实践。</p>
+            <p>装上 Superpowers 后，Claude Code 会"变了个人"——不再收到需求就直接写代码。它有一组核心技能，<strong>而且关键的一点是规划类
+                skill 本身就会落盘持久化</strong>：<code>brainstorming</code> 会把设计文档保存到 <code>docs/superpowers/specs/YYYY-MM-DD-&lt;topic&gt;-design.md</code>
+                并自动 commit；<code>writing-plans</code> 会把实施计划保存到 <code>docs/superpowers/plans/YYYY-MM-DD-&lt;feature&gt;.md</code>。所以网上常见的那句"Superpowers
+                关掉对话就全忘了"是错的——它真正缺的是 <strong>Delta/Archive 多迭代归档机制</strong>，不是"不持久化"。</p>
+            <p>单独使用 Superpowers 时 brainstorming 和 writing-plans 会自动触发；TDD、code-review 等编码纪律<strong>需要在
+                CLAUDE.md 里写明才会生效</strong>：</p>
+            <table>
+                <thead>
+                <tr>
+                    <th>技能</th>
+                    <th>什么时候用</th>
+                    <th>触发方式</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>brainstorming</td>
+                    <td>创建新功能、构建组件前，先探索需求和设计</td>
+                    <td>单独使用时自动触发</td>
+                </tr>
+                <tr>
+                    <td>writing-plans</td>
+                    <td>有明确需求，需要拆解多步实施计划</td>
+                    <td>单独使用时自动触发</td>
+                </tr>
+                <tr>
+                    <td>test-driven-development</td>
+                    <td>实现功能或修 bug 前，先写测试</td>
+                    <td>需在 CLAUDE.md 中明确要求</td>
+                </tr>
+                <tr>
+                    <td>systematic-debugging</td>
+                    <td>遇到 bug、测试失败、异常行为</td>
+                    <td>需在 CLAUDE.md 中明确要求</td>
+                </tr>
+                <tr>
+                    <td>code-reviewer</td>
+                    <td>完成一个主要步骤后做代码审查</td>
+                    <td>需在 CLAUDE.md 中明确要求</td>
+                </tr>
+                <tr>
+                    <td>dispatching-parallel-agents</td>
+                    <td>有多个独立任务可以并行处理</td>
+                    <td>2+ 个无依赖任务时</td>
+                </tr>
+                <tr>
+                    <td>verification-before-completion</td>
+                    <td>准备说"搞定了"之前，先跑验证</td>
+                    <td>需在 CLAUDE.md 中明确要求</td>
+                </tr>
+                </tbody>
+            </table>
+            <blockquote><p><strong>重要纠正</strong>：OpenSpec 和 Superpowers
+                是两套独立系统，<strong>不会自动串联</strong>。使用 <code>/opsx:apply</code> 实施任务时，Superpowers 的
+                TDD、code-review 等技能<strong>不会自动介入</strong>。如果你希望在 apply 过程中执行 TDD 等工程纪律，需要在项目的
+                CLAUDE.md 中明确写入规则，例如：<code>使用 /opsx:apply 实施任务时，必须采用 TDD
+                    方式：先写失败测试，再写实现代码</code>。</p></blockquote>
+            <p>两者结合使用时，<strong>规划阶段由 OpenSpec 主导，编码阶段由 Superpowers 主导</strong>，各管各的阶段：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback"
+                                                                          data-lang="fallback"><span class="line"><span
+                    class="cl">OpenSpec 负责：              Superpowers 负责：
+</span></span><span class="line"><span class="cl">  想清楚做什么                  写代码时怎么做好
+</span></span><span class="line"><span class="cl">┌──────────┐               ┌──────────────┐
+</span></span><span class="line"><span class="cl">│ explore  │               │ brainstorming │ ← 同类职能，不同产物目录
+</span></span><span class="line"><span class="cl">│ propose  │               │ writing-plans │ ← 同类职能，不同产物目录
+</span></span><span class="line"><span class="cl">│ apply ───┼─────────────→ │ TDD          │ ← 需在 CLAUDE.md 中要求
+</span></span><span class="line"><span class="cl">│          │               │ debugging    │ ← 需在 CLAUDE.md 中要求
+</span></span><span class="line"><span class="cl">│          │               │ verification │ ← 需在 CLAUDE.md 中要求
+</span></span><span class="line"><span class="cl">│ archive  │               │ code-review  │ ← 需在 CLAUDE.md 中要求
+</span></span><span class="line"><span class="cl">└──────────┘               └──────────────┘
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+            </div>
+            <p>这两套规划系统<strong>职能重叠但不会自动互让</strong>——装了两个之后，你下一次发起新功能请求时 <code>brainstorming</code>
+                仍然会触发，除非你在 CLAUDE.md 里明确规定"新功能一律走 /opsx:propose，跳过 brainstorming /
+                writing-plans"。没有这行规则，你会在一小时内同时得到 <code>docs/superpowers/specs/</code> 下的一份 design
+                doc 和 <code>openspec/changes/&lt;id&gt;/</code> 下的一份 proposal，两边内容还会悄悄不同步。</p>
+            <p>把规划路由到 OpenSpec 之后，<code>/opsx:apply</code> 进入编码阶段，Superpowers 的
+                TDD、debugging、verification、code-review <strong>依然不会自动介入</strong>——必须在 CLAUDE.md
+                里明确写：<code>使用 /opsx:apply 实施任务时，必须采用 TDD：先写失败测试，再写实现</code>。</p>
+            <p>如果你没用 OpenSpec，直接让 Claude Code 加功能，那 Superpowers 全程主导：brainstorming 先问清楚需求并落盘
+                design doc，writing-plans 拆任务并落盘 plan，然后 TDD 先写测试再写代码。</p>
+            <p><strong>一句话总结</strong>：OpenSpec 管规划，Superpowers 管编码纪律，Claude Code
+                负责执行。两个装在同一个项目里完全不冲突，各管各的阶段。</p>
+            <div style="display:grid;grid-template-columns:1fr;gap:12px;margin:24px 0;font-family:system-ui,-apple-system,sans-serif">
+                <div style="background:linear-gradient(135deg,#018472 0%,#015f54 100%);color:#fff;padding:18px 24px;border-radius:10px">
+                    <div style="font-size:12px;letter-spacing:1.5px;opacity:.75">第 1 层 · 需求</div>
+                    <div style="font-size:20px;font-weight:700;margin:4px 0 8px">OpenSpec</div>
+                    <div style="font-size:14px;opacity:.9;line-height:1.5">proposal.md · specs/ · design.md · tasks.md
+                        —— 做什么、为什么、不做什么，落盘持久化。
+                    </div>
+                </div>
+                <div style="background:linear-gradient(135deg,#2b6cb0 0%,#1e4e8c 100%);color:#fff;padding:18px 24px;border-radius:10px">
+                    <div style="font-size:12px;letter-spacing:1.5px;opacity:.75">第 2 层 · 纪律</div>
+                    <div style="font-size:20px;font-weight:700;margin:4px 0 8px">Superpowers</div>
+                    <div style="font-size:14px;opacity:.9;line-height:1.5">TDD · code-review · verification ·
+                        subagent-driven-dev —— 怎么写，前提是你在 CLAUDE.md 里写进去。
+                    </div>
+                </div>
+                <div style="background:linear-gradient(135deg,#4a5568 0%,#2d3748 100%);color:#fff;padding:18px 24px;border-radius:10px">
+                    <div style="font-size:12px;letter-spacing:1.5px;opacity:.75">第 3 层 · 执行</div>
+                    <div style="font-size:20px;font-weight:700;margin:4px 0 8px">Claude Code</div>
+                    <div style="font-size:14px;opacity:.9;line-height:1.5">改文件 · 跑测试 · 管 git · 派 subagent ——
+                        真正动手打字的那双手。
+                    </div>
+                </div>
+            </div>
+            <h2 id="第二层装起来让三件套能跑">第二层：装起来，让三件套能跑<a
+                    href="#%e7%ac%ac%e4%ba%8c%e5%b1%82%e8%a3%85%e8%b5%b7%e6%9d%a5%e8%ae%a9%e4%b8%89%e4%bb%b6%e5%a5%97%e8%83%bd%e8%b7%91"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h2>
+            <p>认识完了，我们把它们装好。四步搞定，每步都有验证方法。</p>
+            <h3 id="第-1-步安装-claude-code">第 1 步：安装 Claude Code<a
+                    href="#%e7%ac%ac-1-%e6%ad%a5%e5%ae%89%e8%a3%85-claude-code" class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span
+                    class="line"><span class="cl"><span class="c1"># macOS / Linux / WSL</span>
+</span></span><span class="line"><span class="cl">curl -fsSL https://claude.ai/install.sh <span class="p">|</span> bash
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Windows PowerShell</span>
+</span></span><span class="line"><span class="cl">irm https://claude.ai/install.ps1 <span class="p">|</span> iex
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 验证</span>
+</span></span><span class="line"><span class="cl">claude --version
+</span></span><span class="line"><span class="cl"><span class="c1"># 应该输出版本号，比如 2.1.41</span>
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Bash</span></div>
+            <h3 id="第-2-步安装-openspec">第 2 步：安装 OpenSpec<a
+                    href="#%e7%ac%ac-2-%e6%ad%a5%e5%ae%89%e8%a3%85-openspec" class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>需要 Node.js 20.19.0+（运行 <code>node --version</code> 检查）。</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span
+                    class="line"><span class="cl"><span class="c1"># 全局安装</span>
+</span></span><span class="line"><span class="cl">npm install -g @fission-ai/openspec@latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入你的项目目录，初始化（会提示选择 AI 工具，选 Claude Code）</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> your-project
+</span></span><span class="line"><span class="cl">openspec init
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Bash</span></div>
+            <p>初始化后项目多出一个 <code>openspec/</code> 目录：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback"
+                                                                          data-lang="fallback"><span class="line"><span
+                    class="cl">your-project/
+</span></span><span class="line"><span class="cl">├── openspec/
+</span></span><span class="line"><span class="cl">│   ├── specs/           # 当前系统规范
+</span></span><span class="line"><span class="cl">│   ├── changes/         # 进行中的变更
+</span></span><span class="line"><span class="cl">│   │   └── archive/     # 已完成的变更归档
+</span></span><span class="line"><span class="cl">│   └── AGENTS.md        # AI 自动读取的指令
+</span></span><span class="line"><span class="cl">└── ...（你的代码）
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+            </div>
+            <h3 id="第-3-步安装-superpowers">第 3 步：安装 Superpowers<a
+                    href="#%e7%ac%ac-3-%e6%ad%a5%e5%ae%89%e8%a3%85-superpowers" class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>Superpowers 装在 Claude Code 内部：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span
+                    class="line"><span class="cl"><span class="c1"># 启动 Claude Code</span>
+</span></span><span class="line"><span class="cl">claude
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 在交互界面中执行</span>
+</span></span><span class="line"><span class="cl">&gt; /plugin install superpowers@claude-plugins-official
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Bash</span></div>
+            <p>下次启动看到 <code>You have Superpowers</code> 就说明装好了。</p>
+            <h3 id="第-4-步配置三者协同">第 4 步：配置三者协同<a
+                    href="#%e7%ac%ac-4-%e6%ad%a5%e9%85%8d%e7%bd%ae%e4%b8%89%e8%80%85%e5%8d%8f%e5%90%8c" class="anchor"
+                    aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>在项目的 <code>.claude/settings.json</code> 中添加：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span
+                    class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">"mcpServers"</span><span class="p">:</span> <span
+                    class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">"openspec"</span><span class="p">:</span> <span
+                    class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">"command"</span><span class="p">:</span> <span
+                    class="s2">"npx"</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">"args"</span><span class="p">:</span> <span
+                    class="p">[</span><span class="s2">"-y"</span><span class="p">,</span> <span class="s2">"@fission-ai/openspec-mcp"</span><span
+                    class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">"permissions"</span><span class="p">:</span> <span
+                    class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">"allow"</span><span class="p">:</span> <span
+                    class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">"Bash:openspec:*"</span><span
+                    class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">"Bash:npm:*"</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">"Bash:git:*"</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">JSON</span></div>
+            <p><strong>验证</strong>：启动 Claude Code，输入"帮我看看 OpenSpec 和 Superpowers 是否安装好了"。两个都正常的话，Claude
+                Code 会告诉你它检测到了 OpenSpec 目录和 Superpowers 技能。</p>
+            <h2 id="第三层先跑一遍感受全流程">第三层：先跑一遍，感受全流程<a
+                    href="#%e7%ac%ac%e4%b8%89%e5%b1%82%e5%85%88%e8%b7%91%e4%b8%80%e9%81%8d%e6%84%9f%e5%8f%97%e5%85%a8%e6%b5%81%e7%a8%8b"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h2>
+            <p>装好了，先别急着理解原理——<strong>先让它跑起来</strong>，在体感中理解每个工具在干什么。我们做一个用户认证
+                API（Express + MongoDB + JWT），跟着命令走就行。</p>
+            <h3 id="31-用-openspec-把需求变成规范">3.1 用 OpenSpec 把需求变成规范<a
+                    href="#31-%e7%94%a8-openspec-%e6%8a%8a%e9%9c%80%e6%b1%82%e5%8f%98%e6%88%90%e8%a7%84%e8%8c%83"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span
+                    class="line"><span class="cl">claude
+</span></span><span class="line"><span class="cl">&gt; /opsx:propose 用户认证 API，技术栈 Express + MongoDB + JWT。
+</span></span><span class="line"><span class="cl">&gt; 功能：用户注册（用户名+邮箱+密码）、用户登录（返回 JWT Token）、
+</span></span><span class="line"><span class="cl">&gt; 获取当前用户信息（需要鉴权）。
+</span></span><span class="line"><span class="cl">&gt; 安全要求：密码 bcrypt 加密，私有接口 JWT 鉴权。
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Bash</span></div>
+            <p>OpenSpec 会在 <code>openspec/changes/user-auth/</code> 下生成四份文档。<strong>你要做的事</strong>：打开
+                <code>proposal.md</code>，看看 Out of Scope 部分——确认 AI 没有自作主张加"第三方登录"、“密码找回"等你没要的功能。
+            </p>
+            <p>如果需要补充细节（比如密码长度限制），<strong>直接编辑 <code>proposal.md</code> / <code>specs/</code> /
+                <code>design.md</code> 这几个生成出来的 markdown 文件</strong>即可——core profile 里没有 refine/validate
+                这类独立命令，文件就是单一真相源，改完下次 <code>/opsx:apply</code> 会按新版本走。</p>
+            <p><strong>这一步你获得了什么</strong>：一份结构化的、所有人都能看懂的开发蓝图。AI 后续的所有工作都基于这份蓝图，而不是基于你的一句话描述。
+            </p>
+            <pre class="mermaid" data-processed="true"><svg aria-roledescription="flowchart-v2"
+                                                            role="graphics-document document"
+                                                            viewBox="-8 -8 631.8515625 490"
+                                                            style="max-width: 631.8515625px;"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                            id="mermaid-1782513580561"><style>#mermaid-1782513580561 {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580561 .error-icon {
+                fill: #552222;
+            }
+
+            #mermaid-1782513580561 .error-text {
+                fill: #552222;
+                stroke: #552222;
+            }
+
+            #mermaid-1782513580561 .edge-thickness-normal {
+                stroke-width: 2px;
+            }
+
+            #mermaid-1782513580561 .edge-thickness-thick {
+                stroke-width: 3.5px;
+            }
+
+            #mermaid-1782513580561 .edge-pattern-solid {
+                stroke-dasharray: 0;
+            }
+
+            #mermaid-1782513580561 .edge-pattern-dashed {
+                stroke-dasharray: 3;
+            }
+
+            #mermaid-1782513580561 .edge-pattern-dotted {
+                stroke-dasharray: 2;
+            }
+
+            #mermaid-1782513580561 .marker {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580561 .marker.cross {
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580561 svg {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+            }
+
+            #mermaid-1782513580561 .label {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                color: #333;
+            }
+
+            #mermaid-1782513580561 .cluster-label text {
+                fill: #333;
+            }
+
+            #mermaid-1782513580561 .cluster-label span, #mermaid-1782513580561 p {
+                color: #333;
+            }
+
+            #mermaid-1782513580561 .label text, #mermaid-1782513580561 span, #mermaid-1782513580561 p {
+                fill: #333;
+                color: #333;
+            }
+
+            #mermaid-1782513580561 .node rect, #mermaid-1782513580561 .node circle, #mermaid-1782513580561 .node ellipse, #mermaid-1782513580561 .node polygon, #mermaid-1782513580561 .node path {
+                fill: #ECECFF;
+                stroke: #9370DB;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580561 .flowchart-label text {
+                text-anchor: middle;
+            }
+
+            #mermaid-1782513580561 .node .katex path {
+                fill: #000;
+                stroke: #000;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580561 .node .label {
+                text-align: center;
+            }
+
+            #mermaid-1782513580561 .node.clickable {
+                cursor: pointer;
+            }
+
+            #mermaid-1782513580561 .arrowheadPath {
+                fill: #333333;
+            }
+
+            #mermaid-1782513580561 .edgePath .path {
+                stroke: #333333;
+                stroke-width: 2.0px;
+            }
+
+            #mermaid-1782513580561 .flowchart-link {
+                stroke: #333333;
+                fill: none;
+            }
+
+            #mermaid-1782513580561 .edgeLabel {
+                background-color: #e8e8e8;
+                text-align: center;
+            }
+
+            #mermaid-1782513580561 .edgeLabel rect {
+                opacity: 0.5;
+                background-color: #e8e8e8;
+                fill: #e8e8e8;
+            }
+
+            #mermaid-1782513580561 .labelBkg {
+                background-color: rgba(232, 232, 232, 0.5);
+            }
+
+            #mermaid-1782513580561 .cluster rect {
+                fill: #ffffde;
+                stroke: #aaaa33;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580561 .cluster text {
+                fill: #333;
+            }
+
+            #mermaid-1782513580561 .cluster span, #mermaid-1782513580561 p {
+                color: #333;
+            }
+
+            #mermaid-1782513580561 div.mermaidTooltip {
+                position: absolute;
+                text-align: center;
+                max-width: 200px;
+                padding: 2px;
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 12px;
+                background: hsl(80, 100%, 96.2745098039%);
+                border: 1px solid #aaaa33;
+                border-radius: 2px;
+                pointer-events: none;
+                z-index: 100;
+            }
+
+            #mermaid-1782513580561 .flowchartTitleText {
+                text-anchor: middle;
+                font-size: 18px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580561 :root {
+                --mermaid-font-family: "trebuchet ms", verdana, arial, sans-serif;
+            }</style><g><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5"
+                                refX="6" viewBox="0 0 10 10" class="marker flowchart"
+                                id="mermaid-1782513580561_flowchart-pointEnd"><path
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker orient="auto" markerHeight="12" markerWidth="12"
+                                                                      markerUnits="userSpaceOnUse" refY="5" refX="4.5"
+                                                                      viewBox="0 0 10 10" class="marker flowchart"
+                                                                      id="mermaid-1782513580561_flowchart-pointStart"><path
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 0 5 L 10 10 L 10 0 z"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                                       markerUnits="userSpaceOnUse" refY="5" refX="11"
+                                                                       viewBox="0 0 10 10" class="marker flowchart"
+                                                                       id="mermaid-1782513580561_flowchart-circleEnd"><circle
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5"
+                    cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                     markerUnits="userSpaceOnUse" refY="5" refX="-1" viewBox="0 0 10 10"
+                                                     class="marker flowchart"
+                                                     id="mermaid-1782513580561_flowchart-circleStart"><circle
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5"
+                    cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                     markerUnits="userSpaceOnUse" refY="5.2" refX="12"
+                                                     viewBox="0 0 11 11" class="marker cross flowchart"
+                                                     id="mermaid-1782513580561_flowchart-crossEnd"><path
+                    style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><marker orient="auto" markerHeight="11"
+                                                                          markerWidth="11" markerUnits="userSpaceOnUse"
+                                                                          refY="5.2" refX="-1" viewBox="0 0 11 11"
+                                                                          class="marker cross flowchart"
+                                                                          id="mermaid-1782513580561_flowchart-crossStart"><path
+                    style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><g class="root"><g class="clusters"></g><g
+                    class="edgePaths"><path marker-end="url(#mermaid-1782513580561_flowchart-pointEnd)"
+                                            style="fill:none;"
+                                            class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Req LE-Propose"
+                                            id="L-Req-Propose-0"
+                                            d="M200.313,249L204.479,249C208.646,249,216.979,249,224.429,249C231.879,249,238.446,249,241.729,249L245.013,249"></path><path
+                    marker-end="url(#mermaid-1782513580561_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Propose LE-P" id="L-Propose-P-0"
+                    d="M317.108,229.5L329.755,198.5C342.403,167.5,367.697,105.5,389.573,74.5C411.449,43.5,429.907,43.5,439.135,43.5L448.364,43.5"></path><path
+                    marker-end="url(#mermaid-1782513580561_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Propose LE-S" id="L-Propose-S-0"
+                    d="M333.019,229.5L343.015,221.333C353.01,213.167,373.001,196.833,388.131,188.667C403.261,180.5,413.529,180.5,418.663,180.5L423.798,180.5"></path><path
+                    marker-end="url(#mermaid-1782513580561_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Propose LE-D" id="L-Propose-D-0"
+                    d="M333.019,268.5L343.015,276.667C353.01,284.833,373.001,301.167,386.28,309.333C399.559,317.5,406.126,317.5,409.409,317.5L412.692,317.5"></path><path
+                    marker-end="url(#mermaid-1782513580561_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Propose LE-T" id="L-Propose-T-0"
+                    d="M317.601,268.5L330.166,297.5C342.732,326.5,367.862,384.5,388.257,413.5C408.653,442.5,424.313,442.5,432.143,442.5L439.973,442.5"></path></g><g
+                    class="edgeLabels"><g class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject
+                    height="0" width="0"><div style="display: inline-block; white-space: nowrap;"
+                                              xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g
+                    class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g
+                    transform="translate(100.15625, 249)" data-id="Req" data-node="true" id="flowchart-Req-18"
+                    class="node default default flowchart-label"><rect height="87" width="200.3125" y="-43.5"
+                                                                       x="-100.15625" ry="0" rx="0"
+                                                                       style="fill:#2d3748;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-92.65625, -36)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="72" width="185.3125"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                      style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">一句话需求：<br><i>Express + MongoDB + JWT<br>做个用户认证 API</i></span></div></foreignObject></g></g><g
+                    transform="translate(309.15234375, 249)" data-id="Propose" data-node="true"
+                    id="flowchart-Propose-20" class="node default default flowchart-label"><rect height="39"
+                                                                                                 width="117.6796875"
+                                                                                                 y="-19.5"
+                                                                                                 x="-58.83984375" ry="0"
+                                                                                                 rx="0"
+                                                                                                 style="fill:#018472;"
+                                                                                                 class="basic label-container"></rect><g
+                    transform="translate(-51.33984375, -12)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="24" width="102.6796875"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                         style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">/opsx:propose</span></div></foreignObject></g></g><g
+                    transform="translate(516.921875, 43.5)" data-id="P" data-node="true" id="flowchart-P-22"
+                    class="node default default flowchart-label"><rect height="87" width="126.515625" y="-43.5"
+                                                                       x="-63.2578125" ry="0" rx="0"
+                                                                       style="fill:#1e4e8c;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-55.7578125, -36)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="72" width="111.515625"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                        style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel"><b>proposal.md</b><br>为什么 · 做什么<br>不做什么</span></div></foreignObject></g></g><g
+                    transform="translate(516.921875, 180.5)" data-id="S" data-node="true" id="flowchart-S-24"
+                    class="node default default flowchart-label"><rect height="87" width="175.6484375" y="-43.5"
+                                                                       x="-87.82421875" ry="0" rx="0"
+                                                                       style="fill:#1e4e8c;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-80.32421875, -36)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="72" width="160.6484375"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                         style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel"><b>specs/</b><br>GIVEN / WHEN / THEN<br>行为规格</span></div></foreignObject></g></g><g
+                    transform="translate(516.921875, 317.5)" data-id="D" data-node="true" id="flowchart-D-26"
+                    class="node default default flowchart-label"><rect height="87" width="197.859375" y="-43.5"
+                                                                       x="-98.9296875" ry="0" rx="0"
+                                                                       style="fill:#1e4e8c;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-91.4296875, -36)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="72" width="182.859375"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                        style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel"><b>design.md</b><br>bcrypt vs argon2<br>JWT 过期时间 · ORM 选型</span></div></foreignObject></g></g><g
+                    transform="translate(516.921875, 442.5)" data-id="T" data-node="true" id="flowchart-T-28"
+                    class="node default default flowchart-label"><rect height="63" width="143.296875" y="-31.5"
+                                                                       x="-71.6484375" ry="0" rx="0"
+                                                                       style="fill:#1e4e8c;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-64.1484375, -24)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="48" width="128.296875"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                        style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;"
+                    class="nodeLabel"><b>tasks.md</b><br>每个任务 2–5 分钟</span></div></foreignObject></g></g></g></g></g></svg></pre>
+            <h3 id="32-规划阶段已完成进入编码纪律">3.2 规划阶段已完成，进入编码纪律<a
+                    href="#32-%e8%a7%84%e5%88%92%e9%98%b6%e6%ae%b5%e5%b7%b2%e5%ae%8c%e6%88%90%e8%bf%9b%e5%85%a5%e7%bc%96%e7%a0%81%e7%ba%aa%e5%be%8b"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>还记得前面说的分工吗？<strong>规划阶段 OpenSpec 主导，编码阶段 Superpowers 主导</strong>。</p>
+            <p>上一步的 <code>/opsx:propose</code> 已经把需求探索和设计决策都做完了——密码用什么算法、JWT 过期时间、数据库
+                ORM 选择等等，都记录在了 <code>design.md</code> 里。这相当于 Superpowers 的 brainstorming 和 writing-plans
+                已经被 OpenSpec 覆盖了。</p>
+            <p>所以接下来进入 <code>/opsx:apply</code> 时，如果你在 CLAUDE.md 中配置了 TDD 等要求，Superpowers
+                的工程纪律就会在编码过程中生效：TDD（先写测试再写代码）、debugging（遇到问题系统化排查）、verification（完成前验证）、code-review（提交前审查代码质量）。<strong>注意：这些不是自动触发的，需要你在
+                    CLAUDE.md 中明确要求。</strong></p>
+            <p><strong>这一步你获得了什么</strong>：所有设计决策都记录在 <code>design.md</code> 里，而且每次 change
+                完成后会归档到 <code>openspec/changes/&lt;change-id&gt;/archive/</code>。三轮迭代之后你还能看到"为什么 v1
+                选了 bcrypt、v2 改成了 argon2”——这是 Superpowers 单独使用做不到的（它只有最新版 design doc）。<strong>OpenSpec
+                    的 Delta/Archive 机制才是真正闭环场景三的那个环节。</strong></p>
+            <h3 id="33-确认计划让-ai-自动执行">3.3 确认计划、让 AI 自动执行<a
+                    href="#33-%e7%a1%ae%e8%ae%a4%e8%ae%a1%e5%88%92%e8%ae%a9-ai-%e8%87%aa%e5%8a%a8%e6%89%a7%e8%a1%8c"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>Brainstorming 完成后，Superpowers 自动生成任务计划（<code>tasks.md</code>），类似这样：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown"
+                                                                          data-lang="markdown"><span class="line"><span
+                    class="cl"><span class="gu">## 任务 1：项目初始化（2 分钟）
+</span></span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> npm init，安装 express, mongoose, jsonwebtoken, bcryptjs, dotenv
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## 任务 2：数据库连接（3 分钟）
+</span></span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> 创建 src/config/db.js，实现 MongoDB 连接
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## 任务 3：用户模型（5 分钟）
+</span></span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> 创建 src/models/User.js，定义字段约束，实现密码加密钩子
+</span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> 编写单元测试
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## 任务 4：鉴权中间件（3 分钟）
+</span></span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> 创建 src/middleware/auth.js，实现 JWT 验证
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## 任务 5：API 路由（10 分钟）
+</span></span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> POST /api/register、POST /api/login、GET /api/user
+</span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> 编写集成测试
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## 任务 6：项目入口（2 分钟）
+</span></span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> 创建 src/app.js，配置中间件、挂载路由、启动服务
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Markdown</span></div>
+            <p><strong>花 5 分钟通读一遍</strong>，检查顺序是否合理、有没有遗漏。确认后输入：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span
+                    class="line"><span class="cl">&gt; Plan 确认，开始执行
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Bash</span></div>
+            <p>如果你在 CLAUDE.md 中要求了 TDD，Superpowers 会进入 subagent-driven-development 模式——为每个任务启动子代理，每个子代理都<strong>走
+                TDD 流程</strong>（先写测试，测试失败，再写实现，测试通过，做 Code Review）。你可以看到实时进度：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback"
+                                                                          data-lang="fallback"><span class="line"><span
+                    class="cl">[Task 1/6] 项目初始化 ✓
+</span></span><span class="line"><span class="cl">[Task 2/6] 数据库连接
+</span></span><span class="line"><span class="cl">  ├─ 写测试 → 失败（RED）✓
+</span></span><span class="line"><span class="cl">  ├─ 写实现 → 通过（GREEN）✓
+</span></span><span class="line"><span class="cl">  ├─ Code Review → 通过 ✓
+</span></span><span class="line"><span class="cl">  └─ Git 提交 ✓
+</span></span><span class="line"><span class="cl">[Task 3/6] 用户模型 ...
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+            </div>
+            <p><strong>这一步你获得了什么</strong>：AI 在隔离的 worktree 上（注意——worktree 来自 Superpowers 的 <code>using-git-worktrees</code>
+                skill，不是 OpenSpec 自带；<code>/opsx:apply</code> 默认不会主动开 worktree，除非你在 CLAUDE.md 里要求）、按规范、走
+                TDD 在干活。搞砸了直接丢弃 worktree，主代码零污染。<strong>场景二的问题也解决了。</strong></p>
+            <pre class="mermaid" data-processed="true"><svg aria-roledescription="stateDiagram"
+                                                            role="graphics-document document" viewBox="0 0 556.5 740"
+                                                            style="max-width: 556.5px;" class="statediagram"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                            id="mermaid-1782513580580"><style>#mermaid-1782513580580 {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580580 .error-icon {
+                fill: #552222;
+            }
+
+            #mermaid-1782513580580 .error-text {
+                fill: #552222;
+                stroke: #552222;
+            }
+
+            #mermaid-1782513580580 .edge-thickness-normal {
+                stroke-width: 2px;
+            }
+
+            #mermaid-1782513580580 .edge-thickness-thick {
+                stroke-width: 3.5px;
+            }
+
+            #mermaid-1782513580580 .edge-pattern-solid {
+                stroke-dasharray: 0;
+            }
+
+            #mermaid-1782513580580 .edge-pattern-dashed {
+                stroke-dasharray: 3;
+            }
+
+            #mermaid-1782513580580 .edge-pattern-dotted {
+                stroke-dasharray: 2;
+            }
+
+            #mermaid-1782513580580 .marker {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580580 .marker.cross {
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580580 svg {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+            }
+
+            #mermaid-1782513580580 defs #statediagram-barbEnd {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580580 g.stateGroup text {
+                fill: #9370DB;
+                stroke: none;
+                font-size: 10px;
+            }
+
+            #mermaid-1782513580580 g.stateGroup text {
+                fill: #333;
+                stroke: none;
+                font-size: 10px;
+            }
+
+            #mermaid-1782513580580 g.stateGroup .state-title {
+                font-weight: bolder;
+                fill: #131300;
+            }
+
+            #mermaid-1782513580580 g.stateGroup rect {
+                fill: #ECECFF;
+                stroke: #9370DB;
+            }
+
+            #mermaid-1782513580580 g.stateGroup line {
+                stroke: #333333;
+                stroke-width: 1;
+            }
+
+            #mermaid-1782513580580 .transition {
+                stroke: #333333;
+                stroke-width: 1;
+                fill: none;
+            }
+
+            #mermaid-1782513580580 .stateGroup .composit {
+                fill: white;
+                border-bottom: 1px;
+            }
+
+            #mermaid-1782513580580 .stateGroup .alt-composit {
+                fill: #e0e0e0;
+                border-bottom: 1px;
+            }
+
+            #mermaid-1782513580580 .state-note {
+                stroke: #aaaa33;
+                fill: #fff5ad;
+            }
+
+            #mermaid-1782513580580 .state-note text {
+                fill: black;
+                stroke: none;
+                font-size: 10px;
+            }
+
+            #mermaid-1782513580580 .stateLabel .box {
+                stroke: none;
+                stroke-width: 0;
+                fill: #ECECFF;
+                opacity: 0.5;
+            }
+
+            #mermaid-1782513580580 .edgeLabel .label rect {
+                fill: #ECECFF;
+                opacity: 0.5;
+            }
+
+            #mermaid-1782513580580 .edgeLabel .label text {
+                fill: #333;
+            }
+
+            #mermaid-1782513580580 .label div .edgeLabel {
+                color: #333;
+            }
+
+            #mermaid-1782513580580 .stateLabel text {
+                fill: #131300;
+                font-size: 10px;
+                font-weight: bold;
+            }
+
+            #mermaid-1782513580580 .node circle.state-start {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580580 .node .fork-join {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580580 .node circle.state-end {
+                fill: #9370DB;
+                stroke: white;
+                stroke-width: 1.5;
+            }
+
+            #mermaid-1782513580580 .end-state-inner {
+                fill: white;
+                stroke-width: 1.5;
+            }
+
+            #mermaid-1782513580580 .node rect {
+                fill: #ECECFF;
+                stroke: #9370DB;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580580 .node polygon {
+                fill: #ECECFF;
+                stroke: #9370DB;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580580 #statediagram-barbEnd {
+                fill: #333333;
+            }
+
+            #mermaid-1782513580580 .statediagram-cluster rect {
+                fill: #ECECFF;
+                stroke: #9370DB;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580580 .cluster-label, #mermaid-1782513580580 .nodeLabel {
+                color: #131300;
+            }
+
+            #mermaid-1782513580580 .statediagram-cluster rect.outer {
+                rx: 5px;
+                ry: 5px;
+            }
+
+            #mermaid-1782513580580 .statediagram-state .divider {
+                stroke: #9370DB;
+            }
+
+            #mermaid-1782513580580 .statediagram-state .title-state {
+                rx: 5px;
+                ry: 5px;
+            }
+
+            #mermaid-1782513580580 .statediagram-cluster.statediagram-cluster .inner {
+                fill: white;
+            }
+
+            #mermaid-1782513580580 .statediagram-cluster.statediagram-cluster-alt .inner {
+                fill: #f0f0f0;
+            }
+
+            #mermaid-1782513580580 .statediagram-cluster .inner {
+                rx: 0;
+                ry: 0;
+            }
+
+            #mermaid-1782513580580 .statediagram-state rect.basic {
+                rx: 5px;
+                ry: 5px;
+            }
+
+            #mermaid-1782513580580 .statediagram-state rect.divider {
+                stroke-dasharray: 10, 10;
+                fill: #f0f0f0;
+            }
+
+            #mermaid-1782513580580 .note-edge {
+                stroke-dasharray: 5;
+            }
+
+            #mermaid-1782513580580 .statediagram-note rect {
+                fill: #fff5ad;
+                stroke: #aaaa33;
+                stroke-width: 1px;
+                rx: 0;
+                ry: 0;
+            }
+
+            #mermaid-1782513580580 .statediagram-note rect {
+                fill: #fff5ad;
+                stroke: #aaaa33;
+                stroke-width: 1px;
+                rx: 0;
+                ry: 0;
+            }
+
+            #mermaid-1782513580580 .statediagram-note text {
+                fill: black;
+            }
+
+            #mermaid-1782513580580 .statediagram-note .nodeLabel {
+                color: black;
+            }
+
+            #mermaid-1782513580580 .statediagram .edgeLabel {
+                color: red;
+            }
+
+            #mermaid-1782513580580 #dependencyStart, #mermaid-1782513580580 #dependencyEnd {
+                fill: #333333;
+                stroke: #333333;
+                stroke-width: 1;
+            }
+
+            #mermaid-1782513580580 .statediagramTitleText {
+                text-anchor: middle;
+                font-size: 18px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580580 :root {
+                --mermaid-font-family: "trebuchet ms", verdana, arial, sans-serif;
+            }</style><g><defs><marker orient="auto" markerUnits="strokeWidth" markerHeight="14" markerWidth="20"
+                                      refY="7" refX="19" id="mermaid-1782513580580_statediagram-barbEnd"><path
+                    d="M 19,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><g class="root"><g class="clusters"><g
+                    id="RED----parent" class="note-cluster"><rect fill="none" height="298" width="318.5" y="72"
+                                                                  x="210"></rect></g></g><g class="edgePaths"><path
+                    marker-end="url(#mermaid-1782513580580_statediagram-barbEnd)" style="fill:none"
+                    class="edge-thickness-normal transition" id="edge0"
+                    d="M362,22L362,26.167C362,30.333,362,38.667,362,47C362,55.333,362,63.667,362,72C362,80.333,362,88.667,362,92.833L362,97"></path><path
+                    marker-end="url(#mermaid-1782513580580_statediagram-barbEnd)" style="fill:none"
+                    class="edge-thickness-normal transition" id="edge1"
+                    d="M320.932,184L315.11,190.167C309.288,196.333,297.644,208.667,273.322,222.651C249,236.635,212,252.27,193.5,260.088L175,267.906"></path><path
+                    marker-end="url(#mermaid-1782513580580_statediagram-barbEnd)" style="fill:none"
+                    class="edge-thickness-normal transition" id="edge2"
+                    d="M95.5,345L95.5,349.167C95.5,353.333,95.5,361.667,95.5,372C95.5,382.333,95.5,394.667,95.5,407C95.5,419.333,95.5,431.667,95.5,437.833L95.5,444"></path><path
+                    marker-end="url(#mermaid-1782513580580_statediagram-barbEnd)" style="fill:none"
+                    class="edge-thickness-normal transition" id="edge3"
+                    d="M95.5,507L95.5,513.167C95.5,519.333,95.5,531.667,109.476,544C123.453,556.333,151.405,568.667,165.381,574.833L179.358,581"></path><path
+                    marker-end="url(#mermaid-1782513580580_statediagram-barbEnd)" style="fill:none"
+                    class="edge-thickness-normal transition" id="edge4"
+                    d="M338.223,589.253L366.602,581.711C394.982,574.169,451.741,559.084,480.12,540.126C508.5,521.167,508.5,498.333,508.5,475.5C508.5,452.667,508.5,429.833,508.5,412.25C508.5,394.667,508.5,382.333,508.5,364.75C508.5,347.167,508.5,324.333,508.5,299.5C508.5,274.667,508.5,247.833,497.277,228.25C486.055,208.667,463.61,196.333,452.387,190.167L441.165,184"></path><path
+                    marker-end="url(#mermaid-1782513580580_statediagram-barbEnd)" style="fill:none"
+                    class="edge-thickness-normal transition" id="edge5"
+                    d="M250.75,644L250.75,650.167C250.75,656.333,250.75,668.667,250.75,681C250.75,693.333,250.75,705.667,250.75,711.833L250.75,718"></path><path
+                    style="fill:none" class="edge-thickness-normal transition note-edge"
+                    d="M362,184L362,190.167C362,196.333,362,208.667,362,221C362,233.333,362,245.667,362,251.833L362,258"></path></g><g
+                    class="edgeLabels"><g class="edgeLabel"><g transform="translate(0, 0)" class="label"><rect
+                    height="0" width="0" ry="0" rx="0"></rect><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g transform="translate(286, 221)"
+                                                                              class="edgeLabel"><g
+                    transform="translate(-56, -12)" class="label"><rect height="24" width="112" ry="0" rx="0"></rect><foreignObject
+                    height="24" width="112"><div style="display: inline-block; white-space: nowrap;"
+                                                 xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">测试运行并失败</span></div></foreignObject></g></g><g
+                    transform="translate(95.5, 407)" class="edgeLabel"><g transform="translate(-32, -12)" class="label"><rect
+                    height="24" width="64" ry="0" rx="0"></rect><foreignObject height="24" width="64"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">测试通过</span></div></foreignObject></g></g><g transform="translate(95.5, 544)"
+                                                                                      class="edgeLabel"><g
+                    transform="translate(-32, -12)" class="label"><rect height="24" width="64" ry="0" rx="0"></rect><foreignObject
+                    height="24" width="64"><div style="display: inline-block; white-space: nowrap;"
+                                                xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">没有回归</span></div></foreignObject></g></g><g transform="translate(508.5, 407)"
+                                                                                      class="edgeLabel"><g
+                    transform="translate(-40, -12)" class="label"><rect height="24" width="80" ry="0" rx="0"></rect><foreignObject
+                    height="24" width="80"><div style="display: inline-block; white-space: nowrap;"
+                                                xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">下一个任务</span></div></foreignObject></g></g><g
+                    transform="translate(250.75, 681)" class="edgeLabel"><g transform="translate(-48, -12)"
+                                                                            class="label"><rect height="24" width="96"
+                                                                                                ry="0" rx="0"></rect><foreignObject
+                    height="24" width="96"><div style="display: inline-block; white-space: nowrap;"
+                                                xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">任务列表完成</span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><rect height="0" width="0" ry="0" rx="0"></rect><foreignObject
+                    height="0" width="0"><div style="display: inline-block; white-space: nowrap;"
+                                              xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g
+                    class="nodes"><g transform="translate(362, 15)" data-id="root_start" data-node="true"
+                                     id="state-root_start-0" class="node default"><circle height="14" width="14" r="7"
+                                                                                          class="state-start"></circle></g><g
+                    transform="translate(362, 140.5)" data-id="RED" data-node="true" id="state-RED-6"
+                    class="node  statediagram-state undefined"><rect height="87" width="175" y="-43.5" x="-87.5"
+                                                                     style="" class="basic label-container"></rect><g
+                    transform="translate(-80, -36)" style="" class="label"><rect></rect><foreignObject height="72"
+                                                                                                       width="160"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="nodeLabel">🔴 RED<br>先写一个会失败的测试<br>(此时还没有实现代码)</span></div></foreignObject></g></g><g
+                    transform="translate(95.5, 301.5)" data-id="GREEN" data-node="true" id="state-GREEN-2"
+                    class="node  statediagram-state undefined"><rect height="87" width="159" y="-43.5" x="-79.5"
+                                                                     style="" class="basic label-container"></rect><g
+                    transform="translate(-72, -36)" style="" class="label"><rect></rect><foreignObject height="72"
+                                                                                                       width="144"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="nodeLabel">🟢 GREEN<br>写刚好够让测试通过<br>的实现代码</span></div></foreignObject></g></g><g
+                    transform="translate(95.5, 475.5)" data-id="REFACTOR" data-node="true" id="state-REFACTOR-3"
+                    class="node  statediagram-state undefined"><rect height="63" width="175" y="-31.5" x="-87.5"
+                                                                     style="" class="basic label-container"></rect><g
+                    transform="translate(-80, -24)" style="" class="label"><rect></rect><foreignObject height="48"
+                                                                                                       width="160"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="nodeLabel">🔵 REFACTOR<br>测试保持绿，清理代码</span></div></foreignObject></g></g><g
+                    transform="translate(250.75, 612.5)" data-id="REVIEW" data-node="true" id="state-REVIEW-5"
+                    class="node  statediagram-state undefined"><rect height="63" width="174.9453125" y="-31.5"
+                                                                     x="-87.47265625" style=""
+                                                                     class="basic label-container"></rect><g
+                    transform="translate(-79.97265625, -24)" style="" class="label"><rect></rect><foreignObject
+                    height="48" width="159.9453125"><div style="display: inline-block; white-space: nowrap;"
+                                                         xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">✅ Code Review<br>Superpowers 自动审查</span></div></foreignObject></g></g><g
+                    transform="translate(250.75, 725)" data-id="root_end" data-node="true" id="state-root_end-5"
+                    class="node default"><circle height="14" width="14" r="7" class="state-start"></circle><circle
+                    height="10" width="10" r="5" class="state-end"></circle></g><g transform="translate(362, 301.5)"
+                                                                                   data-id="RED----note-6"
+                                                                                   data-node="true"
+                                                                                   id="state-RED----note-6"
+                                                                                   class="node statediagram-note"><rect
+                    height="87" width="223" y="-43.5" x="-111.5"></rect><g transform="translate(-104, -36)" style=""
+                                                                           class="label"><rect></rect><foreignObject
+                    height="72" width="208"><div style="display: inline-block; white-space: nowrap;"
+                                                 xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">如果测试之前就有实现代码，<br>  Superpowers 会直接删掉<br>  —— 不是警告，是删除。</span></div></foreignObject></g></g></g></g></g></svg></pre>
+            <h3 id="34-验证--归档">3.4 验证 + 归档<a href="#34-%e9%aa%8c%e8%af%81--%e5%bd%92%e6%a1%a3" class="anchor"
+                                                     aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span
+                    class="line"><span class="cl"><span class="c1"># 验证实现是否符合规范</span>
+</span></span><span class="line"><span class="cl">&gt; /opsx:verify
+</span></span><span class="line"><span class="cl"><span class="c1"># 输出：所有任务完成，无 CRITICAL 问题</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 归档变更——千万别忘了这一步</span>
+</span></span><span class="line"><span class="cl">&gt; /opsx:archive
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Bash</span></div>
+            <p>归档会把变更的规范合并到主规范中。<strong>忘了这一步，下次开发新功能时 AI
+                读取的还是旧规范，可能重复实现已有功能。</strong></p>
+            <h3 id="35-启动项目验证成果">3.5 启动项目，验证成果<a
+                    href="#35-%e5%90%af%e5%8a%a8%e9%a1%b9%e7%9b%ae%e9%aa%8c%e8%af%81%e6%88%90%e6%9e%9c" class="anchor"
+                    aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span
+                    class="line"><span class="cl">npm install
+</span></span><span class="line"><span class="cl">node src/app.js
+</span></span><span class="line"><span class="cl"><span class="c1"># 输出：服务运行在端口 5000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 测试注册</span>
+</span></span><span class="line"><span class="cl">curl -X POST http://localhost:5000/api/register <span class="se">\
+</span></span></span><span class="line"><span class="cl">  -H <span
+                    class="s2">"Content-Type: application/json"</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  -d <span class="s1">'{"username":"testuser","email":"test@example.com","password":"123456"}'</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 返回：{"success":true,"data":{"id":"...","username":"testuser","email":"test@example.com"}}</span>
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Bash</span></div>
+            <p>到这里，从一句话需求到可运行的 API，全流程跑完了。你的工作是：确认需求 → 回答设计问题 → Review 计划 →
+                验证结果。核心代码由 AI 按规范生成。</p>
+            <pre class="mermaid" data-processed="true"><svg aria-roledescription="flowchart-v2"
+                                                            role="graphics-document document"
+                                                            viewBox="-8 -8 1332.515625 212.25"
+                                                            style="max-width: 1332.515625px;"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                            id="mermaid-1782513580604"><style>#mermaid-1782513580604 {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580604 .error-icon {
+                fill: #552222;
+            }
+
+            #mermaid-1782513580604 .error-text {
+                fill: #552222;
+                stroke: #552222;
+            }
+
+            #mermaid-1782513580604 .edge-thickness-normal {
+                stroke-width: 2px;
+            }
+
+            #mermaid-1782513580604 .edge-thickness-thick {
+                stroke-width: 3.5px;
+            }
+
+            #mermaid-1782513580604 .edge-pattern-solid {
+                stroke-dasharray: 0;
+            }
+
+            #mermaid-1782513580604 .edge-pattern-dashed {
+                stroke-dasharray: 3;
+            }
+
+            #mermaid-1782513580604 .edge-pattern-dotted {
+                stroke-dasharray: 2;
+            }
+
+            #mermaid-1782513580604 .marker {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580604 .marker.cross {
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580604 svg {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+            }
+
+            #mermaid-1782513580604 .label {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                color: #333;
+            }
+
+            #mermaid-1782513580604 .cluster-label text {
+                fill: #333;
+            }
+
+            #mermaid-1782513580604 .cluster-label span, #mermaid-1782513580604 p {
+                color: #333;
+            }
+
+            #mermaid-1782513580604 .label text, #mermaid-1782513580604 span, #mermaid-1782513580604 p {
+                fill: #333;
+                color: #333;
+            }
+
+            #mermaid-1782513580604 .node rect, #mermaid-1782513580604 .node circle, #mermaid-1782513580604 .node ellipse, #mermaid-1782513580604 .node polygon, #mermaid-1782513580604 .node path {
+                fill: #ECECFF;
+                stroke: #9370DB;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580604 .flowchart-label text {
+                text-anchor: middle;
+            }
+
+            #mermaid-1782513580604 .node .katex path {
+                fill: #000;
+                stroke: #000;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580604 .node .label {
+                text-align: center;
+            }
+
+            #mermaid-1782513580604 .node.clickable {
+                cursor: pointer;
+            }
+
+            #mermaid-1782513580604 .arrowheadPath {
+                fill: #333333;
+            }
+
+            #mermaid-1782513580604 .edgePath .path {
+                stroke: #333333;
+                stroke-width: 2.0px;
+            }
+
+            #mermaid-1782513580604 .flowchart-link {
+                stroke: #333333;
+                fill: none;
+            }
+
+            #mermaid-1782513580604 .edgeLabel {
+                background-color: #e8e8e8;
+                text-align: center;
+            }
+
+            #mermaid-1782513580604 .edgeLabel rect {
+                opacity: 0.5;
+                background-color: #e8e8e8;
+                fill: #e8e8e8;
+            }
+
+            #mermaid-1782513580604 .labelBkg {
+                background-color: rgba(232, 232, 232, 0.5);
+            }
+
+            #mermaid-1782513580604 .cluster rect {
+                fill: #ffffde;
+                stroke: #aaaa33;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580604 .cluster text {
+                fill: #333;
+            }
+
+            #mermaid-1782513580604 .cluster span, #mermaid-1782513580604 p {
+                color: #333;
+            }
+
+            #mermaid-1782513580604 div.mermaidTooltip {
+                position: absolute;
+                text-align: center;
+                max-width: 200px;
+                padding: 2px;
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 12px;
+                background: hsl(80, 100%, 96.2745098039%);
+                border: 1px solid #aaaa33;
+                border-radius: 2px;
+                pointer-events: none;
+                z-index: 100;
+            }
+
+            #mermaid-1782513580604 .flowchartTitleText {
+                text-anchor: middle;
+                font-size: 18px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580604 :root {
+                --mermaid-font-family: "trebuchet ms", verdana, arial, sans-serif;
+            }</style><g><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5"
+                                refX="6" viewBox="0 0 10 10" class="marker flowchart"
+                                id="mermaid-1782513580604_flowchart-pointEnd"><path
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker orient="auto" markerHeight="12" markerWidth="12"
+                                                                      markerUnits="userSpaceOnUse" refY="5" refX="4.5"
+                                                                      viewBox="0 0 10 10" class="marker flowchart"
+                                                                      id="mermaid-1782513580604_flowchart-pointStart"><path
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 0 5 L 10 10 L 10 0 z"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                                       markerUnits="userSpaceOnUse" refY="5" refX="11"
+                                                                       viewBox="0 0 10 10" class="marker flowchart"
+                                                                       id="mermaid-1782513580604_flowchart-circleEnd"><circle
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5"
+                    cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                     markerUnits="userSpaceOnUse" refY="5" refX="-1" viewBox="0 0 10 10"
+                                                     class="marker flowchart"
+                                                     id="mermaid-1782513580604_flowchart-circleStart"><circle
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5"
+                    cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                     markerUnits="userSpaceOnUse" refY="5.2" refX="12"
+                                                     viewBox="0 0 11 11" class="marker cross flowchart"
+                                                     id="mermaid-1782513580604_flowchart-crossEnd"><path
+                    style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><marker orient="auto" markerHeight="11"
+                                                                          markerWidth="11" markerUnits="userSpaceOnUse"
+                                                                          refY="5.2" refX="-1" viewBox="0 0 11 11"
+                                                                          class="marker cross flowchart"
+                                                                          id="mermaid-1782513580604_flowchart-crossStart"><path
+                    style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><g class="root"><g class="clusters"><g id="ClaudeCode"
+                                                                                                         class="cluster default flowchart-label"><rect
+                    height="171" width="210.96875" y="19.25" x="0" ry="0" rx="0" style="fill:#4a5568;"></rect><g
+                    transform="translate(60.63671875, 19.25)" class="cluster-label"><foreignObject height="24"
+                                                                                                   width="89.6953125"><div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">Claude Code</span></div></foreignObject></g></g><g
+                    id="Superpowers" class="cluster default flowchart-label"><rect height="196.25" width="366.7109375"
+                                                                                   y="0" x="949.8046875" ry="0" rx="0"
+                                                                                   style="fill:#2b6cb0;"></rect><g
+                    transform="translate(1087.59765625, 0)" class="cluster-label"><foreignObject height="24"
+                                                                                                 width="91.125"><div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">Superpowers</span></div></foreignObject></g></g><g
+                    id="OpenSpec" class="cluster default flowchart-label"><rect height="133" width="350.046875" y="0"
+                                                                                x="549.7578125" ry="0" rx="0"
+                                                                                style="fill:#018472;"></rect><g
+                    transform="translate(689.5703125, 0)" class="cluster-label"><foreignObject height="24"
+                                                                                               width="70.421875"><div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">OpenSpec</span></div></foreignObject></g></g></g><g
+                    class="edgePaths"><path marker-end="url(#mermaid-1782513580604_flowchart-pointEnd)"
+                                            style="fill:none;"
+                                            class="edge-thickness-normal edge-pattern-solid flowchart-link LS-U LE-Propose"
+                                            id="L-U-Propose-0"
+                                            d="M499.758,66.5L503.924,66.5C508.091,66.5,516.424,66.5,524.758,66.5C533.091,66.5,541.424,66.5,548.874,66.5C556.324,66.5,562.891,66.5,566.174,66.5L569.458,66.5"></path><path
+                    marker-end="url(#mermaid-1782513580604_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Propose LE-Artifacts"
+                    id="L-Propose-Artifacts-0"
+                    d="M692.438,66.5L696.604,66.5C700.771,66.5,709.104,66.5,716.554,66.5C724.004,66.5,730.571,66.5,733.854,66.5L737.138,66.5"></path><path
+                    marker-end="url(#mermaid-1782513580604_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Artifacts LE-Plan"
+                    id="L-Artifacts-Plan-0"
+                    d="M874.805,66.5L878.971,66.5C883.138,66.5,891.471,66.5,899.805,66.5C908.138,66.5,916.471,66.5,924.805,66.5C933.138,66.5,941.471,66.5,948.921,66.5C956.371,66.5,962.938,66.5,966.221,66.5L969.505,66.5"></path><path
+                    marker-end="url(#mermaid-1782513580604_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Plan LE-TDD" id="L-Plan-TDD-0"
+                    d="M1053.648,66.5L1057.815,66.5C1061.982,66.5,1070.315,66.5,1079.037,68.156C1087.759,69.813,1096.869,73.126,1101.424,74.782L1105.979,76.439"></path><path
+                    marker-end="url(#mermaid-1782513580604_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-TDD LE-Exec" id="L-TDD-Exec-0"
+                    d="M1110.96,141.25L1105.575,143.208C1100.189,145.167,1089.419,149.083,1073.297,151.042C1057.174,153,1035.701,153,1014.227,153C992.753,153,971.279,153,956.375,153C941.471,153,933.138,153,924.805,153C916.471,153,908.138,153,888.774,153C869.41,153,839.016,153,808.621,153C778.227,153,747.832,153,718.661,153C689.491,153,661.544,153,633.598,153C605.651,153,577.704,153,559.564,153C541.424,153,533.091,153,519.508,153C505.924,153,487.091,153,468.258,153C449.424,153,430.591,153,406.525,153C382.46,153,353.161,153,323.863,153C294.565,153,265.267,153,246.451,153C227.635,153,219.302,153,206.299,149.377C193.295,145.754,175.621,138.507,166.784,134.884L157.948,131.261"></path><path
+                    marker-end="url(#mermaid-1782513580604_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Exec LE-Archive"
+                    id="L-Exec-Archive-0"
+                    d="M153.044,90.25L162.698,86.292C172.352,82.333,191.66,74.417,205.481,70.458C219.302,66.5,227.635,66.5,235.085,66.5C242.535,66.5,249.102,66.5,252.385,66.5L255.669,66.5"></path><path
+                    marker-end="url(#mermaid-1782513580604_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Archive LE-U" id="L-Archive-U-0"
+                    d="M386.758,66.5L390.924,66.5C395.091,66.5,403.424,66.5,410.874,66.5C418.324,66.5,424.891,66.5,428.174,66.5L431.458,66.5"></path></g><g
+                    class="edgeLabels"><g class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject
+                    height="0" width="0"><div style="display: inline-block; white-space: nowrap;"
+                                              xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g
+                    class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g
+                    transform="translate(105.484375, 109.75)" data-id="Exec" data-node="true" id="flowchart-Exec-44"
+                    class="node default default flowchart-label"><rect height="39" width="160.96875" y="-19.5"
+                                                                       x="-80.484375" ry="0" rx="0" style=""
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-72.984375, -12)" style="" class="label"><rect></rect><foreignObject
+                    height="24" width="145.96875"><div style="display: inline-block; white-space: nowrap;"
+                                                       xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">改文件 · 跑测试 · git</span></div></foreignObject></g></g><g
+                    transform="translate(1014.2265625, 66.5)" data-id="Plan" data-node="true" id="flowchart-Plan-40"
+                    class="node default default flowchart-label"><rect height="63" width="78.84375" y="-31.5"
+                                                                       x="-39.421875" ry="0" rx="0" style=""
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-31.921875, -24)" style="" class="label"><rect></rect><foreignObject
+                    height="48" width="63.84375"><div style="display: inline-block; white-space: nowrap;"
+                                                      xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">tasks.md<br>复核</span></div></foreignObject></g></g><g
+                    transform="translate(1197.58203125, 109.75)" data-id="TDD" data-node="true" id="flowchart-TDD-42"
+                    class="node default default flowchart-label"><rect height="63" width="187.8671875" y="-31.5"
+                                                                       x="-93.93359375" ry="0" rx="0" style=""
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-86.43359375, -24)" style="" class="label"><rect></rect><foreignObject
+                    height="48" width="172.8671875"><div style="display: inline-block; white-space: nowrap;"
+                                                         xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">TDD 循环<br>(RED→GREEN→REVIEW)</span></div></foreignObject></g></g><g
+                    transform="translate(808.62109375, 66.5)" data-id="Artifacts" data-node="true"
+                    id="flowchart-Artifacts-38" class="node default default flowchart-label"><rect height="63"
+                                                                                                   width="132.3671875"
+                                                                                                   y="-31.5"
+                                                                                                   x="-66.18359375"
+                                                                                                   ry="0" rx="0"
+                                                                                                   style=""
+                                                                                                   class="basic label-container"></rect><g
+                    transform="translate(-58.68359375, -24)" style="" class="label"><rect></rect><foreignObject
+                    height="48" width="117.3671875"><div style="display: inline-block; white-space: nowrap;"
+                                                         xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">proposal / specs<br>design / tasks</span></div></foreignObject></g></g><g
+                    transform="translate(633.59765625, 66.5)" data-id="Propose" data-node="true"
+                    id="flowchart-Propose-36" class="node default default flowchart-label"><rect height="39"
+                                                                                                 width="117.6796875"
+                                                                                                 y="-19.5"
+                                                                                                 x="-58.83984375" ry="0"
+                                                                                                 rx="0" style=""
+                                                                                                 class="basic label-container"></rect><g
+                    transform="translate(-51.33984375, -12)" style="" class="label"><rect></rect><foreignObject
+                    height="24" width="102.6796875"><div style="display: inline-block; white-space: nowrap;"
+                                                         xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel">/opsx:propose</span></div></foreignObject></g></g><g
+                    transform="translate(468.2578125, 66.5)" data-id="U" data-node="true" id="flowchart-U-35"
+                    class="node default default flowchart-label"><rect height="87" width="63" y="-43.5" x="-31.5" ry="0"
+                                                                       rx="0" style="fill:#1a202c;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-24, -36)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="72" width="48"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">你：<br>一句话<br>需求</span></div></foreignObject></g></g><g
+                    transform="translate(323.86328125, 66.5)" data-id="Archive" data-node="true"
+                    id="flowchart-Archive-46" class="node default default flowchart-label"><rect height="63"
+                                                                                                 width="125.7890625"
+                                                                                                 y="-31.5"
+                                                                                                 x="-62.89453125" ry="0"
+                                                                                                 rx="0"
+                                                                                                 style="fill:#c05621;"
+                                                                                                 class="basic label-container"></rect><g
+                    transform="translate(-55.39453125, -24)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="48" width="110.7890625"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                         style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">/opsx:archive<br>spec delta 合并</span></div></foreignObject></g></g></g></g></g></svg></pre>
+            <h2 id="第四层为什么-claude-code--openspec--superpowers-互相独占缺一个就断链">第四层：为什么 Claude Code +
+                OpenSpec + Superpowers 互相独占，缺一个就断链<a
+                        href="#%e7%ac%ac%e5%9b%9b%e5%b1%82%e4%b8%ba%e4%bb%80%e4%b9%88-claude-code--openspec--superpowers-%e4%ba%92%e7%9b%b8%e7%8b%ac%e5%8d%a0%e7%bc%ba%e4%b8%80%e4%b8%aa%e5%b0%b1%e6%96%ad%e9%93%be"
+                        class="anchor" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                </a></h2>
+            <p>跑通了一遍，你可能会想：真有必要这么麻烦吗？不能只用 Claude Code？或者只用其中两个？</p>
+            <p>可以，但你会掉回前面说的那些坑里。先看一张表，搞清楚 OpenSpec 和 Superpowers 到底哪里重叠、哪里互补：</p>
+            <table>
+                <thead>
+                <tr>
+                    <th>能力</th>
+                    <th style="text-align:center">OpenSpec</th>
+                    <th style="text-align:center">Superpowers</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>需求探索</td>
+                    <td style="text-align:center">✅ propose</td>
+                    <td style="text-align:center">✅ brainstorming</td>
+                </tr>
+                <tr>
+                    <td>任务拆解</td>
+                    <td style="text-align:center">✅ tasks.md</td>
+                    <td style="text-align:center">✅ writing-plans</td>
+                </tr>
+                <tr>
+                    <td>设计文档落盘</td>
+                    <td style="text-align:center">✅ <code>openspec/changes/&lt;id&gt;/design.md</code></td>
+                    <td style="text-align:center">✅ <code>docs/superpowers/specs/</code></td>
+                </tr>
+                <tr>
+                    <td>实施计划落盘</td>
+                    <td style="text-align:center">✅ <code>openspec/changes/&lt;id&gt;/tasks.md</code></td>
+                    <td style="text-align:center">✅ <code>docs/superpowers/plans/</code></td>
+                </tr>
+                <tr>
+                    <td><strong>结构化四文件拆分</strong>（proposal / spec / design / tasks）</td>
+                    <td style="text-align:center">✅ 强约束</td>
+                    <td style="text-align:center">❌ 单份 design + plan</td>
+                </tr>
+                <tr>
+                    <td><strong>Delta + Archive 多轮归档</strong></td>
+                    <td style="text-align:center">✅ 每个 change 独立目录，完成后存档</td>
+                    <td style="text-align:center">❌ 下一次 brainstorm 会覆盖上一次 design</td>
+                </tr>
+                <tr>
+                    <td><strong>新会话自动读取为 spec-of-truth</strong></td>
+                    <td style="text-align:center">✅ 通过 <code>openspec/AGENTS.md</code> 自动注入</td>
+                    <td style="text-align:center">⚠️ 需你手动让 Claude 去读 plan 文件</td>
+                </tr>
+                <tr>
+                    <td><strong>TDD 强制</strong></td>
+                    <td style="text-align:center">❌</td>
+                    <td style="text-align:center">✅ 先写测试，否则删掉已写代码</td>
+                </tr>
+                <tr>
+                    <td><strong>Code Review</strong></td>
+                    <td style="text-align:center">❌</td>
+                    <td style="text-align:center">✅ 自动 code-review</td>
+                </tr>
+                <tr>
+                    <td><strong>Git 分支隔离</strong></td>
+                    <td style="text-align:center">❌</td>
+                    <td style="text-align:center">✅ using-git-worktrees</td>
+                </tr>
+                <tr>
+                    <td><strong>系统化调试</strong></td>
+                    <td style="text-align:center">❌</td>
+                    <td style="text-align:center">✅ systematic-debugging</td>
+                </tr>
+                <tr>
+                    <td><strong>完成前验证</strong></td>
+                    <td style="text-align:center">❌</td>
+                    <td style="text-align:center">✅ verification-before-completion</td>
+                </tr>
+                </tbody>
+            </table>
+            <p><strong>网上流传的"Superpowers 不持久化"是错的</strong> —— 两套系统都落盘。真正的差异是 OpenSpec 独占两点：一是
+                <strong>Delta/Archive 多轮归档</strong>（每次 change 都是独立版本化目录，不会被下一次覆盖），二是<strong>自动作为
+                    spec-of-truth 注入新会话</strong>（新开 Claude 时会自动读 <code>openspec/AGENTS.md</code>，不用你手动指路）。Superpowers
+                的 design doc 是 last-write-wins，而且必须你手动让 Claude 再读一次。这两条差异对"同一个功能反复迭代 3-4
+                次的团队场景"非常重要，对"一次性构建"则体感很弱。</p>
+            <p>理解了这张表，再看每种组合缺什么就很清楚了。</p>
+            <pre class="mermaid" data-processed="true"><svg aria-roledescription="quadrantChart"
+                                                            role="graphics-document document" viewBox="0 0 500 500"
+                                                            style="max-width: 500px;"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                            id="mermaid-1782513580630"><style>#mermaid-1782513580630 {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580630 .error-icon {
+                fill: #552222;
+            }
+
+            #mermaid-1782513580630 .error-text {
+                fill: #552222;
+                stroke: #552222;
+            }
+
+            #mermaid-1782513580630 .edge-thickness-normal {
+                stroke-width: 2px;
+            }
+
+            #mermaid-1782513580630 .edge-thickness-thick {
+                stroke-width: 3.5px;
+            }
+
+            #mermaid-1782513580630 .edge-pattern-solid {
+                stroke-dasharray: 0;
+            }
+
+            #mermaid-1782513580630 .edge-pattern-dashed {
+                stroke-dasharray: 3;
+            }
+
+            #mermaid-1782513580630 .edge-pattern-dotted {
+                stroke-dasharray: 2;
+            }
+
+            #mermaid-1782513580630 .marker {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580630 .marker.cross {
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580630 svg {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+            }
+
+            #mermaid-1782513580630 :root {
+                --mermaid-font-family: "trebuchet ms", verdana, arial, sans-serif;
+            }</style><g></g><g class="main"><g class="quadrants"><g class="quadrant"><rect fill="#ECECFF" height="212"
+                                                                                           width="232" y="45"
+                                                                                           x="263"></rect><text
+                    transform="translate(379, 50) rotate(0)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="16" fill="#131300" y="0" x="0">三件套 ✅</text></g><g class="quadrant"><rect
+                    fill="#f1f1ff" height="212" width="232" y="45" x="31"></rect><text
+                    transform="translate(147, 50) rotate(0)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="16" fill="#0e0e00" y="0" x="0">OpenSpec + Claude Code</text></g><g class="quadrant"><rect
+                    fill="#f6f6ff" height="212" width="232" y="257" x="31"></rect><text
+                    transform="translate(147, 262) rotate(0)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="16" fill="#090900" y="0" x="0">只有 Claude Code</text></g><g class="quadrant"><rect
+                    fill="#fbfbff" height="212" width="232" y="257" x="263"></rect><text
+                    transform="translate(379, 262) rotate(0)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="16" fill="#040400" y="0" x="0">Superpowers + Claude Code</text></g></g><g class="border"><line
+                    style="stroke: rgb(199, 199, 241); stroke-width: 2;" y2="45" x2="496" y1="45" x1="30"></line><line
+                    style="stroke: rgb(199, 199, 241); stroke-width: 2;" y2="468" x2="495" y1="46" x1="495"></line><line
+                    style="stroke: rgb(199, 199, 241); stroke-width: 2;" y2="469" x2="496" y1="469" x1="30"></line><line
+                    style="stroke: rgb(199, 199, 241); stroke-width: 2;" y2="468" x2="31" y1="46" x1="31"></line><line
+                    style="stroke: rgb(199, 199, 241); stroke-width: 1;" y2="468" x2="263" y1="46" x1="263"></line><line
+                    style="stroke: rgb(199, 199, 241); stroke-width: 1;" y2="257" x2="494" y1="257" x1="32"></line></g><g
+                    class="data-points"><g class="data-point"><circle fill="hsl(240, 100%, NaN%)" r="5"
+                                                                      cy="104.36000000000001"
+                                                                      cx="411.47999999999996"></circle><text
+                    transform="translate(411.47999999999996, 109.36000000000001) rotate(0)" text-anchor="middle"
+                    dominant-baseline="hanging" font-size="12" fill="#131300" y="0" x="0">三件套</text></g><g
+                    class="data-point"><circle fill="hsl(240, 100%, NaN%)" r="5" cy="129.79999999999998"
+                                               cx="133.08"></circle><text
+                    transform="translate(133.08, 134.79999999999998) rotate(0)" text-anchor="middle"
+                    dominant-baseline="hanging" font-size="12" fill="#131300" y="0" x="0">加 OpenSpec</text></g><g
+                    class="data-point"><circle fill="hsl(240, 100%, NaN%)" r="5" cy="375.71999999999997"
+                                               cx="392.92"></circle><text
+                    transform="translate(392.92, 380.71999999999997) rotate(0)" text-anchor="middle"
+                    dominant-baseline="hanging" font-size="12" fill="#131300" y="0" x="0">加 Superpowers</text></g><g
+                    class="data-point"><circle fill="hsl(240, 100%, NaN%)" r="5" cy="405.4" cx="114.52"></circle><text
+                    transform="translate(114.52, 410.4) rotate(0)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="12" fill="#131300" y="0" x="0">只用 Claude Code</text></g></g><g class="labels"><g
+                    class="label"><text transform="translate(147, 479) rotate(0)" text-anchor="middle"
+                                        dominant-baseline="hanging" font-size="16" fill="#131300" y="0"
+                                        x="0">纪律弱</text></g><g class="label"><text
+                    transform="translate(379, 479) rotate(0)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="16" fill="#131300" y="0" x="0">纪律强</text></g><g class="label"><text
+                    transform="translate(5, 363) rotate(-90)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="16" fill="#131300" y="0" x="0">记忆短</text></g><g class="label"><text
+                    transform="translate(5, 151) rotate(-90)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="16" fill="#131300" y="0" x="0">记忆持久</text></g></g><g class="title"><text
+                    transform="translate(250, 10) rotate(0)" text-anchor="middle" dominant-baseline="hanging"
+                    font-size="20" fill="#131300" y="0" x="0">四种组合分别落在哪个象限</text></g></g></svg></pre>
+            <h3 id="只用-claude-code快但乱">只用 Claude Code：快但乱<a
+                    href="#%e5%8f%aa%e7%94%a8-claude-code%e5%bf%ab%e4%bd%86%e4%b9%b1" class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>开发速度最快，但没有规范约束。一位开发者的实际经历是：团队里不同人用 Claude Code 生成的代码，有的接口返回
+                <code>{code: 200, data: ...}</code>，有的返回 <code>{success: true, result: ...}</code>——前端对接时每个接口都要单独适配，痛苦至极。更严重的是，有人忘了给密码加密、有人忘了给私有接口加鉴权，这些安全问题要到测试甚至上线后才暴露。
+            </p>
+            <h3 id="openspec--claude-code缺-superpowers有蓝图但没工头">OpenSpec + Claude Code（缺 Superpowers）：有蓝图但没工头<a
+                    href="#openspec--claude-code%e7%bc%ba-superpowers%e6%9c%89%e8%93%9d%e5%9b%be%e4%bd%86%e6%b2%a1%e5%b7%a5%e5%a4%b4"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>你的规范写得再好，Claude Code 在执行过程中可能"自由发挥"偏离规范。没有在 CLAUDE.md 中要求 TDD、没有要求 Code
+                Review、没有 Worktree
+                隔离——规范和实现之间缺少一个"执法者"。相当于画了完美的建筑图纸，但施工队不按图施工，你又没有监理。</p>
+            <h3 id="superpowers--claude-code缺-openspec有纪律但记忆短">Superpowers + Claude Code（缺 OpenSpec）：有纪律但记忆短<a
+                    href="#superpowers--claude-code%e7%bc%ba-openspec%e6%9c%89%e7%ba%aa%e5%be%8b%e4%bd%86%e8%ae%b0%e5%bf%86%e7%9f%ad"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>TDD 和 Code Review 保证质量，而且设计文档和任务计划<strong>确实会落盘</strong>（<code>docs/superpowers/specs/</code>
+                和 <code>docs/superpowers/plans/</code>）。真正缺的是 Delta/Archive 这一层——下一次 brainstorming 会直接覆盖上一次的
+                design doc，不是版本化归档。三轮迭代之后，你已经无法重建"最初那版设计为什么做了那个权衡"。<strong>一次性交付的个人项目不是问题；同一个功能要迭代三四轮的团队项目就会咬人。</strong>
+            </p>
+            <h3 id="三者组合蓝图--监理--施工队">三者组合：蓝图 + 监理 + 施工队<a
+                    href="#%e4%b8%89%e8%80%85%e7%bb%84%e5%90%88%e8%93%9d%e5%9b%be--%e7%9b%91%e7%90%86--%e6%96%bd%e5%b7%a5%e9%98%9f"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback"
+                                                                          data-lang="fallback"><span class="line"><span
+                    class="cl">OpenSpec（需求层）→ Superpowers（纪律层）→ Claude Code（执行层）
+</span></span><span class="line"><span class="cl">   │                    │                      │
+</span></span><span class="line"><span class="cl">   ├─ proposal.md       ├─ Brainstorming       ├─ 写代码
+</span></span><span class="line"><span class="cl">   ├─ specs/            ├─ TDD 强制            ├─ 跑测试
+</span></span><span class="line"><span class="cl">   ├─ design.md         ├─ Code Review         ├─ Git 操作
+</span></span><span class="line"><span class="cl">   └─ tasks.md          └─ Subagent 并行       └─ 安装依赖
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+            </div>
+            <p>OpenSpec 把需求锚定成可追溯的文档 → Superpowers 确保 AI 按文档执行且有质量保障 → Claude Code 高效落地代码。形成"规范
+                → 执行 → 验证 → 归档"的闭环。三个工具各管一层，任何一层缺失，这个闭环就断了。</p>
+            <p>这里有个很多人忽略的关键设计：<strong>OpenSpec 刻意把每份 spec 文件控制在 200-300 行</strong>（比对标工具
+                <a href="https://github.com/github/spec-kit">Spec Kit</a> 明显更轻）。这不是功能缺失——是刻意控制长度。规范太长没人会读，AI
+                也会在里面丢失上下文。正确的 Spec 描述行为，不描述实现：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown"
+                                                                          data-lang="markdown"><span class="line"><span
+                    class="cl"><span class="gh"># 正确：描述行为
+</span></span></span><span class="line"><span class="cl">需求：用户登录
+</span></span><span class="line"><span class="cl"><span class="k">-</span> GIVEN 有效凭证
+</span></span><span class="line"><span class="cl"><span class="k">-</span> WHEN 提交登录表单
+</span></span><span class="line"><span class="cl"><span class="k">-</span> THEN 返回 JWT Token
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gh"># 错误：描述实现
+</span></span></span><span class="line"><span class="cl">实现 login 函数：
+</span></span><span class="line"><span class="cl"><span class="k">1.</span> 导入 bcrypt
+</span></span><span class="line"><span class="cl"><span class="k">2.</span> 调用 bcrypt.compare
+</span></span><span class="line"><span class="cl"><span class="k">3.</span> 如果成功，调用 jwt.sign
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+                <span class="code-lang-label">Markdown</span></div>
+            <p>Spec 管的是"要什么结果"，不管"怎么写代码"。后者是 Superpowers + Claude Code 的事。</p>
+            <p>另一个反直觉的设计在 Superpowers 这边：<strong>它的 TDD 技能会删除在测试之前写的代码</strong>。不是警告你，是直接删掉。这看起来激进，但解决了一个真实问题——AI
+                总是先写实现再补测试，补出来的测试只是在"验证代码确实是这么写的"而不是"验证代码确实做了该做的事"。</p>
+            <h2 id="第五层更大的案例看三件套的上限在哪">第五层：更大的案例——看三件套的上限在哪<a
+                    href="#%e7%ac%ac%e4%ba%94%e5%b1%82%e6%9b%b4%e5%a4%a7%e7%9a%84%e6%a1%88%e4%be%8b%e7%9c%8b%e4%b8%89%e4%bb%b6%e5%a5%97%e7%9a%84%e4%b8%8a%e9%99%90%e5%9c%a8%e5%93%aa"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h2>
+            <p>前面的用户认证 API 是"新手体验版"，下面看两个更大的案例，展示三件套在复杂项目中的真实表现。</p>
+            <h3 id="案例一一天内搭完一个博客系统">案例一：一天内搭完一个博客系统<a
+                    href="#%e6%a1%88%e4%be%8b%e4%b8%80%e4%b8%80%e5%a4%a9%e5%86%85%e6%90%ad%e5%ae%8c%e4%b8%80%e4%b8%aa%e5%8d%9a%e5%ae%a2%e7%b3%bb%e7%bb%9f"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>需求：用 Next.js + PostgreSQL 搭一个技术博客，要有认证、文章 CRUD、Markdown 渲染、评论功能。目标一天完成。</p>
+            <p>工作流分成四个独立的 OpenSpec 变更<strong>并行推进</strong>：</p>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback"
+                                                                          data-lang="fallback"><span class="line"><span
+                    class="cl">9:00-11:35   用户认证（6 个任务）→ archive
+</span></span><span class="line"><span class="cl">11:35-13:30  文章管理（8 个任务）→ archive
+</span></span><span class="line"><span class="cl">14:30-16:00  Markdown 渲染（4 个任务）→ archive
+</span></span><span class="line"><span class="cl">16:00-18:00  评论功能（7 个任务）→ archive
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+            </div>
+            <p>最终产出：约 2500 行代码、87% 测试覆盖率、23 个 Git 提交、上线后一周零 Bug。</p>
+            <p>时间分配值得关注：<strong>需求对齐占 19%，设计规划占 13%，代码执行占 56%，验证修复占 12%。</strong>
+                三分之一的时间花在"写代码之前"——但正是这三分之一，让剩下三分之二的执行时间几乎没有返工。这是很多人不理解的地方：前期花时间对齐需求和设计，不是在浪费时间，而是在<strong>提前消灭返工</strong>。
+            </p>
+            <h3 id="案例二支付收银台审查发现-11-个问题">案例二：支付收银台——审查发现 11 个问题<a
+                    href="#%e6%a1%88%e4%be%8b%e4%ba%8c%e6%94%af%e4%bb%98%e6%94%b6%e9%93%b6%e5%8f%b0%e5%ae%a1%e6%9f%a5%e5%8f%91%e7%8e%b0-11-%e4%b8%aa%e9%97%ae%e9%a2%98"
+                    class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p>一位开发者用三件套从零构建一个支付收银台演示项目（React + FastAPI +
+                MySQL），这个案例最能体现规范审查的价值。</p>
+            <p>他用 <code>/opsx:propose</code> 一条指令生成了全套规范文档，然后用 Superpowers 的 Brainstorming 从<strong>架构师、测试工程师、开发工程师</strong>三个视角审查。结果在一行代码都没写之前，就发现了
+                <strong>11 个问题</strong>：</p>
+            <ul>
+                <li><strong>高优先级</strong>：缺少按订单号查询的接口（前端没法查订单）、API 缺少参数验证（任何人都能注入非法数据）
+                </li>
+                <li><strong>中优先级</strong>：依赖列表不完整、数据库缺索引（查询会很慢）</li>
+                <li><strong>低优先级</strong>：未明确单用户演示模式、缺少测试数据准备步骤</li>
+            </ul>
+            <p>如果这些问题是在代码写完后才发现，修复成本至少是现在的 5-10 倍。通过一轮审查 + 自动修复，任务从 50+ 个扩展到
+                74 个，覆盖了所有遗漏。最终核心功能 100% 可用，13 个任务组、74 个具体任务，只剩部署工作没做。</p>
+            <p><strong>这个案例的关键启示</strong>：三件套的价值不仅在于"帮你写代码"，更在于"帮你在写代码之前发现你自己都没想到的问题"。这是纯用
+                Claude Code 做不到的——因为 Claude Code 收到需求就开始写了，它不会停下来三个视角审查你的需求是否完整。</p>
+            <h2 id="第六层什么时候不该上-claude-code--openspec--superpowers-全套">第六层：什么时候不该上 Claude Code +
+                OpenSpec + Superpowers 全套<a
+                        href="#%e7%ac%ac%e5%85%ad%e5%b1%82%e4%bb%80%e4%b9%88%e6%97%b6%e5%80%99%e4%b8%8d%e8%af%a5%e4%b8%8a-claude-code--openspec--superpowers-%e5%85%a8%e5%a5%97"
+                        class="anchor" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                </a></h2>
+            <pre class="mermaid" data-processed="true"><svg aria-roledescription="flowchart-v2"
+                                                            role="graphics-document document"
+                                                            viewBox="-8 -8 632.140625 840"
+                                                            style="max-width: 632.140625px;"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                            xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                            id="mermaid-1782513580636"><style>#mermaid-1782513580636 {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580636 .error-icon {
+                fill: #552222;
+            }
+
+            #mermaid-1782513580636 .error-text {
+                fill: #552222;
+                stroke: #552222;
+            }
+
+            #mermaid-1782513580636 .edge-thickness-normal {
+                stroke-width: 2px;
+            }
+
+            #mermaid-1782513580636 .edge-thickness-thick {
+                stroke-width: 3.5px;
+            }
+
+            #mermaid-1782513580636 .edge-pattern-solid {
+                stroke-dasharray: 0;
+            }
+
+            #mermaid-1782513580636 .edge-pattern-dashed {
+                stroke-dasharray: 3;
+            }
+
+            #mermaid-1782513580636 .edge-pattern-dotted {
+                stroke-dasharray: 2;
+            }
+
+            #mermaid-1782513580636 .marker {
+                fill: #333333;
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580636 .marker.cross {
+                stroke: #333333;
+            }
+
+            #mermaid-1782513580636 svg {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 16px;
+            }
+
+            #mermaid-1782513580636 .label {
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                color: #333;
+            }
+
+            #mermaid-1782513580636 .cluster-label text {
+                fill: #333;
+            }
+
+            #mermaid-1782513580636 .cluster-label span, #mermaid-1782513580636 p {
+                color: #333;
+            }
+
+            #mermaid-1782513580636 .label text, #mermaid-1782513580636 span, #mermaid-1782513580636 p {
+                fill: #333;
+                color: #333;
+            }
+
+            #mermaid-1782513580636 .node rect, #mermaid-1782513580636 .node circle, #mermaid-1782513580636 .node ellipse, #mermaid-1782513580636 .node polygon, #mermaid-1782513580636 .node path {
+                fill: #ECECFF;
+                stroke: #9370DB;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580636 .flowchart-label text {
+                text-anchor: middle;
+            }
+
+            #mermaid-1782513580636 .node .katex path {
+                fill: #000;
+                stroke: #000;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580636 .node .label {
+                text-align: center;
+            }
+
+            #mermaid-1782513580636 .node.clickable {
+                cursor: pointer;
+            }
+
+            #mermaid-1782513580636 .arrowheadPath {
+                fill: #333333;
+            }
+
+            #mermaid-1782513580636 .edgePath .path {
+                stroke: #333333;
+                stroke-width: 2.0px;
+            }
+
+            #mermaid-1782513580636 .flowchart-link {
+                stroke: #333333;
+                fill: none;
+            }
+
+            #mermaid-1782513580636 .edgeLabel {
+                background-color: #e8e8e8;
+                text-align: center;
+            }
+
+            #mermaid-1782513580636 .edgeLabel rect {
+                opacity: 0.5;
+                background-color: #e8e8e8;
+                fill: #e8e8e8;
+            }
+
+            #mermaid-1782513580636 .labelBkg {
+                background-color: rgba(232, 232, 232, 0.5);
+            }
+
+            #mermaid-1782513580636 .cluster rect {
+                fill: #ffffde;
+                stroke: #aaaa33;
+                stroke-width: 1px;
+            }
+
+            #mermaid-1782513580636 .cluster text {
+                fill: #333;
+            }
+
+            #mermaid-1782513580636 .cluster span, #mermaid-1782513580636 p {
+                color: #333;
+            }
+
+            #mermaid-1782513580636 div.mermaidTooltip {
+                position: absolute;
+                text-align: center;
+                max-width: 200px;
+                padding: 2px;
+                font-family: "trebuchet ms", verdana, arial, sans-serif;
+                font-size: 12px;
+                background: hsl(80, 100%, 96.2745098039%);
+                border: 1px solid #aaaa33;
+                border-radius: 2px;
+                pointer-events: none;
+                z-index: 100;
+            }
+
+            #mermaid-1782513580636 .flowchartTitleText {
+                text-anchor: middle;
+                font-size: 18px;
+                fill: #333;
+            }
+
+            #mermaid-1782513580636 :root {
+                --mermaid-font-family: "trebuchet ms", verdana, arial, sans-serif;
+            }</style><g><marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5"
+                                refX="6" viewBox="0 0 10 10" class="marker flowchart"
+                                id="mermaid-1782513580636_flowchart-pointEnd"><path
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker orient="auto" markerHeight="12" markerWidth="12"
+                                                                      markerUnits="userSpaceOnUse" refY="5" refX="4.5"
+                                                                      viewBox="0 0 10 10" class="marker flowchart"
+                                                                      id="mermaid-1782513580636_flowchart-pointStart"><path
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 0 5 L 10 10 L 10 0 z"></path></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                                       markerUnits="userSpaceOnUse" refY="5" refX="11"
+                                                                       viewBox="0 0 10 10" class="marker flowchart"
+                                                                       id="mermaid-1782513580636_flowchart-circleEnd"><circle
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5"
+                    cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                     markerUnits="userSpaceOnUse" refY="5" refX="-1" viewBox="0 0 10 10"
+                                                     class="marker flowchart"
+                                                     id="mermaid-1782513580636_flowchart-circleStart"><circle
+                    style="stroke-width: 1; stroke-dasharray: 1, 0;" class="arrowMarkerPath" r="5" cy="5"
+                    cx="5"></circle></marker><marker orient="auto" markerHeight="11" markerWidth="11"
+                                                     markerUnits="userSpaceOnUse" refY="5.2" refX="12"
+                                                     viewBox="0 0 11 11" class="marker cross flowchart"
+                                                     id="mermaid-1782513580636_flowchart-crossEnd"><path
+                    style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><marker orient="auto" markerHeight="11"
+                                                                          markerWidth="11" markerUnits="userSpaceOnUse"
+                                                                          refY="5.2" refX="-1" viewBox="0 0 11 11"
+                                                                          class="marker cross flowchart"
+                                                                          id="mermaid-1782513580636_flowchart-crossStart"><path
+                    style="stroke-width: 2; stroke-dasharray: 1, 0;" class="arrowMarkerPath"
+                    d="M 1,1 l 9,9 M 10,1 l -9,9"></path></marker><g class="root"><g class="clusters"></g><g
+                    class="edgePaths"><path marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)"
+                                            style="fill:none;"
+                                            class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Start LE-Dur"
+                                            id="L-Start-Dur-0"
+                                            d="M301.031,39L301.031,43.167C301.031,47.333,301.031,55.667,301.097,63.2C301.163,70.734,301.295,77.467,301.361,80.834L301.427,84.201"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Dur LE-Solo" id="L-Dur-Solo-0"
+                    d="M347.098,177.933L376.272,191.611C405.446,205.289,463.793,232.644,492.967,259.522C522.141,286.4,522.141,312.8,522.141,326L522.141,339.2"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Dur LE-Pair" id="L-Dur-Pair-0"
+                    d="M325.252,199.78L330.715,209.816C336.178,219.853,347.105,239.927,352.568,269.297C358.031,298.667,358.031,337.333,358.031,376C358.031,414.667,358.031,453.333,358.031,490C358.031,526.667,358.031,561.333,358.031,596C358.031,630.667,358.031,665.333,361.684,688.1C365.336,710.867,372.64,721.734,376.293,727.168L379.945,732.601"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Dur LE-Team" id="L-Dur-Team-0"
+                    d="M277.811,199.78L272.181,209.816C266.551,219.853,255.291,239.927,249.733,255.33C244.174,270.733,244.317,281.467,244.389,286.834L244.461,292.2"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Dur LE-Full" id="L-Dur-Full-0"
+                    d="M255.024,176.993L223.356,190.828C191.688,204.662,128.352,232.331,96.684,265.499C65.016,298.667,65.016,337.333,65.016,376C65.016,414.667,65.016,453.333,74.839,484.08C84.662,514.828,104.309,537.655,114.132,549.069L123.956,560.483"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Team LE-Full" id="L-Team-Full-0"
+                    d="M244.531,455.5L244.448,461.583C244.365,467.667,244.198,479.833,234.291,497.33C224.385,514.828,204.738,537.655,194.915,549.069L185.091,560.483"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Team LE-Pair" id="L-Team-Pair-0"
+                    d="M291.276,408.755L311.42,422.629C331.564,436.503,371.852,464.252,391.997,495.459C412.141,526.667,412.141,561.333,412.141,596C412.141,630.667,412.141,665.333,412.141,687.95C412.141,710.567,412.141,721.133,412.141,726.417L412.141,731.7"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Solo LE-Risk1" id="L-Solo-Risk1-0"
+                    d="M509.921,407.5L504.457,421.583C498.994,435.667,488.067,463.833,486.461,486.73C484.854,509.626,492.568,527.253,496.424,536.066L500.281,544.879"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Risk1 LE-Pair" id="L-Risk1-Pair-0"
+                    d="M522.641,663.5L522.557,669.583C522.474,675.667,522.307,687.833,514.51,699.562C506.713,711.29,491.286,722.58,483.572,728.225L475.859,733.87"></path><path
+                    marker-end="url(#mermaid-1782513580636_flowchart-pointEnd)" style="fill:none;"
+                    class="edge-thickness-normal edge-pattern-solid flowchart-link LS-Risk1 LE-Solo" id="L-Risk1-Solo-0"
+                    d="M540.57,547.43L543.832,538.191C547.094,528.953,553.617,510.477,552.54,487.994C551.464,465.512,542.787,439.024,538.448,425.781L534.11,412.537"></path></g><g
+                    class="edgeLabels"><g class="edgeLabel"><g transform="translate(0, 0)" class="label"><foreignObject
+                    height="0" width="0"><div style="display: inline-block; white-space: nowrap;"
+                                              xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignObject></g></g><g
+                    transform="translate(522.140625, 260)" class="edgeLabel"><g transform="translate(-33.58203125, -12)"
+                                                                                class="label"><foreignObject height="24"
+                                                                                                             width="67.1640625"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">&lt; 2h 原型</span></div></foreignObject></g></g><g
+                    transform="translate(358.03125, 492)" class="edgeLabel"><g transform="translate(-34.109375, -12)"
+                                                                               class="label"><foreignObject height="24"
+                                                                                                            width="68.21875"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">2–8h 个人</span></div></foreignObject></g></g><g
+                    transform="translate(244.03125, 260)" class="edgeLabel"><g transform="translate(-38.3046875, -12)"
+                                                                               class="label"><foreignObject height="24"
+                                                                                                            width="76.609375"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">4–16h 团队</span></div></foreignObject></g></g><g
+                    transform="translate(65.015625, 376)" class="edgeLabel"><g transform="translate(-65.015625, -12)"
+                                                                               class="label"><foreignObject height="24"
+                                                                                                            width="130.03125"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">大型 / 多特性并行</span></div></foreignObject></g></g><g
+                    transform="translate(244.03125, 492)" class="edgeLabel"><g transform="translate(-8, -12)"
+                                                                               class="label"><foreignObject height="24"
+                                                                                                            width="16"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">是</span></div></foreignObject></g></g><g transform="translate(412.140625, 596)"
+                                                                                class="edgeLabel"><g
+                    transform="translate(-8, -12)" class="label"><foreignObject height="24" width="16"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">否</span></div></foreignObject></g></g><g class="edgeLabel"><g
+                    transform="translate(0, 0)" class="label"><foreignObject height="0" width="0"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel"></span></div></foreignObject></g></g><g transform="translate(522.140625, 700)"
+                                                                              class="edgeLabel"><g
+                    transform="translate(-8, -12)" class="label"><foreignObject height="24" width="16"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">是</span></div></foreignObject></g></g><g transform="translate(560.140625, 492)"
+                                                                                class="edgeLabel"><g
+                    transform="translate(-56, -12)" class="label"><foreignObject height="24" width="112"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="edgeLabel">否，一次性脚本</span></div></foreignObject></g></g></g><g class="nodes"><g
+                    transform="translate(301.03125, 19.5)" data-id="Start" data-node="true" id="flowchart-Start-57"
+                    class="node default default flowchart-label"><rect height="39" width="95" y="-19.5" x="-47.5" ry="0"
+                                                                       rx="0" style="fill:#1a202c;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-40, -12)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="24" width="80"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">新任务来了</span></div></foreignObject></g></g><g
+                    transform="translate(301.03125, 156)" data-id="Dur" data-node="true" id="flowchart-Dur-58"
+                    class="node default default flowchart-label"><polygon style="" transform="translate(-67,67)"
+                                                                          class="label-container"
+                                                                          points="67,0 134,-67 67,-134 0,-67"></polygon><g
+                    transform="translate(-40, -12)" style="" class="label"><rect></rect><foreignObject height="24"
+                                                                                                       width="80"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="nodeLabel">预估工时？</span></div></foreignObject></g></g><g
+                    transform="translate(522.140625, 376)" data-id="Solo" data-node="true" id="flowchart-Solo-60"
+                    class="node default default flowchart-label"><rect height="63" width="153.71875" y="-31.5"
+                                                                       x="-76.859375" ry="0" rx="0"
+                                                                       style="fill:#4a5568;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-69.359375, -24)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="48" width="138.71875"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                       style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;"
+                    class="nodeLabel">只用 Claude Code<br><i>不写 spec 不跑 TDD</i></span></div></foreignObject></g></g><g
+                    transform="translate(412.140625, 780.5)" data-id="Pair" data-node="true" id="flowchart-Pair-62"
+                    class="node default default flowchart-label"><rect height="87" width="127.7421875" y="-43.5"
+                                                                       x="-63.87109375" ry="0" rx="0"
+                                                                       style="fill:#2b6cb0;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-56.37109375, -36)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="72" width="112.7421875"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                         style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;"
+                    class="nodeLabel">Claude Code +<br>Superpowers<br><i>TDD + worktree</i></span></div></foreignObject></g></g><g
+                    transform="translate(244.03125, 376)" data-id="Team" data-node="true" id="flowchart-Team-64"
+                    class="node default default flowchart-label"><polygon style="" transform="translate(-79,79)"
+                                                                          class="label-container"
+                                                                          points="79,0 158,-79 79,-158 0,-79"></polygon><g
+                    transform="translate(-40, -24)" style="" class="label"><rect></rect><foreignObject height="48"
+                                                                                                       width="80"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="nodeLabel">团队协作 /<br>长期维护？</span></div></foreignObject></g></g><g
+                    transform="translate(154.5234375, 596)" data-id="Full" data-node="true" id="flowchart-Full-66"
+                    class="node default default flowchart-label"><rect height="63" width="116.6171875" y="-31.5"
+                                                                       x="-58.30859375" ry="0" rx="0"
+                                                                       style="fill:#018472;"
+                                                                       class="basic label-container"></rect><g
+                    transform="translate(-50.80859375, -24)" style="color:#fff;" class="label"><rect></rect><foreignObject
+                    height="48" width="101.6171875"><div xmlns="http://www.w3.org/1999/xhtml"
+                                                         style="color: rgb(255, 255, 255); display: inline-block; white-space: nowrap;"><span
+                    style="color:#fff;" class="nodeLabel">三件套 +<br>并行 worktree</span></div></foreignObject></g></g><g
+                    transform="translate(522.140625, 596)" data-id="Risk1" data-node="true" id="flowchart-Risk1-72"
+                    class="node default default flowchart-label"><polygon style="" transform="translate(-67,67)"
+                                                                          class="label-container"
+                                                                          points="67,0 134,-67 67,-134 0,-67"></polygon><g
+                    transform="translate(-40, -12)" style="" class="label"><rect></rect><foreignObject height="24"
+                                                                                                       width="80"><div
+                    style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span
+                    class="nodeLabel">要上生产？</span></div></foreignObject></g></g></g></g></g></svg></pre>
+            <p>到这里，你可能已经对三件套很有好感了。但我必须泼一盆冷水：<strong>不是所有项目都适合上全套</strong>。过度工程化和工程化不足一样有害。
+            </p>
+            <table>
+                <thead>
+                <tr>
+                    <th>场景</th>
+                    <th>推荐组合</th>
+                    <th>理由</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>快速原型 / 探索性实验（&lt;2h）</td>
+                    <td>只用 Claude Code</td>
+                    <td>需求还没定，写 Spec 是浪费时间</td>
+                </tr>
+                <tr>
+                    <td>个人中型功能（2-8h）</td>
+                    <td>Claude Code + Superpowers</td>
+                    <td>TDD 和 Worktree 隔离防翻车，不需要决策追溯</td>
+                </tr>
+                <tr>
+                    <td>团队中型功能（4-16h）</td>
+                    <td>全套</td>
+                    <td>多人协作需要 Spec 对齐和决策留痕</td>
+                </tr>
+                <tr>
+                    <td>大型项目 / 多功能并行</td>
+                    <td>全套 + 并行 Worktree</td>
+                    <td>OpenSpec 支持多个变更并行开发互不冲突</td>
+                </tr>
+                <tr>
+                    <td>一次性脚本</td>
+                    <td>只用 Claude Code</td>
+                    <td>没有维护需求，不需要流程</td>
+                </tr>
+                <tr>
+                    <td>学习/教学</td>
+                    <td>全套</td>
+                    <td>完整流程本身就是最好的教材</td>
+                </tr>
+                </tbody>
+            </table>
+            <p><strong>我的建议是从 Claude Code + Superpowers 两件套开始</strong>，不要一上来就三件套全上。Superpowers 的
+                TDD 和 Code Review 对任何项目都有价值，而 OpenSpec
+                只在"需要团队协作或长期维护"的场景下才能体现优势。先用两件套养成工程纪律的习惯，等你觉得"决策追溯"成了真实瓶颈时再加
+                OpenSpec——那时候你会自然理解它的价值。</p>
+            <h3 id="容易踩的-5-个坑">容易踩的 5 个坑<a href="#%e5%ae%b9%e6%98%93%e8%b8%a9%e7%9a%84-5-%e4%b8%aa%e5%9d%91"
+                                                       class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p><strong>坑 1：Spec 写成了伪代码。</strong> Spec 描述行为（GIVEN/WHEN/THEN），不描述实现（导入什么模块、调用什么函数）。写太细会限制
+                AI 的实现选择空间，更新成本极高。</p>
+            <p><strong>坑 2：完成后忘了 archive。</strong> 这是我自己踩过的坑。做完功能兴奋地开始下一个，忘了 <code>/opsx:archive</code>。下次开新会话，AI
+                读取的还是旧规范，把已经实现的功能又做了一遍。<strong>养成习惯：每个功能完成后，archive
+                    是最后一个动作。</strong></p>
+            <p><strong>坑 3：跳过 Brainstorming。</strong> Superpowers 的 Brainstorming 不是闲聊——它在帮你和 AI
+                对齐技术决策。跳过这步，AI 会基于自己的猜测选技术方案，你到 Review 代码时才发现方向不对，修改成本已经很高了。
+            </p>
+            <p><strong>坑 4：不看 Plan 就确认执行。</strong> 花 5 分钟通读 <code>tasks.md</code>。检查任务顺序是否合理（JWT
+                工具函数应该在登录 API 之前）、有没有遗漏、验收标准是否清晰。这 5 分钟能省 1-2 小时返工。</p>
+            <p><strong>坑 5：30 分钟的需求上全套流程。</strong> propose→brainstorm→plan→execute→verify→archive 全走完可能要
+                2 小时。<strong>工具服务于目标，不是目标服务于工具。</strong></p>
+            <h2 id="速查参考">速查参考<a href="#%e9%80%9f%e6%9f%a5%e5%8f%82%e8%80%83" class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h2>
+            <h3 id="命令速查表">命令速查表<a href="#%e5%91%bd%e4%bb%a4%e9%80%9f%e6%9f%a5%e8%a1%a8" class="anchor"
+                                             aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <p><strong>Core Profile（默认）</strong>：</p>
+            <table>
+                <thead>
+                <tr>
+                    <th>阶段</th>
+                    <th>命令</th>
+                    <th>作用</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>探索</td>
+                    <td><code>/opsx:explore</code></td>
+                    <td>进入探索模式，和 AI 一起思考和调研问题</td>
+                </tr>
+                <tr>
+                    <td>需求</td>
+                    <td><code>/opsx:propose &lt;功能描述&gt;</code></td>
+                    <td>生成 proposal + spec + design + tasks</td>
+                </tr>
+                <tr>
+                    <td>执行实现</td>
+                    <td><code>/opsx:apply</code></td>
+                    <td>根据规范逐任务实施代码</td>
+                </tr>
+                <tr>
+                    <td>归档</td>
+                    <td><code>/opsx:archive</code></td>
+                    <td>合并 Delta Spec，归档变更</td>
+                </tr>
+                </tbody>
+            </table>
+            <p>最简流程：<strong>propose → apply → archive</strong>。explore 按需使用。</p>
+            <blockquote><p><strong>注意</strong>：网上一些文章提到的
+                <code>/opsx:refine</code>、<code>/opsx:validate</code>、<code>/opsx:ff</code> 等命令<strong>不在默认的
+                    core profile 中</strong>。如需使用 verify、sync、continue 等扩展命令，需要通过 <code>openspec config
+                    profile</code> 切换到 expanded profile，再运行 <code>openspec update</code> 安装额外的 skill
+                文件。对大多数场景，core 的四个命令就够了。如果想修改已生成的
+                proposal.md、design.md、tasks.md，直接编辑文件即可，不需要专门的 refine 命令。</p></blockquote>
+            <h3 id="新手上手路线图">新手上手路线图<a
+                    href="#%e6%96%b0%e6%89%8b%e4%b8%8a%e6%89%8b%e8%b7%af%e7%ba%bf%e5%9b%be" class="anchor"
+                    aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h3>
+            <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback"
+                                                                          data-lang="fallback"><span class="line"><span
+                    class="cl">第 1 周：只用 Claude Code
+</span></span><span class="line"><span class="cl">  → 熟悉终端中与 AI 协作的感觉
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">第 2 周：加上 Superpowers
+</span></span><span class="line"><span class="cl">  → 体验 TDD、Code Review、Worktree 的价值
+</span></span><span class="line"><span class="cl">  → 感受"有纪律的 AI"和"没纪律的 AI"的区别
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">第 3 周起：按需加入 OpenSpec
+</span></span><span class="line"><span class="cl">  → 当你发现"每次都要重复解释需求"或"团队里其他人看不懂我的代码逻辑"
+</span></span><span class="line"><span class="cl">  → 就是引入 OpenSpec 的时机
+</span></span></code></pre>
+                <button class="highlight-copy-btn">Copy</button>
+            </div>
+            <h2 id="最终判断">最终判断<a href="#%e6%9c%80%e7%bb%88%e5%88%a4%e6%96%ad" class="anchor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M15 7h3a5 5 0 015 5 5 5 0 01-5 5h-3m-6 0H6a5 5 0 01-5-5 5 5 0 015-5h3"></path>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </a></h2>
+            <p>这套组合的本质，是<strong>把人类工程师的最佳实践（需求对齐、TDD、Code Review、决策记录）编码成 AI
+                必须遵守的规则</strong>。不是让 AI 自由发挥，而是让 AI 在约束下创造。</p>
+            <p>但请记住三点：</p>
+            <ol>
+                <li><strong>从小开始</strong>。Claude Code → 加 Superpowers → 按需加 OpenSpec。不要第一天就全套上。</li>
+                <li><strong>工具不能替代判断</strong>。AI 生成的代码你必须能读懂、能 Review、能识别问题。工具提升的是效率，不是能力。
+                </li>
+                <li><strong>不要让流程成为枷锁</strong>。30 分钟的任务不需要全套流程，快速原型不需要写
+                    Spec。灵活选择合适的组合，才是真正的工程成熟度。
+                </li>
+            </ol>
+            <p>三者协同的终极目标不是"让 AI 帮你写更多代码"，而是<strong>让 AI
+                写的代码像人类工程师写的一样可靠、可维护、可追溯</strong>。这个目标是否值得额外的工具投入，取决于你的项目规模和团队需求——现在你有了做判断的框架，也有了上手实操的路径。
+            </p>
+            <hr>
+            <p><strong>Related Reading:</strong></p>
+            <ul>
+                <li><a href="/zh/posts/ai/2026-02-01-superpowers-deep-dive/">Superpowers 深度解析：让 Claude Code
+                    变身高级工程师的技能框架</a></li>
+                <li><a href="/zh/posts/ai/2026-02-28-claude-code-claudemd-guide/">CLAUDE.md 终极指南：把 AI
+                    助手训练成你的理想同事</a></li>
+                <li><a href="/zh/posts/ai/2026-03-30-harness-engineering-guide/">Harness Engineering：不换模型，只改
+                    Harness 就能大幅提升 AI Agent 效果</a></li>
+                <li><a href="/zh/posts/ai/2026-02-28-claude-code-complete-guide/">Claude Code 完全指南：从入门到精通</a>
+                </li>
+            </ul>
+        </div>
+    </article>
+</main>
+</body>
+</html>

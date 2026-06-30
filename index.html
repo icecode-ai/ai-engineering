@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#ffffff">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>AI Engineering</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            color-scheme: light;
+            --white: #ffffff;
+            --black: #000000;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --radius: 10px;
+            --max-width: 960px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 70px;
+            background-color: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: var(--white);
+            color: var(--gray-800);
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== Nav ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 1000;
+        }
+
+        .logo {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--black);
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--black);
+        }
+
+        .nav-links a.active {
+            color: var(--black);
+            font-weight: 700;
+        }
+
+        .nav-toggle {
+            position: absolute;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            color: var(--black);
+            padding: 4px;
+        }
+
+        .lang-toggle {
+            position: absolute;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 1001;
+        }
+
+        .lang-toggle:hover {
+            color: var(--black);
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--black);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-desc {
+            font-size: 15px;
+            color: var(--gray-500);
+            margin-bottom: 36px;
+        }
+
+        /* ===== Overview ===== */
+        #overview {
+            padding-top: 140px;
+            text-align: center;
+        }
+
+        .overview-title {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--black);
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .overview-desc {
+            font-size: 19px;
+            color: var(--gray-600);
+            max-width: 720px;
+            margin: 0 auto 32px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        /* ===== Install ===== */
+        .install-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .install-tab {
+            padding: 12px 24px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-500);
+            transition: all 0.2s;
+        }
+
+        .install-tab.active {
+            background: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+        }
+
+        .install-hint {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--gray-800);
+        }
+
+        .install-hint code {
+            background: var(--gray-100);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+            color: var(--black);
+        }
+
+        .code-block {
+            display: none;
+            background: var(--gray-900);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        .code-block code {
+            color: #e5e7eb;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: var(--gray-700);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--black);
+        }
+
+        .copy-btn.copied {
+            background: #166534;
+        }
+
+        /* ===== Project Structure ===== */
+        .tree-block {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            overflow-x: auto;
+        }
+
+        .tree-block pre {
+            font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.9;
+            color: var(--gray-800);
+            white-space: pre;
+        }
+
+        .tree-comment {
+            color: var(--gray-400);
+        }
+
+        .tree-dir {
+            color: var(--black);
+            font-weight: 600;
+        }
+
+        /* ===== Core Workflow ===== */
+        .workflow-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .workflow-step {
+            flex: 1;
+            min-width: 140px;
+            background: var(--white);
+            border: 2px solid var(--gray-900);
+            border-radius: var(--radius);
+            padding: 22px 16px;
+            text-align: center;
+            position: relative;
+        }
+
+        .workflow-step .step-num {
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            background: var(--black);
+            color: var(--white);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .workflow-step .step-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 6px;
+        }
+
+        .workflow-step .step-desc {
+            font-size: 12px;
+            color: var(--gray-500);
+            line-height: 1.6;
+        }
+
+        .workflow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 2px;
+            font-size: 20px;
+            color: var(--gray-400);
+            font-weight: 300;
+        }
+
+        .cli-block {
+            margin-top: 36px;
+            background: var(--black);
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            overflow-x: auto;
+        }
+
+        .cli-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        .cli-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: var(--gray-700);
+        }
+
+        .cli-line {
+            font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .cli-label {
+            display: inline-block;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        .cli-user .cli-label {
+            color: var(--gray-400);
+        }
+
+        .cli-user .cli-text {
+            color: #e5e7eb;
+        }
+
+        .cli-ai .cli-label {
+            color: var(--gray-500);
+        }
+
+        .cli-ai .cli-text {
+            color: var(--gray-300);
+        }
+
+        /* ===== Core Commands ===== */
+        .cmd-category {
+            margin-bottom: 40px;
+        }
+
+        .cmd-category-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 3px solid var(--black);
+        }
+
+        .cmd-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .cmd-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .cmd-card--full {
+            grid-column: 1 / -1;
+        }
+
+        .cmd-card:hover {
+            border-color: var(--gray-400);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .cmd-name {
+            font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 6px;
+        }
+
+        .cmd-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .logo {
+                left: 20px;
+            }
+
+            .nav-toggle {
+                right: 20px;
+            }
+
+            .lang-toggle {
+                right: 68px;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                transform: none;
+                background: var(--white);
+                flex-direction: column;
+                gap: 0;
+                padding: 0;
+                border-bottom: 1px solid var(--gray-200);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-links li {
+                border-top: 1px solid var(--gray-100);
+            }
+
+            .nav-links a {
+                display: block;
+                padding: 14px 24px;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .overview-title {
+                font-size: 38px;
+            }
+
+            .overview-desc {
+                font-size: 16px;
+            }
+
+            .cmd-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-flow {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .workflow-arrow {
+                transform: rotate(90deg);
+                padding: 8px 0;
+            }
+
+            .workflow-step {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            #overview {
+                padding-top: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav" id="nav">
+    <a href="#overview" class="logo">AI Engineering</a>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#overview" class="active" data-i18n="nav.overview">概览</a></li>
+        <li><a href="#install" data-i18n="nav.install">安装</a></li>
+        <li><a href="#structure" data-i18n="nav.structure">项目结构</a></li>
+        <li><a href="#workflow" data-i18n="nav.workflow">流程</a></li>
+        <li><a href="#commands" data-i18n="nav.commands">命令</a></li>
+    </ul>
+    <button class="lang-toggle" id="langToggle" aria-label="Switch language">中文</button>
+    <button class="nav-toggle" id="navToggle" aria-label="菜单" data-i18n-label="aria.menu">&#9776;</button>
+</nav>
+
+<!-- Overview -->
+<section id="overview">
+    <div class="container">
+        <h1 class="overview-title">AI Engineering</h1>
+        <p class="overview-desc" data-i18n="overview.desc">为 AI Agent 提供一套端到端工作流</p>
+        <div class="tags">
+            <span class="tag" data-i18n="overview.tag1">Git 多仓库管理</span>
+            <span class="tag" data-i18n="overview.tag2">只读依赖隔离</span>
+            <span class="tag" data-i18n="overview.tag3">增强 OpenSpec 工作流</span>
+            <span class="tag" data-i18n="overview.tag4">集成 Superpowers 插件</span>
+        </div>
+    </div>
+</section>
+
+<!-- Install -->
+<section id="install">
+    <div class="container">
+        <h2 class="section-title" data-i18n="install.title">安装</h2>
+
+        <div class="install-tabs">
+            <button class="install-tab active" data-tab="claude">Claude Code</button>
+            <button class="install-tab" data-tab="opencode">OpenCode</button>
+            <button class="install-tab" data-tab="qoder">Qoder</button>
+        </div>
+
+        <div class="install-content">
+            <div class="code-block active" data-panel="claude">
+                <button class="copy-btn"
+                        data-copy="Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_CLAUDE.md"
+                        data-i18n="common.copy">
+                    复制
+                </button>
+                <code>Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_CLAUDE.md</code>
+            </div>
+            <div class="code-block" data-panel="opencode">
+                <button class="copy-btn"
+                        data-copy="Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_OPENCODE.md"
+                        data-i18n="common.copy">
+                    复制
+                </button>
+                <code>Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_OPENCODE.md</code>
+            </div>
+            <div class="code-block" data-panel="qoder">
+                <button class="copy-btn"
+                        data-copy="Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_QODER.md"
+                        data-i18n="common.copy">
+                    复制
+                </button>
+                <code>Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_QODER.md</code>
+            </div>
+        </div>
+
+        <p class="install-hint" data-i18n-html="install.hint">安装完成后，请<strong style="color:var(--black);">重启 Agent</strong>，并执行 <code>/ai-env-init</code>命令完成环境初始化</p>
+    </div>
+</section>
+
+<!-- Project Structure -->
+<section id="structure">
+    <div class="container">
+        <h2 class="section-title" data-i18n="structure.title">项目结构</h2>
+        <p class="section-desc" data-i18n-html="structure.desc">执行 <code
+                style="background:var(--gray-100);padding:2px 6px;border-radius:4px;font-size:13px;font-family:monospace;">/ai-env-init</code>
+            后，在你的项目中生成以下目录结构</p>
+
+        <div class="tree-block">
+<pre><span class="tree-dir">{project}/</span>                            <span
+        class="tree-comment" data-i18n="structure.c1"># 主项目根目录</span>
+├── AGENTS.md                         <span class="tree-comment" data-i18n="structure.c2"># 主项目指导文件</span>
+├── <span class="tree-dir">ai/</span>                               <span
+            class="tree-comment" data-i18n="structure.c3"># AI 工作目录，过程产物输出</span>
+│   ├── <span class="tree-dir">archetypes/</span>                   <span class="tree-comment" data-i18n="structure.c4"># PRD、启始 Prompt、原型等入口 (用户唯一干预路径)</span>
+│   │   └── {user}/{seq}/{prd}.md
+│   ├── <span class="tree-dir">changes/</span>                      <span class="tree-comment" data-i18n="structure.c5"># 变更目录 (explore/propose 产出)</span>
+│   │   └── <span class="tree-dir">archives/</span>                 <span
+            class="tree-comment" data-i18n="structure.c6"># 归档目录 (archive 产出)</span>
+│   ├── <span class="tree-dir">memories/</span>                     <span class="tree-comment" data-i18n="structure.c7"># AI 记忆目录 (auto-memory 产出)</span>
+│   │   └── {memory}.md
+│   └── <span class="tree-dir">specs/</span>                        <span
+            class="tree-comment" data-i18n="structure.c8"># 规格目录 (archive 产出，归档后同步到此)</span>
+│       └── {spec}/
+├── <span class="tree-dir">modules/</span>                          <span
+            class="tree-comment" data-i18n="structure.c9"># 模块目录，AI 最终产物输出</span>
+│   └── {module}/                     <span class="tree-comment" data-i18n="structure.c10"># 模块 git 库</span>
+│       └── AGENTS.md
+└── <span class="tree-dir">readonly-dependencies/</span>            <span
+            class="tree-comment" data-i18n="structure.c11"># 只读依赖目录 (AI 只读不写)</span>
+    └── {dependency}/                 <span class="tree-comment" data-i18n="structure.c12"># 依赖 git 库</span></pre>
+        </div>
+    </div>
+</section>
+
+<!-- Core Workflow -->
+<section id="workflow">
+    <div class="container">
+        <h2 class="section-title" data-i18n="workflow.title">流程</h2>
+        <p class="section-desc" data-i18n="workflow.desc">增强 OpenSpec 工作流，执行过程集成 Superpowers 插件，实现从探索想法到归档的完整闭环</p>
+
+        <div class="workflow-flow">
+            <div class="workflow-step">
+                <span class="step-num">1</span>
+                <div class="step-name">explore</div>
+                <div class="step-desc" data-i18n="workflow.step1">探索想法，调研问题，明确需求</div>
+            </div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-step">
+                <span class="step-num">2</span>
+                <div class="step-name">propose</div>
+                <div class="step-desc" data-i18n="workflow.step2">提出变更，一步生成全部产物</div>
+            </div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-step">
+                <span class="step-num">3</span>
+                <div class="step-name">apply</div>
+                <div class="step-desc" data-i18n="workflow.step3">按 TDD 实现任务、审查、验证</div>
+            </div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-step">
+                <span class="step-num">4</span>
+                <div class="step-name">archive</div>
+                <div class="step-desc" data-i18n="workflow.step4">归档已完成变更，同步规格</div>
+            </div>
+        </div>
+
+        <div class="cli-block">
+            <div class="cli-header">
+                <span class="cli-dot"></span>
+                <span class="cli-dot"></span>
+                <span class="cli-dot"></span>
+            </div>
+            <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-spec-explore @ai/archetypes/tom/0/prd.md</span>
+            </div>
+            <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli">已进入探索模式，正在分析 PRD 并梳理需求...</span>
+            </div>
+            <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span
+                    class="cli-text">/ai-spec-apply</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Commands -->
+<section id="commands">
+    <div class="container">
+        <h2 class="section-title" data-i18n="commands.title">命令</h2>
+        <p class="section-desc" data-i18n="commands.desc">四大类命令，覆盖环境、模块、Spec 工作流与 Git 操作</p>
+
+        <!-- 环境指令 -->
+        <div class="cmd-category">
+            <h3 class="cmd-category-title" data-i18n="commands.cat.env">环境指令</h3>
+            <div class="cmd-grid">
+                <div class="cmd-card cmd-card--full">
+                    <div class="cmd-name">/ai-env-init</div>
+                    <div class="cmd-desc" data-i18n="commands.env_init">初始化或更新项目环境，创建标准目录结构并生成指导文件</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模块和依赖指令 -->
+        <div class="cmd-category">
+            <h3 class="cmd-category-title" data-i18n="commands.cat.module">模块和依赖指令</h3>
+            <div class="cmd-grid">
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-module-add</div>
+                    <div class="cmd-desc" data-i18n="commands.module_add">新增模块（git 仓库）到 modules/ 目录</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-module-remove</div>
+                    <div class="cmd-desc" data-i18n="commands.module_remove">从 modules/ 目录中删除模块</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-dependency-add</div>
+                    <div class="cmd-desc" data-i18n="commands.dependency_add">新增依赖（git 仓库）到 readonly-dependencies/ 目录</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-dependency-remove</div>
+                    <div class="cmd-desc" data-i18n="commands.dependency_remove">从 readonly-dependencies/ 目录中删除依赖</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spec 指令 -->
+        <div class="cmd-category">
+            <h3 class="cmd-category-title" data-i18n="commands.cat.spec">Spec 指令</h3>
+            <div class="cmd-grid">
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-spec-explore</div>
+                    <div class="cmd-desc" data-i18n="commands.spec_explore">进入探索模式，梳理想法、调研问题、明确需求</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-spec-propose</div>
+                    <div class="cmd-desc" data-i18n="commands.spec_propose">提出新变更，一步创建并生成全部产物</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-spec-apply</div>
+                    <div class="cmd-desc" data-i18n="commands.spec_apply">按照 spec 变更实现任务，融入 TDD 与代码审查</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-spec-archive</div>
+                    <div class="cmd-desc" data-i18n="commands.spec_archive">归档已完成的变更</div>
+                </div>
+                <div class="cmd-card cmd-card--full">
+                    <div class="cmd-name">/ai-spec-sync</div>
+                    <div class="cmd-desc" data-i18n="commands.spec_sync">将 spec 内容同步到相关 module 模块</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Git 指令 -->
+        <div class="cmd-category">
+            <h3 class="cmd-category-title" data-i18n="commands.cat.git">Git 指令</h3>
+            <div class="cmd-grid">
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-git-checkout</div>
+                    <div class="cmd-desc" data-i18n="commands.git_checkout">拉取主项目、模块或依赖的指定分支</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-git-pull</div>
+                    <div class="cmd-desc" data-i18n="commands.git_pull">拉取全部、主项目、模块或依赖的最新内容</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-git-push</div>
+                    <div class="cmd-desc" data-i18n="commands.git_push">提交并推送全部、主项目或模块的 Git 更改</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-git-merge</div>
+                    <div class="cmd-desc" data-i18n="commands.git_merge">将主干代码合并到当前分支，支持全部、主项目、模块、依赖</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>AI Engineering - MIT</p>
+</footer>
+
+<script>
+    // ===== i18n =====
+    const langToggle = document.getElementById('langToggle');
+    let currentLang = 'en';
+
+    const translations = {
+        en: {
+            'nav.overview': 'Overview',
+            'nav.install': 'Install',
+            'nav.structure': 'Structure',
+            'nav.workflow': 'Workflow',
+            'nav.commands': 'Commands',
+            'aria.menu': 'Menu',
+            'overview.desc': 'An end-to-end workflow for AI Agents',
+            'overview.tag1': 'Multi-repo Git management',
+            'overview.tag2': 'Read-only dependency isolation',
+            'overview.tag3': 'Enhanced OpenSpec workflow',
+            'overview.tag4': 'Integrated Superpowers plugin',
+            'install.title': 'Install',
+            'install.hint': 'After installation, please <strong style="color:var(--black);">restart the Agent</strong> and run <code>/ai-env-init</code> to complete environment initialization',
+            'common.copy': 'Copy',
+            'common.copied': 'Copied',
+            'structure.title': 'Project Structure',
+            'structure.desc': 'After running <code style="background:var(--gray-100);padding:2px 6px;border-radius:4px;font-size:13px;font-family:monospace;">/ai-env-init</code>, the following directory structure is generated in your project',
+            'structure.c1': '# Main project root directory',
+            'structure.c2': '# Main project guidance file',
+            'structure.c3': '# AI working directory, process artifacts output',
+            'structure.c4': '# Entry for PRD, initial prompts, prototypes (user\'s only intervention path)',
+            'structure.c5': '# Changes directory (explore/propose output)',
+            'structure.c6': '# Archive directory (archive output)',
+            'structure.c7': '# AI memory directory (auto-memory output)',
+            'structure.c8': '# Specs directory (archive output, synced here after archiving)',
+            'structure.c9': '# Modules directory, AI final output',
+            'structure.c10': '# Module git repository',
+            'structure.c11': '# Read-only dependencies directory (AI read-only)',
+            'structure.c12': '# Dependency git repository',
+            'workflow.title': 'Workflow',
+            'workflow.desc': 'Enhanced OpenSpec workflow with integrated Superpowers plugin, achieving a complete closed loop from exploring ideas to archiving',
+            'workflow.step1': 'Explore ideas, investigate problems, clarify requirements',
+            'workflow.step2': 'Propose changes, generate all artifacts in one step',
+            'workflow.step3': 'Implement tasks with TDD, review, verify',
+            'workflow.step4': 'Archive completed changes, sync specs',
+            'workflow.cli': 'Entered exploration mode, analyzing PRD and clarifying requirements...',
+            'commands.title': 'Commands',
+            'commands.desc': 'Four categories of commands covering environment, modules, Spec workflow, and Git operations',
+            'commands.cat.env': 'Environment',
+            'commands.cat.module': 'Modules & Dependencies',
+            'commands.cat.spec': 'Spec',
+            'commands.cat.git': 'Git',
+            'commands.env_init': 'Initialize or update the project environment, create the standard directory structure and generate guidance files',
+            'commands.module_add': 'Add a module (git repo) to the modules/ directory',
+            'commands.module_remove': 'Remove a module from the modules/ directory',
+            'commands.dependency_add': 'Add a dependency (git repo) to the readonly-dependencies/ directory',
+            'commands.dependency_remove': 'Remove a dependency from the readonly-dependencies/ directory',
+            'commands.spec_explore': 'Enter exploration mode, organize ideas, investigate problems, clarify requirements',
+            'commands.spec_propose': 'Propose a new change, create and generate all artifacts in one step',
+            'commands.spec_apply': 'Implement tasks per spec changes, incorporating TDD and code review',
+            'commands.spec_archive': 'Archive completed changes',
+            'commands.spec_sync': 'Sync spec content to related modules',
+            'commands.git_checkout': 'Checkout a specified branch of the main project, module, or dependency',
+            'commands.git_pull': 'Pull the latest content of all, main project, module, or dependency',
+            'commands.git_push': 'Commit and push Git changes of all, main project, or module',
+            'commands.git_merge': 'Merge main branch into current branch; supports all, main project, module, dependency'
+        },
+        zh: {
+            'nav.overview': '概览',
+            'nav.install': '安装',
+            'nav.structure': '项目结构',
+            'nav.workflow': '流程',
+            'nav.commands': '命令',
+            'aria.menu': '菜单',
+            'overview.desc': '为 AI Agent 提供一套端到端工作流',
+            'overview.tag1': 'Git 多仓库管理',
+            'overview.tag2': '只读依赖隔离',
+            'overview.tag3': '增强 OpenSpec 工作流',
+            'overview.tag4': '集成 Superpowers 插件',
+            'install.title': '安装',
+            'install.hint': '安装完成后，请<strong style="color:var(--black);">重启 Agent</strong>，并执行 <code>/ai-env-init</code>命令完成环境初始化',
+            'common.copy': '复制',
+            'common.copied': '已复制',
+            'structure.title': '项目结构',
+            'structure.desc': '执行 <code style="background:var(--gray-100);padding:2px 6px;border-radius:4px;font-size:13px;font-family:monospace;">/ai-env-init</code> 后，在你的项目中生成以下目录结构',
+            'structure.c1': '# 主项目根目录',
+            'structure.c2': '# 主项目指导文件',
+            'structure.c3': '# AI 工作目录，过程产物输出',
+            'structure.c4': '# PRD、启始 Prompt、原型等入口 (用户唯一干预路径)',
+            'structure.c5': '# 变更目录 (explore/propose 产出)',
+            'structure.c6': '# 归档目录 (archive 产出)',
+            'structure.c7': '# AI 记忆目录 (auto-memory 产出)',
+            'structure.c8': '# 规格目录 (archive 产出，归档后同步到此)',
+            'structure.c9': '# 模块目录，AI 最终产物输出',
+            'structure.c10': '# 模块 git 库',
+            'structure.c11': '# 只读依赖目录 (AI 只读不写)',
+            'structure.c12': '# 依赖 git 库',
+            'workflow.title': '流程',
+            'workflow.desc': '增强 OpenSpec 工作流，执行过程集成 Superpowers 插件，实现从探索想法到归档的完整闭环',
+            'workflow.step1': '探索想法，调研问题，明确需求',
+            'workflow.step2': '提出变更，一步生成全部产物',
+            'workflow.step3': '按 TDD 实现任务、审查、验证',
+            'workflow.step4': '归档已完成变更，同步规格',
+            'workflow.cli': '已进入探索模式，正在分析 PRD 并梳理需求...',
+            'commands.title': '命令',
+            'commands.desc': '四大类命令，覆盖环境、模块、Spec 工作流与 Git 操作',
+            'commands.cat.env': '环境指令',
+            'commands.cat.module': '模块和依赖指令',
+            'commands.cat.spec': 'Spec 指令',
+            'commands.cat.git': 'Git 指令',
+            'commands.env_init': '初始化或更新项目环境，创建标准目录结构并生成指导文件',
+            'commands.module_add': '新增模块（git 仓库）到 modules/ 目录',
+            'commands.module_remove': '从 modules/ 目录中删除模块',
+            'commands.dependency_add': '新增依赖（git 仓库）到 readonly-dependencies/ 目录',
+            'commands.dependency_remove': '从 readonly-dependencies/ 目录中删除依赖',
+            'commands.spec_explore': '进入探索模式，梳理想法、调研问题、明确需求',
+            'commands.spec_propose': '提出新变更，一步创建并生成全部产物',
+            'commands.spec_apply': '按照 spec 变更实现任务，融入 TDD 与代码审查',
+            'commands.spec_archive': '归档已完成的变更',
+            'commands.spec_sync': '将 spec 内容同步到相关 module 模块',
+            'commands.git_checkout': '拉取主项目、模块或依赖的指定分支',
+            'commands.git_pull': '拉取全部、主项目、模块或依赖的最新内容',
+            'commands.git_push': '提交并推送全部、主项目或模块的 Git 更改',
+            'commands.git_merge': '将主干代码合并到当前分支，支持全部、主项目、模块、依赖'
+        }
+    };
+
+    function setLang(lang) {
+        currentLang = lang;
+        const dict = translations[lang] || translations.en;
+        document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key] != null) el.textContent = dict[key];
+        });
+        document.querySelectorAll('[data-i18n-html]').forEach(el => {
+            const key = el.getAttribute('data-i18n-html');
+            if (dict[key] != null) el.innerHTML = dict[key];
+        });
+        document.querySelectorAll('[data-i18n-label]').forEach(el => {
+            const key = el.getAttribute('data-i18n-label');
+            if (dict[key] != null) el.setAttribute('aria-label', dict[key]);
+        });
+        langToggle.textContent = lang === 'en' ? '中文' : 'EN';
+        try { localStorage.setItem('ai-cmd-lang', lang); } catch (e) {}
+    }
+
+    let savedLang = 'en';
+    try { savedLang = localStorage.getItem('ai-cmd-lang') || 'en'; } catch (e) {}
+    setLang(savedLang);
+
+    langToggle.addEventListener('click', () => {
+        setLang(currentLang === 'en' ? 'zh' : 'en');
+    });
+
+    // Mobile nav toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+
+    // Active section highlight
+    const sections = document.querySelectorAll('section');
+    const navAnchors = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(sec => {
+            if (window.scrollY >= sec.offsetTop - 80) {
+                current = sec.id;
+            }
+        });
+        navAnchors.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+    });
+
+    // Install tabs
+    const tabs = document.querySelectorAll('.install-tab');
+    const panels = document.querySelectorAll('.install-content .code-block');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            tabs.forEach(t => t.classList.toggle('active', t === tab));
+            panels.forEach(p => p.classList.toggle('active', p.dataset.panel === target));
+        });
+    });
+
+    // Copy buttons
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const text = btn.dataset.copy;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = translations[currentLang]['common.copied'];
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = orig;
+                    btn.classList.remove('copied');
+                }, 1500);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

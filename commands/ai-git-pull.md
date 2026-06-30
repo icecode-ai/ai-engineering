@@ -1,0 +1,120 @@
+---
+description: Pull latest git content across MAIN, modules, and dependencies
+argument-hint: [<target>]
+---
+
+Pull the latest content from git remotes. Supports pulling for the main project, modules, and dependencies.
+
+**Input**: One optional argument — the target scope. Defaults to `ALL`.
+
+| Target | Scope |
+|--------|-------|
+| `ALL` (default) | Main project + all modules + all dependencies |
+| `MAIN` | Root project git repository |
+| `{module-name}` | A specific module in `modules/` |
+| `{dependency-name}` | A specific dependency in `readonly-dependencies/` |
+
+**Steps**
+
+1. **Pull based on target scope**
+
+   ```bash
+   set -euo pipefail
+   PROJECT_ROOT="$(pwd)"
+   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+   done
+   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+   cd "$PROJECT_ROOT"
+
+   target="${1:-ALL}"
+   ```
+
+   **If target is `ALL`**:
+
+   ```bash
+   echo "=== MAIN ==="
+   git pull 2>&1 || echo "Pull failed for MAIN, manual resolution may be needed"
+
+   for dir in "${PROJECT_ROOT}/modules"/*/; do
+     [ -d "$dir/.git" ] || continue
+     echo "=== Module: $(basename "$dir") ==="
+     (cd "$dir" && git pull 2>&1) || echo "Pull failed for $(basename "$dir"), manual resolution may be needed"
+   done
+
+   for dir in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
+     [ -d "$dir/.git" ] || continue
+     echo "=== Dependency: $(basename "$dir") ==="
+     (cd "$dir" && git pull 2>&1) || echo "Pull failed for $(basename "$dir"), manual resolution may be needed"
+   done
+   ```
+
+   **If target is `MAIN`**:
+
+   ```bash
+   git pull 2>&1 || echo "Pull failed for MAIN, manual resolution may be needed"
+   ```
+
+   **If target is a module name**:
+
+   ```bash
+   if [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
+     (cd "${PROJECT_ROOT}/modules/$target" && git pull 2>&1) || echo "Pull failed for module $target, manual resolution may be needed"
+   else
+     echo "Module '$target' not found or is not a git repository"
+   fi
+   ```
+
+   **If target is a dependency name**:
+
+   ```bash
+   if [ -d "${PROJECT_ROOT}/readonly-dependencies/$target/.git" ]; then
+     (cd "${PROJECT_ROOT}/readonly-dependencies/$target" && git pull 2>&1) || echo "Pull failed for dependency $target, manual resolution may be needed"
+   else
+     echo "Dependency '$target' not found or is not a git repository"
+   fi
+   ```
+
+2. **Resolve conflicts if any**
+
+   If there are merge conflicts, help the user resolve them.
+
+3. **Generate guidance files for affected modules**
+
+   For each module affected by this pull (i.e. when target is `ALL` or a specific module name), generate or update its guidance file at `modules/$module/`. Skip dependencies — they are read-only and carry no guidance file.
+
+   Target file & environment:
+   - **Claude Code** → `CLAUDE.md`. Run the `/init` skill; afterward re-merge any user-specific sections it may have overwritten.
+   - **Other agents** → `AGENTS.md`. Generate via the approach below.
+
+   How to investigate:
+   - Read `README*`, root manifests, workspace config, lockfiles; build/test/lint/formatter/typecheck/codegen config; CI workflows; existing instruction files (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`, `.cursorrules`, `.github/copilot-instructions.md`); `opencode.json`.
+   - Prefer executable sources of truth over prose; if docs conflict with config/scripts, trust the executable source.
+   - If architecture is still unclear, inspect a few representative code files for real entrypoints and package boundaries.
+
+   What to extract (high-signal, repo-specific only):
+   - exact developer commands, especially non-obvious ones; how to run a single test/package/focused verification
+   - required command order when it matters (e.g. `lint -> typecheck -> test`)
+   - monorepo/multi-package boundaries, major directory ownership, real app/library entrypoints
+   - framework/toolchain quirks: generated code, migrations, codegen, build artifacts, env loading, dev servers, deploy flow
+   - repo-specific style/workflow conventions differing from defaults; testing quirks (fixtures, integration prerequisites, snapshots, services, flaky suites)
+   - constraints from existing instruction files worth preserving
+
+   Create vs. update:
+   - **Target missing** — Claude Code: run `/init` (fallback: the approach above). Other agents: use the approach above.
+   - **Other-environment file exists instead** (e.g. targeting `CLAUDE.md` but only `AGENTS.md` present) — treat it as the primary fact source, re-verify against current sources, generate the target from it, and leave the other file in place. Keep both files in sync when facts change.
+   - **Target exists** — re-extract current facts and compare. If only wording/formatting/unchanged facts differ, leave as-is. If substantive differences exist (new/changed commands, architecture, added/removed modules or dependencies): Claude Code runs `/init` then re-merges user-specific sections; other agents update in place.
+
+   Preserve user-specific content: keep the user's special references/sections (e.g. development specs, custom conventions); update only the factual, project-derived portions.
+   Module guidance files do NOT carry the `readonly-dependencies/` marking.
+   Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
+
+4. **Generate main project guidance file (all targets)**
+
+   For all targets (`ALL`, `MAIN`, module, and dependency), generate or update the main project guidance file at the project root. Follow the same methodology as step 3 above (Target file & environment, How to investigate, What to extract, Create vs. update, Preserve user-specific content, Writing rules).
+
+   Additionally:
+   - **Required marking**: explicitly state `readonly-dependencies/` is a READ-ONLY knowledge base — never write, modify, or delete.
+
+**Guardrails**
+- Skip repositories without a configured remote/upstream and inform the user
