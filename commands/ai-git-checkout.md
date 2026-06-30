@@ -39,14 +39,14 @@ Checkout a git branch across the project. Supports switching branches on the mai
    **If target is `MAIN`** — checkout on main project only:
 
    ```bash
-   git checkout "$branch" 2>&1 || echo "Checkout failed or conflict in MAIN, manual resolution may be needed"
+   git checkout "$branch" 2>&1 || echo "Checkout failed or conflict in MAIN, will auto-resolve via stash"
    ```
 
    **If target is a module name** — checkout on that specific module:
 
    ```bash
    if [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
-     (cd "${PROJECT_ROOT}/modules/$target" && git checkout "$branch" 2>&1) || echo "Checkout failed or conflict in module $target, manual resolution may be needed"
+     (cd "${PROJECT_ROOT}/modules/$target" && git checkout "$branch" 2>&1) || echo "Checkout failed or conflict in module $target, will auto-resolve via stash"
    else
      echo "Module '$target' not found or is not a git repository"
    fi
@@ -56,13 +56,30 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
    ```bash
    if [ -d "${PROJECT_ROOT}/readonly-dependencies/$target/.git" ]; then
-     (cd "${PROJECT_ROOT}/readonly-dependencies/$target" && git checkout "$branch" 2>&1) || echo "Checkout failed or conflict in dependency $target, manual resolution may be needed"
+     (cd "${PROJECT_ROOT}/readonly-dependencies/$target" && git checkout "$branch" 2>&1) || echo "Checkout failed or conflict in dependency $target, will auto-resolve via stash"
    else
      echo "Dependency '$target' not found or is not a git repository"
    fi
    ```
 
-2. **Generate guidance file for the target module (module targets only)**
+2. **Resolve checkout conflicts automatically**
+
+   If `git checkout` reported that local uncommitted changes would be overwritten (the checkout did not complete), automatically recover without discarding local changes and without asking the user:
+
+   1. Identify the target repository that failed (MAIN, the module, or the dependency).
+   2. Save local changes (including untracked) in that repository with `git stash push -u -m "ai-git-checkout-autostash"`.
+   3. Retry `git checkout "$branch"` in the same repository.
+   4. Restore the stashed changes with `git stash pop`.
+   5. If `git stash pop` produces merge conflicts, resolve them automatically:
+      - List conflicted files with `git diff --name-only --diff-filter=U`.
+      - For each conflicted file, read the `<<<<<<<`, `=======`, and `>>>>>>>` sections plus surrounding code to understand both sides' intent.
+      - Edit to produce the correct merged result: combine non-overlapping changes; where they genuinely conflict, choose the semantically correct side. Remove all conflict markers.
+      - Stage each resolved file with `git add <file>`. No commit is needed — the resolved content stays in the working tree.
+   6. Do not discard local changes, do not abort, do not ask for confirmation.
+
+   If checkout failed for a reason other than local-change conflicts (e.g., the branch does not exist), report it and stop.
+
+3. **Generate guidance file for the target module (module targets only)**
 
    If the target is a **module**, generate or update its guidance file at `modules/$target/`. Skip this step for `MAIN` and dependency targets — module guidance files are only for modules.
 
@@ -92,13 +109,13 @@ Checkout a git branch across the project. Supports switching branches on the mai
    Module guidance files do NOT carry the `readonly-dependencies/` marking.
    Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
 
-3. **Generate main project guidance file (all targets)**
+4. **Generate main project guidance file (all targets)**
 
-   For all targets (`MAIN`, module, and dependency), generate or update the main project guidance file at the project root. Follow the same methodology as step 2 above (Target file & environment, How to investigate, What to extract, Create vs. update, Preserve user-specific content, Writing rules).
+   For all targets (`MAIN`, module, and dependency), generate or update the main project guidance file at the project root. Follow the same methodology as step 3 above (Target file & environment, How to investigate, What to extract, Create vs. update, Preserve user-specific content, Writing rules).
 
    Additionally:
    - **Required marking**: explicitly state `readonly-dependencies/` is a READ-ONLY knowledge base — never write, modify, or delete.
 
 **Guardrails**
-- If there are conflicts during checkout, help the user resolve them
+- If checkout fails due to local-change conflicts, auto-recover via stash (step 2) without discarding changes
 - Validate the branch exists on the target repository before switching

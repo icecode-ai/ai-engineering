@@ -34,32 +34,32 @@ Pull the latest content from git remotes. Supports pulling for the main project,
 
    ```bash
    echo "=== MAIN ==="
-   git pull 2>&1 || echo "Pull failed for MAIN, manual resolution may be needed"
+   git pull 2>&1 || echo "Pull failed for MAIN, conflicts detected — will auto-resolve"
 
    for dir in "${PROJECT_ROOT}/modules"/*/; do
      [ -d "$dir/.git" ] || continue
      echo "=== Module: $(basename "$dir") ==="
-     (cd "$dir" && git pull 2>&1) || echo "Pull failed for $(basename "$dir"), manual resolution may be needed"
+     (cd "$dir" && git pull 2>&1) || echo "Pull failed for $(basename "$dir"), conflicts detected — will auto-resolve"
    done
 
    for dir in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
      [ -d "$dir/.git" ] || continue
      echo "=== Dependency: $(basename "$dir") ==="
-     (cd "$dir" && git pull 2>&1) || echo "Pull failed for $(basename "$dir"), manual resolution may be needed"
+     (cd "$dir" && git pull 2>&1) || echo "Pull failed for $(basename "$dir"), conflicts detected — will auto-resolve"
    done
    ```
 
    **If target is `MAIN`**:
 
    ```bash
-   git pull 2>&1 || echo "Pull failed for MAIN, manual resolution may be needed"
+   git pull 2>&1 || echo "Pull failed for MAIN, conflicts detected — will auto-resolve"
    ```
 
    **If target is a module name**:
 
    ```bash
    if [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
-     (cd "${PROJECT_ROOT}/modules/$target" && git pull 2>&1) || echo "Pull failed for module $target, manual resolution may be needed"
+     (cd "${PROJECT_ROOT}/modules/$target" && git pull 2>&1) || echo "Pull failed for module $target, conflicts detected — will auto-resolve"
    else
      echo "Module '$target' not found or is not a git repository"
    fi
@@ -69,15 +69,24 @@ Pull the latest content from git remotes. Supports pulling for the main project,
 
    ```bash
    if [ -d "${PROJECT_ROOT}/readonly-dependencies/$target/.git" ]; then
-     (cd "${PROJECT_ROOT}/readonly-dependencies/$target" && git pull 2>&1) || echo "Pull failed for dependency $target, manual resolution may be needed"
+     (cd "${PROJECT_ROOT}/readonly-dependencies/$target" && git pull 2>&1) || echo "Pull failed for dependency $target, conflicts detected — will auto-resolve"
    else
      echo "Dependency '$target' not found or is not a git repository"
    fi
    ```
 
-2. **Resolve conflicts if any**
+2. **Resolve conflicts automatically**
 
-   If there are merge conflicts, help the user resolve them.
+   If `git pull` produced merge conflicts, automatically resolve them without prompting the user:
+
+   1. List conflicted files with `git diff --name-only --diff-filter=U` (run inside each repository that conflicted).
+   2. For each conflicted file, read the `<<<<<<<`, `=======`, and `>>>>>>>` sections plus the surrounding code and recent commit context to understand both sides' intent.
+   3. Edit the file to produce the correct merged result: combine non-overlapping changes from both sides; where they genuinely conflict, choose the semantically correct side based on the code's purpose. Remove all conflict markers.
+   4. Stage each resolved file with `git add <file>`.
+   5. Finalize the merge with `git commit` (default merge message) if the merge is still in progress.
+   6. Do not abort the merge, do not discard changes, do not ask for confirmation — resolve and proceed.
+
+   Repeat for every repository (MAIN, modules, and dependencies) that has conflicts.
 
 3. **Generate guidance files for affected modules**
 
