@@ -2,8 +2,8 @@
   "name": "ai-engineering",
   "description": "AI Engineering",
   "author": {
-    "name": "doersoul"
+    "name": "icecode-ai"
   },
-  "repository": "https://github.com/doersoul/ai-engineering.git",
+  "repository": "https://github.com/icecode-ai/ai-engineering.git",
   "version": "0.0.1"
 }

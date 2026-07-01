@@ -27,7 +27,7 @@ Create `.claude/settings.json` in the project root:
     "ai-engineering-marketplace": {
       "source": { 
         "source": "github", 
-        "repo": "doersoul/ai-engineering"
+        "repo": "icecode-ai/ai-engineering"
       },
       "autoUpdate": true
     },
@@ -45,7 +45,7 @@ Create `.claude/settings.json` in the project root:
 Add the marketplaces and install both plugins:
 
 ```bash
-claude plugin marketplace add doersoul/ai-engineering --scope project
+claude plugin marketplace add icecode-ai/ai-engineering --scope project
 claude plugin marketplace add obra/superpowers-marketplace --scope project
 claude plugin install ai-engineering@ai-engineering-marketplace --scope project
 claude plugin install superpowers@superpowers-marketplace --scope project

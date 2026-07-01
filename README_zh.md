@@ -1,4 +1,4 @@
-https://doersoul.github.io/ai-engineering/#overview
+https://icecode-ai.github.io/ai-engineering/#overview
 
 # AI Engineering
 
@@ -16,19 +16,19 @@ https://doersoul.github.io/ai-engineering/#overview
 ### Claude Code
 
 ```
-Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_CLAUDE.md
+Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/ai-engineering/refs/heads/main/INSTALL_4_CLAUDE.md
 ```
 
 ### OpenCode
 
 ```
-Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_OPENCODE.md
+Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/ai-engineering/refs/heads/main/INSTALL_4_OPENCODE.md
 ```
 
 ### Qoder
 
 ```
-Fetch and follow instructions from https://raw.githubusercontent.com/doersoul/ai-engineering/refs/heads/main/INSTALL_4_QODER.md
+Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/ai-engineering/refs/heads/main/INSTALL_4_QODER.md
 ```
 
 安装完成后，请**重启 Agent**，并执行 `/ai-env-init` 命令完成环境初始化。
