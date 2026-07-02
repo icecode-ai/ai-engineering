@@ -158,7 +158,7 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
    When working under `modules/`, read the standards in the following order:
 
-   1. Module guidance file: `modules/<name>/<target-guidance-file>.md`
+   1. The module's guidance file (`AGENTS.md`, or `CLAUDE.md` for Claude Code) at the module root
    2. Standards under `ai/baselines/` relevant to the module's tech stack, if any
 
    In case of conflict, the module guidance file takes precedence.
