@@ -43,8 +43,10 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 ├── ai/                               # AI 工作目录（过程产物）
 │   ├── archetypes/                   # PRD、启始 Prompt、原型等入口 (用户唯一干预路径)
 │   │   └── {user}/{seq}/{prd}.md
+│   ├── baselines/                    # 基线规范目录 (baseline standards)
+│   │   └── {standard}.md
 │   ├── changes/                      # 变更目录 (explore/propose 产出)
-│   │   └── archives/                 # 归档目录 (archive 产出)
+│   │   └── archive/                  # 归档目录 (archive 产出)
 │   ├── memories/                     # AI 记忆目录 (auto-memory 产出)
 │   │   └── {memory}.md
 │   └── specs/                        # 规格目录 (archive 产出，归档后同步到此)

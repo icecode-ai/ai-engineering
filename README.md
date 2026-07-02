@@ -43,8 +43,10 @@ After running `/ai-env-init`, the following directory structure is generated in 
 ├── ai/                               # AI working directory (process artifacts output)
 │   ├── archetypes/                   # Entry for PRD, initial prompts, prototypes (user's only intervention path)
 │   │   └── {user}/{seq}/{prd}.md
+│   ├── baselines/                    # Baseline standards collection
+│   │   └── {standard}.md
 │   ├── changes/                      # Changes directory (explore/propose output)
-│   │   └── archives/                 # Archive directory (archive output)
+│   │   └── archive/                  # Archive directory (archive output)
 │   ├── memories/                     # AI memory directory (auto-memory output)
 │   │   └── {memory}.md
 │   └── specs/                        # Specs directory (archive output, synced here after archiving)
