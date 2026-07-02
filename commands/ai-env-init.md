@@ -66,7 +66,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
    done
 
    gitignore_file="${PROJECT_ROOT}/.gitignore"
-   entry="readonly-dependencies/"
+   entry="readonly-dependencies/*/*"
    if [ ! -f "$gitignore_file" ]; then
      printf '%s\n' "$entry" > "$gitignore_file"
      echo "Created .gitignore with readonly-dependencies entry"
@@ -168,7 +168,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
 
    When working under `modules/`, read the standards in the following order:
 
-   1. Module guidance file: `modules/<name>/AGENTS.md`
+   1. Module guidance file: `modules/<name>/<target-guidance-file>.md`
    2. Standards under `ai/baselines/` relevant to the module's tech stack, if any
 
    In case of conflict, the module guidance file takes precedence.

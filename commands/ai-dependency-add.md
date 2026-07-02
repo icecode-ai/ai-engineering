@@ -91,7 +91,7 @@ Add a dependency project to the `readonly-dependencies/` directory. Dependencies
 
    When working under `modules/`, read the standards in the following order:
 
-   1. Module guidance file: `modules/<name>/AGENTS.md`
+   1. Module guidance file: `modules/<name>/<target-guidance-file>.md`
    2. Standards under `ai/baselines/` relevant to the module's tech stack, if any
 
    In case of conflict, the module guidance file takes precedence.
