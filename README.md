@@ -42,16 +42,20 @@ After running `/ai-env-init`, the following directory structure is generated in 
 {project}/                            # Main project root directory
 ├── AGENTS.md                         # Main project guidance file
 ├── ai/                               # AI working directory (process artifacts output)
-│   ├── archetypes/                   # Entry for PRD, initial prompts, prototypes (user's only intervention path)
+│   ├── config/                       # Configuration directory
+│   │   ├── rules/                    # Rules collection
+│   │   │   └── {rule}.md
+│   │   ├── tools/                    # Tools
+│   │   └── spec-config.yaml          # Spec configuration
+│   ├── input/                        # Entry for PRD, initial prompts, prototypes (user's only intervention path)
 │   │   └── {user}/{seq}/{prd}.md
-│   ├── baselines/                    # Baseline standards collection
-│   │   └── {standard}.md
-│   ├── changes/                      # Changes directory (explore/propose output)
-│   │   └── archive/                  # Archive directory (archive output)
-│   ├── memories/                     # AI memory directory (auto-memory output)
-│   │   └── {memory}.md
-│   └── specs/                        # Specs directory (archive output, synced here after archiving)
-│       └── {spec}/
+│   └── output/                       # Output directory
+│       ├── changes/                  # Changes directory (explore/propose output)
+│       │   └── archive/              # Archive directory (archive output)
+│       ├── memories/                 # AI memory directory (auto-memory output)
+│       │   └── {memory}.md
+│       └── specs/                    # Specs directory (archive output, synced here after archiving)
+│           └── {spec}/
 ├── modules/                          # Modules directory, AI final output
 │   └── {module}/                     # Module git repository
 │       └── AGENTS.md
@@ -73,7 +77,7 @@ Enhanced OpenSpec workflow with integrated Superpowers plugin, achieving a compl
 4. **archive** — Archive completed changes, sync specs
 
 ```bash
-USER> /ai-spec-explore @ai/archetypes/tom/0/prd.md
+USER> /ai-spec-explore @ai/input/tom/0/prd.md
 AI>   Entered exploration mode, analyzing PRD and clarifying requirements...
 USER> create change or /ai-spec-propose
 AI>   Creating change...

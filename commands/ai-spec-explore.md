@@ -86,7 +86,7 @@ while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PR
 done
 [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
 cd "$PROJECT_ROOT"
-ls -1 "${PROJECT_ROOT}/ai/changes/" 2>/dev/null | grep -v '^archive$' || echo "No active changes found"
+ls -1 "${PROJECT_ROOT}/ai/output/changes/" 2>/dev/null | grep -v '^archive$' || echo "No active changes found"
 ```
 
 This tells you if there are active changes and their names.
@@ -101,7 +101,7 @@ If the user mentions a change or you detect one is relevant:
 
 1. **Check artifact status**
    ```bash
-   change_dir="${PROJECT_ROOT}/ai/changes/$name"
+   change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
    for artifact in proposal.md design.md tasks.md; do
      if [ -f "$change_dir/$artifact" ]; then
        echo "✓ $artifact"
@@ -120,11 +120,11 @@ If the user mentions a change or you detect one is relevant:
 
    | Insight Type | Where to Capture |
    |---|---|
-   | New requirement discovered | `ai/specs/<capability>/spec.md` |
-   | Requirement changed | `ai/specs/<capability>/spec.md` |
-   | Design decision made | `ai/changes/<name>/design.md` |
-   | Scope changed | `ai/changes/<name>/proposal.md` |
-   | New work identified | `ai/changes/<name>/tasks.md` |
+   | New requirement discovered | `ai/output/specs/<capability>/spec.md` |
+   | Requirement changed | `ai/output/specs/<capability>/spec.md` |
+   | Design decision made | `ai/output/changes/<name>/design.md` |
+   | Scope changed | `ai/output/changes/<name>/proposal.md` |
+   | New work identified | `ai/output/changes/<name>/tasks.md` |
 
 4. **The user decides** — Offer and move on. Don't pressure. Don't auto-capture.
 
@@ -179,7 +179,7 @@ done
 cd "$PROJECT_ROOT"
 
 name="<derived-kebab-case-name>"
-change_dir="${PROJECT_ROOT}/ai/changes/$name"
+change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
 
 # Check if change already exists
 if [ -d "$change_dir" ] && [ "$(ls -A "$change_dir" 2>/dev/null)" ]; then
@@ -199,7 +199,7 @@ mkdir -p "$change_dir"
 **Step 3. Check artifact status**
 
 ```bash
-change_dir="${PROJECT_ROOT}/ai/changes/$name"
+change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
 for artifact in proposal.md design.md tasks.md; do
   if [ -f "$change_dir/$artifact" ]; then
     echo "✓ $artifact (done)"
@@ -219,7 +219,7 @@ fi
 
 **Step 4. Load project config (optional)**
 
-Read `${PROJECT_ROOT}/ai/config.yaml` if it exists. If present:
+Read `${PROJECT_ROOT}/ai/config/spec-config.yaml` if it exists. If present:
 - `context` — apply as background to **every** artifact you generate (proposal, specs, design, tasks).
 - `rules` — for each artifact you generate, apply `rules[<artifactId>]` as mandatory constraints. Valid IDs: `proposal`, `specs`, `design`, `tasks`.
 

@@ -33,11 +33,11 @@ Push local commits to git remotes. Supports pushing for the main project and mod
 
 2. **If target is `ALL` or `MAIN` — check for incomplete changes before pushing**
 
-   Before pushing the main project, verify there are no incomplete tasks or unarchived changes in `ai/changes/`:
+   Before pushing the main project, verify there are no incomplete tasks or unarchived changes in `ai/output/changes/`:
 
    ```bash
    if [ "$target" = "ALL" ] || [ "$target" = "MAIN" ]; then
-     changes_dir="${PROJECT_ROOT}/ai/changes"
+     changes_dir="${PROJECT_ROOT}/ai/output/changes"
      has_incomplete=false
 
      # Check each active (non-archived) change for incomplete tasks
@@ -72,7 +72,7 @@ Push local commits to git remotes. Supports pushing for the main project and mod
      # List unarchived changes count
      active_count=$(ls -1d "$changes_dir"/*/ 2>/dev/null | grep -v '/archive/$' | wc -l | tr -d ' ') || active_count=0
      if [ "$active_count" -gt 0 ]; then
-       echo "Found $active_count active (unarchived) change(s) in ai/changes/"
+       echo "Found $active_count active (unarchived) change(s) in ai/output/changes/"
      fi
 
      if [ "$has_incomplete" = true ]; then
@@ -101,7 +101,7 @@ Push local commits to git remotes. Supports pushing for the main project and mod
       - Unignored artifact paths: `node_modules/`, `dist/`, `build/`, `out/`, `target/`, `.next/`, `__pycache__/`, `coverage/`, `*.log`.
    d. **When a candidate is flagged, pause and ask the user per item**: "include" (add it anyway), "exclude" (skip it and keep it in the working tree), or "abort" (stop the entire push). Do not silently commit flagged files.
    e. After all flagged items are resolved, stage the remaining candidates with `git add -A` (respects `.gitignore`); for any "exclude" item that was staged, unstage it with `git restore --staged <file>`.
-   f. Generate a conventional-commit message from the diff and the active change in `ai/changes/` (the non-archived change matching this work): `feat(scope): <summary> [ai-change: <change-name>]`. Choose type (`feat`/`fix`/`refactor`/`docs`/`chore`/`test`) and scope from the diff. If multiple unrelated changes are present, split into multiple logical commits. If there is no active change, use `chore: <summary>` without the tag.
+   f. Generate a conventional-commit message from the diff and the active change in `ai/output/changes/` (the non-archived change matching this work): `feat(scope): <summary> [ai-change: <change-name>]`. Choose type (`feat`/`fix`/`refactor`/`docs`/`chore`/`test`) and scope from the diff. If multiple unrelated changes are present, split into multiple logical commits. If there is no active change, use `chore: <summary>` without the tag.
    g. Commit with `git commit -m "<message>"`. Do not push yet.
 
 4. **Pull latest content for the target scope**
@@ -216,7 +216,7 @@ Push local commits to git remotes. Supports pushing for the main project and mod
 
 **Guardrails**
 - Never push anything under `readonly-dependencies/` — it is read-only and excluded from pull/merge/commit/push
-- For `ALL` or `MAIN` targets, always check `ai/changes/` for incomplete tasks or unarchived changes before pushing (fail-fast)
+- For `ALL` or `MAIN` targets, always check `ai/output/changes/` for incomplete tasks or unarchived changes before pushing (fail-fast)
 - Before pushing: stage+commit uncommitted work with risk interception (step 3), pull latest (step 4), merge mainline into the current branch (step 5), and auto-resolve any conflicts (step 6)
 - Risk interception (step 3) pauses to ask the user per flagged file (include/exclude/abort); never silently commit secrets, large files, or unignored artifacts
 - Only committed changes are pushed — step 3 ensures uncommitted work (including AI-created files) is committed first

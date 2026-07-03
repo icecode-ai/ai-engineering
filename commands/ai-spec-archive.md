@@ -23,7 +23,7 @@ Archive a completed change. Moves the change directory into the archive to keep 
    cd "$PROJECT_ROOT"
 
    echo "Active changes:"
-   ls -1 "${PROJECT_ROOT}/ai/changes/" 2>/dev/null | grep -v '^archive$' || echo "  (no active changes)"
+   ls -1 "${PROJECT_ROOT}/ai/output/changes/" 2>/dev/null | grep -v '^archive$' || echo "  (no active changes)"
    ```
 
    Use the **AskUserQuestion tool** to let the user select.
@@ -34,7 +34,7 @@ Archive a completed change. Moves the change directory into the archive to keep 
 
    ```bash
    # $name = selected change (chosen by user in step 1)
-   change_dir="${PROJECT_ROOT}/ai/changes/$name"
+   change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
    if [ ! -d "$change_dir" ]; then
      echo "Change '$name' not found."
      exit 1
@@ -84,7 +84,7 @@ Archive a completed change. Moves the change directory into the archive to keep 
        [ -d "$spec_dir" ] || continue
        capability="$(basename "$spec_dir")"
        echo "  Capability: $capability"
-       if [ -f "${PROJECT_ROOT}/ai/specs/$capability/spec.md" ]; then
+       if [ -f "${PROJECT_ROOT}/ai/output/specs/$capability/spec.md" ]; then
          echo "    Main spec exists — will merge delta changes"
        else
          echo "    Main spec does not exist — will create from delta"
@@ -98,16 +98,16 @@ Archive a completed change. Moves the change directory into the archive to keep 
    **If delta specs exist**, for each delta spec:
    1. Read the delta spec file (`$change_dir/specs/<capability>/spec.md`)
    2. Parse the delta sections: `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements`
-   3. Read the corresponding main spec (`ai/specs/<capability>/spec.md`) if it exists
+   3. Read the corresponding main spec (`ai/output/specs/<capability>/spec.md`) if it exists
    4. Apply the delta operations in order: RENAMED → REMOVED → MODIFIED → ADDED
-   5. Write the updated main spec to `ai/specs/<capability>/spec.md`
+   5. Write the updated main spec to `ai/output/specs/<capability>/spec.md`
 
    **Ask the user** whether to sync before archiving. Options: "Sync now (recommended)", "Archive without syncing". Proceed to archive regardless of choice.
 
 5. **Perform the archive**
 
    ```bash
-   archive_dir="${PROJECT_ROOT}/ai/changes/archive"
+   archive_dir="${PROJECT_ROOT}/ai/output/changes/archive"
    mkdir -p "$archive_dir"
 
    archive_name="$(date +%F)-$name"
@@ -131,7 +131,7 @@ Archive a completed change. Moves the change directory into the archive to keep 
    ## Archive Complete
 
    **Change:** <change-name>
-   **Archived to:** ai/changes/archive/YYYY-MM-DD-<name>/
+   **Archived to:** ai/output/changes/archive/YYYY-MM-DD-<name>/
    **Specs:** ✓ Synced to main specs (or "No delta specs" / "Sync skipped")
    ```
 
@@ -141,7 +141,7 @@ Archive a completed change. Moves the change directory into the archive to keep 
    ## Archive Complete (with warnings)
 
    **Change:** <change-name>
-   **Archived to:** ai/changes/archive/YYYY-MM-DD-<name>/
+   **Archived to:** ai/output/changes/archive/YYYY-MM-DD-<name>/
    **Specs:** Synced / Sync skipped / No delta specs
 
    **Warnings:**

@@ -11,7 +11,7 @@ Sync specification and memory content from the main project's `ai/` directory to
 
 1. **Discover specs and modules, then sync specs to modules**
 
-   For each spec file in `ai/specs/` (or from a change), determine which module it relates to and sync it to `modules/<module>/ai/specs/<capability>/`:
+   For each spec file in `ai/output/specs/` (or from a change), determine which module it relates to and sync it to `modules/<module>/ai/output/specs/<capability>/`:
 
    ```bash
    set -euo pipefail
@@ -24,10 +24,10 @@ Sync specification and memory content from the main project's `ai/` directory to
 
    change_name="${1:-}"
 
-   # Discover available specs (from a change, or from ai/specs/)
+   # Discover available specs (from a change, or from ai/output/specs/)
    echo "=== Available specs ==="
-   if [ -n "$change_name" ] && [ -f "${PROJECT_ROOT}/ai/changes/$change_name/.openspec.yaml" ]; then
-     change_specs="${PROJECT_ROOT}/ai/changes/$change_name/specs"
+   if [ -n "$change_name" ] && [ -f "${PROJECT_ROOT}/ai/output/changes/$change_name/.openspec.yaml" ]; then
+     change_specs="${PROJECT_ROOT}/ai/output/changes/$change_name/specs"
      if [ -d "$change_specs" ]; then
        echo "From change '$change_name':"
        for spec_file in "$change_specs"/*/spec.md; do
@@ -36,7 +36,7 @@ Sync specification and memory content from the main project's `ai/` directory to
        done
      fi
    else
-     for spec_dir in "${PROJECT_ROOT}/ai/specs"/*/; do
+     for spec_dir in "${PROJECT_ROOT}/ai/output/specs"/*/; do
        [ -d "$spec_dir" ] || continue
        echo "  $(basename "$spec_dir")"
      done
@@ -54,20 +54,20 @@ Sync specification and memory content from the main project's `ai/` directory to
 
    ```bash
    # $capability = spec name; $module = target module (both determined by AI)
-   target="${PROJECT_ROOT}/modules/$module/ai/specs/$capability"
+   target="${PROJECT_ROOT}/modules/$module/ai/output/specs/$capability"
    mkdir -p "$target"
-   cp -r "${PROJECT_ROOT}/ai/specs/$capability/." "$target/" 2>/dev/null || true
+   cp -r "${PROJECT_ROOT}/ai/output/specs/$capability/." "$target/" 2>/dev/null || true
    echo "Synced spec '$capability' to module '$module'"
    ```
 
 2. **Sync memories to modules**
 
-   For each memory file in `ai/memories/`, determine which module it relates to and sync it:
+   For each memory file in `ai/output/memories/`, determine which module it relates to and sync it:
 
    ```bash
    # Discover available memories ($PROJECT_ROOT from step 1)
    echo "=== Available memories ==="
-   for memory_file in "${PROJECT_ROOT}/ai/memories"/*; do
+   for memory_file in "${PROJECT_ROOT}/ai/output/memories"/*; do
      [ -f "$memory_file" ] || continue
      echo "  $(basename "$memory_file")"
    done
@@ -77,9 +77,9 @@ Sync specification and memory content from the main project's `ai/` directory to
 
    ```bash
    # $memory_name and $module determined by AI
-   target="${PROJECT_ROOT}/modules/$module/ai/memories"
+   target="${PROJECT_ROOT}/modules/$module/ai/output/memories"
    mkdir -p "$target"
-   cp "${PROJECT_ROOT}/ai/memories/$memory_name" "$target/" 2>/dev/null || true
+   cp "${PROJECT_ROOT}/ai/output/memories/$memory_name" "$target/" 2>/dev/null || true
    echo "Synced memory '$memory_name' to module '$module'"
    ```
 
@@ -87,8 +87,8 @@ Sync specification and memory content from the main project's `ai/` directory to
 
    ```bash
    echo "=== Sync Complete ==="
-   echo "Specs synced to module ai/specs/ directories"
-   echo "Memories synced to module ai/memories/ directories"
+   echo "Specs synced to module ai/output/specs/ directories"
+   echo "Memories synced to module ai/output/memories/ directories"
    ```
 
 **Guardrails**

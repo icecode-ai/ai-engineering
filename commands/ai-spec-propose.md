@@ -35,7 +35,7 @@ When ready to implement, run `/ai-spec-apply`.
 
    name="${1:-}"
    [ -z "$name" ] && { echo "Usage: /ai-spec-propose <change-name-or-description>"; exit 1; }
-   change_dir="${PROJECT_ROOT}/ai/changes/$name"
+   change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
 
    # Check if change already exists
    if [ -d "$change_dir" ] && [ "$(ls -A "$change_dir" 2>/dev/null)" ]; then
@@ -57,7 +57,7 @@ When ready to implement, run `/ai-spec-apply`.
    Determine which artifacts already exist and which need to be created:
 
    ```bash
-   change_dir="${PROJECT_ROOT}/ai/changes/$name"
+   change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
    for artifact in proposal.md design.md tasks.md; do
      if [ -f "$change_dir/$artifact" ]; then
        echo "✓ $artifact (done)"
@@ -77,7 +77,7 @@ When ready to implement, run `/ai-spec-apply`.
 
 4. **Load project config (optional)**
 
-   Read `${PROJECT_ROOT}/ai/config.yaml` if it exists. If present:
+   Read `${PROJECT_ROOT}/ai/config/spec-config.yaml` if it exists. If present:
    - `context` — apply as background to **every** artifact you generate (proposal, specs, design, tasks).
    - `rules` — for each artifact you generate, apply `rules[<artifactId>]` as mandatory constraints. Valid IDs: `proposal`, `specs`, `design`, `tasks`.
 

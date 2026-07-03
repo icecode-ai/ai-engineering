@@ -79,9 +79,9 @@ runner at the root.
 
 | Path | Description |
 |------|-------------|
-| `ai/specs/` | Project spec artifacts |
-| `ai/baselines/` | Baseline standards collection |
-| `ai/memories/` | Memory artifacts |
+| `ai/config/rules/` | Rules collection |
+| `ai/output/memories/` | Memory artifacts |
+| `ai/output/specs/` | Project spec artifacts |
 | `modules/` | Independent projects collection |
 | `readonly-dependencies/` | Read-only knowledge base |
 
@@ -102,20 +102,20 @@ modules.
 |-----------------|------|-------------|
 | <dependency> | `readonly-dependencies/<dependency>` | <description> |
 
-## baselines
+## rules
 
-Baseline standards
+Rules
 
-| Standard | Path | Description |
+| Rule | Path | Description |
 |----------|------|-------------|
-| <standard> | `ai/baselines/<standard_file>` | <description> |
+| <rule> | `ai/config/rules/<rule_file>` | <description> |
 
 ## Workflow
 
 When working under `modules/`, read the standards in the following order:
 
 1. The module's guidance file (`AGENTS.md`, or `CLAUDE.md` for Claude Code) at the module root
-2. Standards under `ai/baselines/` relevant to the module's tech stack, if any
+2. Rules under `ai/config/rules/` relevant to the module's tech stack, if any
 
 In case of conflict, the module guidance file takes precedence.
 
@@ -138,15 +138,15 @@ for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
   [ -d "$d" ] || continue
   echo "D:$(basename "$d")|readonly-dependencies/$(basename "$d")"
 done
-for f in "${PROJECT_ROOT}/ai/baselines"/*; do
+for f in "${PROJECT_ROOT}/ai/config/rules"/*; do
   [ -f "$f" ] || continue
-  echo "B:$(basename "$f")|ai/baselines/$(basename "$f")"
+  echo "R:$(basename "$f")|ai/config/rules/$(basename "$f")"
 done
 ```
 
 **描述格式**（一行，≤100 字符，格式 `<purpose/domain> — <key tech stack>`）：
 
-* 读取各条目的 `README.md`（modules & dependencies）或内容（baselines）
+* 读取各条目的 `README.md`（modules & dependencies）或内容（rules）
 * 优先业务域 + 关键框架/语言，省略废话
 * 示例：`E-commerce backend — Go/Gin/PostgreSQL` · `Coding standards — naming/formatting/structure`
 * 无信息可用 → 目录名 / 文件名
@@ -159,10 +159,10 @@ done
 * **跨环境同步**：如另一环境的指导文件已存在（如目标 `CLAUDE.md` 但只有 `AGENTS.md`），以其为主要事实来源，生成目标文件，保留另一文件，两者保持同步
 * **保留用户特殊内容**：更新时保留用户的特殊引用/段落（如开发规范、自定义约定），仅更新事实性、项目派生部分
 
-### config.yaml 规范
+### spec-config.yaml 规范
 
-* `ai-env-init` 生成 `ai/config.yaml`，包含 `schema`、`context`（可选）、`rules`（可选）字段
-* `ai-spec-propose` 及 `ai-spec-explore` 创建变更时，加载 `ai/config.yaml`（如存在）：
+* `ai-env-init` 生成 `ai/config/spec-config.yaml`，包含 `schema`、`context`（可选）、`rules`（可选）字段
+* `ai-spec-propose` 及 `ai-spec-explore` 创建变更时，加载 `ai/config/spec-config.yaml`（如存在）：
     - `context` → 应用为**所有** artifact（proposal、specs、design、tasks）的背景
     - `rules[<artifactId>]` → 作为强制约束应用，有效 ID：`proposal`、`specs`、`design`、`tasks`
 * 如文件不存在，正常进行（默认 schema 为 `spec-driven`）
@@ -194,16 +194,16 @@ done
 > 注：使用脚本以避免 AI 的不稳定性
 
 - ai
-- ai/archetypes
-- ai/changes
-- ai/changes/archive
-- ai/memories
-- ai/specs
-- ai/baselines
+- ai/input
+- ai/output/changes
+- ai/output/changes/archive
+- ai/output/memories
+- ai/output/specs
+- ai/config/rules
 - modules
 - readonly-dependencies
 
-第 2 步：用户项目下，生成 `ai/config.yaml`（如不存在），参考 `config.yaml 规范`
+第 2 步：用户项目下，生成 `ai/config/spec-config.yaml`（如不存在），参考 `spec-config.yaml 规范`
 
 第 3 步：用户项目下，新建或更新 `各模块` 的指导文件，参考 `公共规范` 中的 `模块指导文件`
 
@@ -277,7 +277,7 @@ Enter explore mode - think through ideas, investigate problems, clarify requirem
 
 * 当探索完成时，询问用户是否需要创建变更，当用户回复类似 `创建`、`创建变更`、`创建变更吧` 等，直接创建变更，参考
   `commands/ai-spec-propose.md` 中的内容或 `.ai/references/open_spec_commands/opsx-propose.md` 中的内容（包含创建变更目录、生成所有
-  artifact、加载 config.yaml 等完整流程）
+  artifact、加载 spec-config.yaml 等完整流程）
 
 #### ai-spec-propose
 
@@ -287,7 +287,7 @@ Propose a new change - create it and generate all artifacts in one step
 
 增强部分
 
-* 创建 artifact 前，加载 `ai/config.yaml`（如存在），参考 `config.yaml 规范`
+* 创建 artifact 前，加载 `ai/config/spec-config.yaml`（如存在），参考 `spec-config.yaml 规范`
 
 #### ai-spec-apply
 
@@ -319,9 +319,9 @@ Archive a completed change in the experimental workflow
 
 我自己实现的，没有参考 `openspec`
 
-第 1 步：将 `ai/specs/` 目录下的 spec 内容，同步到对应的 `modules/{module}/ai/specs/` 下一份，注意点：此需是和这个
+第 1 步：将 `ai/output/specs/` 目录下的 spec 内容，同步到对应的 `modules/{module}/ai/output/specs/` 下一份，注意点：此需是和这个
 `{module}` 相关的内容，AI 要判断内容该写在已有文件进行更新，还是新增
-第 2 步：将 `ai/memories/` 目录下的记忆内容，同步到对应的 `modules/{module}/ai/memories/` 下一份，注意点：需是和这个
+第 2 步：将 `ai/output/memories/` 目录下的记忆内容，同步到对应的 `modules/{module}/ai/output/memories/` 下一份，注意点：需是和这个
 `{module}` 相关的记忆，AI 要判断内容该写在已有文件进行更新，还是新增
 
 ### git指令
@@ -431,7 +431,7 @@ Archive a completed change in the experimental workflow
 
 如果 target 是 `ALL` 或 `MAIN`
 
-* 第 1 步：判断 `ai/changes` 是否有 `未完成任务或变更`、`未归档的变更`，可以参考 `commands/ai-spec-xx.md` 中的 `bash脚本`
+* 第 1 步：判断 `ai/output/changes` 是否有 `未完成任务或变更`、`未归档的变更`，可以参考 `commands/ai-spec-xx.md` 中的 `bash脚本`
   如何判断任务或变更状态。如果都完成了，继续下一步；未完成，提示用户处理
 
 以下步骤对 target 范围内的每个仓库执行（`ALL` = 主项目 + 所有模块，`MAIN` = 主项目，`{module-name}` = 指定模块）：

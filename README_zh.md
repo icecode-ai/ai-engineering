@@ -42,16 +42,20 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 {project}/                            # 主项目根目录
 ├── AGENTS.md                         # 主项目指导文件
 ├── ai/                               # AI 工作目录（过程产物）
-│   ├── archetypes/                   # PRD、启始 Prompt、原型等入口 (用户唯一干预路径)
+│   ├── config/                       # 配置目录
+│   │   ├── rules/                    # 规则目录 (rules)
+│   │   │   └── {rule}.md
+│   │   ├── tools/                    # 工具目录 (tools)
+│   │   └── spec-config.yaml          # 规格配置文件
+│   ├── input/                        # PRD、启始 Prompt、原型等入口 (用户唯一干预路径)
 │   │   └── {user}/{seq}/{prd}.md
-│   ├── baselines/                    # 基线规范目录 (baseline standards)
-│   │   └── {standard}.md
-│   ├── changes/                      # 变更目录 (explore/propose 产出)
-│   │   └── archive/                  # 归档目录 (archive 产出)
-│   ├── memories/                     # AI 记忆目录 (auto-memory 产出)
-│   │   └── {memory}.md
-│   └── specs/                        # 规格目录 (archive 产出，归档后同步到此)
-│       └── {spec}/
+│   └── output/                       # 产物输出目录
+│       ├── changes/                  # 变更目录 (explore/propose 产出)
+│       │   └── archive/              # 归档目录 (archive 产出)
+│       ├── memories/                 # AI 记忆目录 (auto-memory 产出)
+│       │   └── {memory}.md
+│       └── specs/                    # 规格目录 (archive 产出，归档后同步到此)
+│           └── {spec}/
 ├── modules/                          # 模块目录，AI 最终产物输出
 │   └── {module}/                     # 模块 git 库
 │       └── AGENTS.md
@@ -73,7 +77,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 4. **archive** — 归档已完成变更，同步规格
 
 ```bash
-USER> /ai-spec-explore @ai/archetypes/tom/0/prd.md
+USER> /ai-spec-explore @ai/input/tom/0/prd.md
 AI>   已进入探索模式，正在分析 PRD 并梳理需求...
 USER> 创建变更 或 /ai-spec-propose
 AI>   创建变更中..

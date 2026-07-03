@@ -25,7 +25,7 @@ Implement tasks from a spec change. Work through pending tasks with integrated T
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists:
      ```bash
-     ls -1 "${PROJECT_ROOT}/ai/changes/" 2>/dev/null | grep -v '^archive$'
+     ls -1 "${PROJECT_ROOT}/ai/output/changes/" 2>/dev/null | grep -v '^archive$'
      ```
    - If ambiguous or multiple changes exist, use the **AskUserQuestion tool** to let the user select
 
@@ -35,7 +35,7 @@ Implement tasks from a spec change. Work through pending tasks with integrated T
 
    ```bash
    # $name = selected change (provided by user or auto-selected in step 1)
-   change_dir="${PROJECT_ROOT}/ai/changes/$name"
+   change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
    if [ ! -d "$change_dir" ]; then
      echo "Change '$name' not found."
      exit 1
@@ -131,7 +131,7 @@ Implement tasks from a spec change. Work through pending tasks with integrated T
 
    Display:
    ```bash
-   tasks_file="${PROJECT_ROOT}/ai/changes/$name/tasks.md"
+   tasks_file="${PROJECT_ROOT}/ai/output/changes/$name/tasks.md"
    total=$(grep -cE '^\s*[-*]\s+\[[ x]\]' "$tasks_file" 2>/dev/null) || total=0
    done_count=$(grep -cE '^\s*[-*]\s+\[[x]\]' "$tasks_file" 2>/dev/null) || done_count=0
    echo "=== Implementation Status ==="

@@ -124,9 +124,9 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
    | Path | Description |
    |------|-------------|
-   | `ai/specs/` | Project spec artifacts |
-   | `ai/baselines/` | Baseline standards collection |
-   | `ai/memories/` | Memory artifacts |
+   | `ai/config/rules/` | Rules collection |
+   | `ai/output/memories/` | Memory artifacts |
+   | `ai/output/specs/` | Project spec artifacts |
    | `modules/` | Independent projects collection |
    | `readonly-dependencies/` | Read-only knowledge base |
 
@@ -146,20 +146,20 @@ Checkout a git branch across the project. Supports switching branches on the mai
    |-----------------|------|-------------|
    | <dependency> | `readonly-dependencies/<dependency>` | <description> |
 
-   ## baselines
+   ## rules
 
-   Baseline standards
+   Rules
 
-   | Standard | Path | Description |
+   | Rule | Path | Description |
    |----------|------|-------------|
-   | <standard> | `ai/baselines/<standard_file>` | <description> |
+   | <rule> | `ai/config/rules/<rule_file>` | <description> |
 
    ## Workflow
 
    When working under `modules/`, read the standards in the following order:
 
    1. The module's guidance file (`AGENTS.md`, or `CLAUDE.md` for Claude Code) at the module root
-   2. Standards under `ai/baselines/` relevant to the module's tech stack, if any
+   2. Rules under `ai/config/rules/` relevant to the module's tech stack, if any
 
    In case of conflict, the module guidance file takes precedence.
 
@@ -181,21 +181,21 @@ Checkout a git branch across the project. Supports switching branches on the mai
      [ -d "$d" ] || continue
      echo "D:$(basename "$d")|readonly-dependencies/$(basename "$d")"
    done
-   for f in "${PROJECT_ROOT}/ai/baselines"/*; do
+   for f in "${PROJECT_ROOT}/ai/config/rules"/*; do
      [ -f "$f" ] || continue
-     echo "B:$(basename "$f")|ai/baselines/$(basename "$f")"
+     echo "R:$(basename "$f")|ai/config/rules/$(basename "$f")"
    done
    ```
 
    **Description** (one line, ≤100 chars, format: `<purpose/domain> — <key tech stack>`):
-   - Read each entry's `README.md` (modules & dependencies) or content (baselines)
+   - Read each entry's `README.md` (modules & dependencies) or content (rules)
    - Prioritize business domain + key frameworks/languages; omit fluff
    - Examples: `E-commerce backend — Go/Gin/PostgreSQL` · `Coding standards — naming/formatting/structure`
    - No info available → directory name / filename
    - Empty table → header row only (keep the section)
 
    **Incremental update**:
-   - If the target file already exists, regenerate from the template and compare. If differences are only wording/formatting/unchanged facts, leave as-is. Update ONLY on substantive changes (added/removed/renamed modules, dependencies, or baselines).
+   - If the target file already exists, regenerate from the template and compare. If differences are only wording/formatting/unchanged facts, leave as-is. Update ONLY on substantive changes (added/removed/renamed modules, dependencies, or rules).
    - If the other-environment guidance file exists instead (e.g. targeting `CLAUDE.md` but only `AGENTS.md` present), use it as a reference, generate the target from the template, and leave the other file in place. Keep both in sync.
    - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) — update only the template-derived portions.
 
