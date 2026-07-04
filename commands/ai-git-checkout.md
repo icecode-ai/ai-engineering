@@ -122,13 +122,15 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
    ## Directory Structure
 
-   | Path | Description |
-   |------|-------------|
-   | `ai/config/rules/` | Rules collection |
-   | `ai/output/memories/` | Memory artifacts |
-   | `ai/output/specs/` | Project spec artifacts |
-   | `modules/` | Independent projects collection |
-   | `readonly-dependencies/` | Read-only knowledge base |
+    | Path | Description |
+    |------|-------------|
+    | `ai/config/rules/` | Rules & standards for AI work; apply when relevant |
+    | `ai/config/skills/` | On-demand skills; invoke only when the user explicitly requests |
+    | `ai/output/specs/` | Source-of-truth system behavior specs; read when needed or when requirements are unclear |
+    | `ai/output/changes/archive/` | Archived change history; read when needed or when requirements are unclear |
+    | `ai/output/memories/` | Bad cases & lessons; read when needed for long-term context |
+    | `modules/` | Independent projects, each its own git repo + guidance file |
+    | `readonly-dependencies/` | Read-only dependency references; never modify |
 
    ## modules
 

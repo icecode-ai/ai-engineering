@@ -645,25 +645,25 @@
 ├── <span class="tree-dir">ai/</span>                               <span
             class="tree-comment" data-i18n="structure.c3"># AI 工作目录（过程产物）</span>
 │   ├── <span class="tree-dir">config/</span>                       <span class="tree-comment" data-i18n="structure.c14"># 配置目录</span>
-│   │   ├── <span class="tree-dir">rules/</span>                    <span class="tree-comment" data-i18n="structure.c13"># 规则目录 (rules)</span>
+│   │   ├── <span class="tree-dir">rules/</span>                    <span class="tree-comment" data-i18n="structure.c13"># AI 执行规则与规范；相关时应用</span>
 │   │   │   └── {rule}.md
-│   │   ├── <span class="tree-dir">skills/</span>                   <span class="tree-comment" data-i18n="structure.c15"># 技能目录 (skills)</span>
+│   │   ├── <span class="tree-dir">skills/</span>                   <span class="tree-comment" data-i18n="structure.c15"># 按需技能；仅当用户明确请求时调用</span>
 │   │   └── spec-config.yaml          <span class="tree-comment" data-i18n="structure.c16"># 规格配置文件</span>
 │   ├── <span class="tree-dir">input/</span>                        <span class="tree-comment" data-i18n="structure.c4"># PRD、启始 Prompt、原型等入口 (用户唯一干预路径)</span>
 │   │   └── {user}/{seq}/{prd}.md
 │   └── <span class="tree-dir">output/</span>                       <span class="tree-comment" data-i18n="structure.c17"># 产物输出目录</span>
 │       ├── <span class="tree-dir">changes/</span>                  <span class="tree-comment" data-i18n="structure.c5"># 变更目录 (explore/propose 产出)</span>
-│       │   └── <span class="tree-dir">archive/</span>              <span class="tree-comment" data-i18n="structure.c6"># 归档目录 (archive 产出)</span>
-│       ├── <span class="tree-dir">memories/</span>                 <span class="tree-comment" data-i18n="structure.c7"># AI 记忆目录 (auto-memory 产出)</span>
+│       │   └── <span class="tree-dir">archive/</span>              <span class="tree-comment" data-i18n="structure.c6"># 归档变更历史；需要时或需求不明确时阅读</span>
+│       ├── <span class="tree-dir">memories/</span>                 <span class="tree-comment" data-i18n="structure.c7"># 不良案例与经验；需要时阅读以获取长期上下文</span>
 │       │   └── {memory}.md
-│       └── <span class="tree-dir">specs/</span>                    <span class="tree-comment" data-i18n="structure.c8"># 规格目录 (archive 产出，归档后同步到此)</span>
+│       └── <span class="tree-dir">specs/</span>                    <span class="tree-comment" data-i18n="structure.c8"># 系统行为规格的事实来源；需要时或需求不明确时阅读</span>
 │           └── {spec}/
 ├── <span class="tree-dir">modules/</span>                          <span
-            class="tree-comment" data-i18n="structure.c9"># 模块目录，AI 最终产物输出</span>
+            class="tree-comment" data-i18n="structure.c9"># 独立项目，每个都是独立 git 仓库 + 指导文件</span>
 │   └── {module}/                     <span class="tree-comment" data-i18n="structure.c10"># 模块 git 库</span>
 │       └── AGENTS.md
 └── <span class="tree-dir">readonly-dependencies/</span>            <span
-            class="tree-comment" data-i18n="structure.c11"># 只读依赖目录 (AI 只读不写)</span>
+            class="tree-comment" data-i18n="structure.c11"># 只读依赖引用；切勿修改</span>
     └── {dependency}/                 <span class="tree-comment" data-i18n="structure.c12"># 依赖 git 库</span></pre>
         </div>
     </div>
@@ -846,16 +846,16 @@
             'structure.c3': '# AI working directory (process artifacts output)',
             'structure.c4': '# Entry for PRD, initial prompts, prototypes (user\'s only intervention path)',
             'structure.c5': '# Changes directory (explore/propose output)',
-            'structure.c6': '# Archive directory (archive output)',
-            'structure.c7': '# AI memory directory (auto-memory output)',
-            'structure.c8': '# Specs directory (archive output, synced here after archiving)',
-            'structure.c9': '# Modules directory, AI final output',
+            'structure.c6': '# Archived change history; read when needed or when requirements are unclear',
+            'structure.c7': '# Bad cases & lessons; read when needed for long-term context',
+            'structure.c8': '# Source-of-truth system behavior specs; read when needed or when requirements are unclear',
+            'structure.c9': '# Independent projects, each its own git repo + guidance file',
             'structure.c10': '# Module git repository',
-            'structure.c11': '# Read-only dependencies directory (AI read-only)',
+            'structure.c11': '# Read-only dependency references; never modify',
             'structure.c12': '# Dependency git repository',
-            'structure.c13': '# Rules collection',
+            'structure.c13': '# Rules & standards for AI work; apply when relevant',
             'structure.c14': '# Configuration directory',
-            'structure.c15': '# Skills',
+            'structure.c15': '# On-demand skills; invoke only when the user explicitly requests',
             'structure.c16': '# Spec configuration',
             'structure.c17': '# Output directory',
             'workflow.title': 'Workflow',
@@ -911,16 +911,16 @@
             'structure.c3': '# AI 工作目录（过程产物）',
             'structure.c4': '# PRD、启始 Prompt、原型等入口 (用户唯一干预路径)',
             'structure.c5': '# 变更目录 (explore/propose 产出)',
-            'structure.c6': '# 归档目录 (archive 产出)',
-            'structure.c7': '# AI 记忆目录 (auto-memory 产出)',
-            'structure.c8': '# 规格目录 (archive 产出，归档后同步到此)',
-            'structure.c9': '# 模块目录，AI 最终产物输出',
+            'structure.c6': '# 归档变更历史；需要时或需求不明确时阅读',
+            'structure.c7': '# 不良案例与经验；需要时阅读以获取长期上下文',
+            'structure.c8': '# 系统行为规格的事实来源；需要时或需求不明确时阅读',
+            'structure.c9': '# 独立项目，每个都是独立 git 仓库 + 指导文件',
             'structure.c10': '# 模块 git 库',
-            'structure.c11': '# 只读依赖目录 (AI 只读不写)',
+            'structure.c11': '# 只读依赖引用；切勿修改',
             'structure.c12': '# 依赖 git 库',
-            'structure.c13': '# 规则目录 (rules)',
+            'structure.c13': '# AI 执行规则与规范；相关时应用',
             'structure.c14': '# 配置目录',
-            'structure.c15': '# 技能目录 (skills)',
+            'structure.c15': '# 按需技能；仅当用户明确请求时调用',
             'structure.c16': '# 规格配置文件',
             'structure.c17': '# 产物输出目录',
             'workflow.title': '流程',

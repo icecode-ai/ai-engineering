@@ -43,23 +43,23 @@ After running `/ai-env-init`, the following directory structure is generated in 
 ├── AGENTS.md                         # Main project guidance file
 ├── ai/                               # AI working directory (process artifacts output)
 │   ├── config/                       # Configuration directory
-│   │   ├── rules/                    # Rules collection
+│   │   ├── rules/                    # Rules & standards for AI work; apply when relevant
 │   │   │   └── {rule}.md
-│   │   ├── skills/                   # Skills
+│   │   ├── skills/                   # On-demand skills; invoke only when the user explicitly requests
 │   │   └── spec-config.yaml          # Spec configuration
 │   ├── input/                        # Entry for PRD, initial prompts, prototypes (user's only intervention path)
 │   │   └── {user}/{seq}/{prd}.md
 │   └── output/                       # Output directory
 │       ├── changes/                  # Changes directory (explore/propose output)
-│       │   └── archive/              # Archive directory (archive output)
-│       ├── memories/                 # AI memory directory (auto-memory output)
+│       │   └── archive/              # Archived change history; read when needed or when requirements are unclear
+│       ├── memories/                 # Bad cases & lessons; read when needed for long-term context
 │       │   └── {memory}.md
-│       └── specs/                    # Specs directory (archive output, synced here after archiving)
+│       └── specs/                    # Source-of-truth system behavior specs; read when needed or when requirements are unclear
 │           └── {spec}/
-├── modules/                          # Modules directory, AI final output
+├── modules/                          # Independent projects, each its own git repo + guidance file
 │   └── {module}/                     # Module git repository
 │       └── AGENTS.md
-└── readonly-dependencies/            # Read-only dependencies directory (AI read-only)
+└── readonly-dependencies/            # Read-only dependency references; never modify
     └── {dependency}/                 # Dependency git repository
 ```
 

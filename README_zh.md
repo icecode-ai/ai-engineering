@@ -43,23 +43,23 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 ├── AGENTS.md                         # 主项目指导文件
 ├── ai/                               # AI 工作目录（过程产物）
 │   ├── config/                       # 配置目录
-│   │   ├── rules/                    # 规则目录 (rules)
+│   │   ├── rules/                    # AI 执行规则与规范；相关时应用
 │   │   │   └── {rule}.md
-│   │   ├── skills/                   # 技能目录 (skills)
+│   │   ├── skills/                   # 按需技能；仅当用户明确请求时调用
 │   │   └── spec-config.yaml          # 规格配置文件
 │   ├── input/                        # PRD、启始 Prompt、原型等入口 (用户唯一干预路径)
 │   │   └── {user}/{seq}/{prd}.md
 │   └── output/                       # 产物输出目录
 │       ├── changes/                  # 变更目录 (explore/propose 产出)
-│       │   └── archive/              # 归档目录 (archive 产出)
-│       ├── memories/                 # AI 记忆目录 (auto-memory 产出)
+│       │   └── archive/              # 归档变更历史；需要时或需求不明确时阅读
+│       ├── memories/                 # 不良案例与经验；需要时阅读以获取长期上下文
 │       │   └── {memory}.md
-│       └── specs/                    # 规格目录 (archive 产出，归档后同步到此)
+│       └── specs/                    # 系统行为规格的事实来源；需要时或需求不明确时阅读
 │           └── {spec}/
-├── modules/                          # 模块目录，AI 最终产物输出
+├── modules/                          # 独立项目，每个都是独立 git 仓库 + 指导文件
 │   └── {module}/                     # 模块 git 库
 │       └── AGENTS.md
-└── readonly-dependencies/            # 只读依赖目录 (AI 只读不写)
+└── readonly-dependencies/            # 只读依赖引用；切勿修改
     └── {dependency}/                 # 依赖 git 库
 ```
 
