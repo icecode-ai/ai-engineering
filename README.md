@@ -45,7 +45,7 @@ After running `/ai-env-init`, the following directory structure is generated in 
 │   ├── config/                       # Configuration directory
 │   │   ├── rules/                    # Rules collection
 │   │   │   └── {rule}.md
-│   │   ├── tools/                    # Tools
+│   │   ├── skills/                   # Skills
 │   │   └── spec-config.yaml          # Spec configuration
 │   ├── input/                        # Entry for PRD, initial prompts, prototypes (user's only intervention path)
 │   │   └── {user}/{seq}/{prd}.md

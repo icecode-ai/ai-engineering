@@ -48,7 +48,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
      "ai"
      "ai/config"
      "ai/config/rules"
-     "ai/config/tools"
+     "ai/config/skills"
      "ai/input"
      "ai/output/changes"
      "ai/output/changes/archive"

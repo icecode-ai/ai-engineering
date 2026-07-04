@@ -45,7 +45,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 │   ├── config/                       # 配置目录
 │   │   ├── rules/                    # 规则目录 (rules)
 │   │   │   └── {rule}.md
-│   │   ├── tools/                    # 工具目录 (tools)
+│   │   ├── skills/                   # 技能目录 (skills)
 │   │   └── spec-config.yaml          # 规格配置文件
 │   ├── input/                        # PRD、启始 Prompt、原型等入口 (用户唯一干预路径)
 │   │   └── {user}/{seq}/{prd}.md

@@ -6,7 +6,7 @@
 - `ai` 不变
 - 新增 `ai/config`
 - `ai/baselines` 改成 `ai/config/rules`
-- 新增 `ai/config/tools`
+- 新增 `ai/config/skills`
 - `ai/config.yaml` 改成 `ai/config/spec-config.yaml`，内容生成逻辑和步骤不变
 - `ai/archetypes` 改成 `ai/input`
 - `ai/changes` 改成 `ai/output/changes`
