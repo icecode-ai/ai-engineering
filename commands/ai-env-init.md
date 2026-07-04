@@ -134,15 +134,15 @@ Writing rules: short sections and bullets; include only what an agent would othe
 
    ## Directory Structure
 
-    | Path | Description |
-    |------|-------------|
-    | `ai/config/rules/` | Rules & standards for AI work; apply when relevant |
-    | `ai/config/skills/` | On-demand skills; invoke only when the user explicitly requests |
-    | `ai/output/specs/` | Source-of-truth system behavior specs; read when needed or when requirements are unclear |
-    | `ai/output/changes/archive/` | Archived change history; read when needed or when requirements are unclear |
-    | `ai/output/memories/` | Bad cases & lessons; read when needed for long-term context |
-    | `modules/` | Independent projects, each its own git repo + guidance file |
-    | `readonly-dependencies/` | Read-only dependency references; never modify |
+   | Path | Description |
+   |------|-------------|
+   | `ai/config/rules/` | Rules & standards; apply when relevant |
+   | `ai/config/skills/` | On-demand skills; invoke only when the user explicitly requests |
+   | `ai/output/specs/` | Source-of-truth system behavior specs; read when needed or when requirements are unclear |
+   | `ai/output/changes/archive/` | Archived change history; read when needed or when requirements are unclear |
+   | `ai/output/memories/` | Bad cases & lessons; read when facing blockers or seeking proven experience |
+   | `modules/` | Independent projects, each its own git repo + guidance file |
+   | `readonly-dependencies/` | Read-only dependency references; never modify |
 
    ## modules
 
