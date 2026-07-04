@@ -136,7 +136,7 @@ Pull the latest content from git remotes. Supports pulling for the main project,
    | `ai/config/rules/` | Rules & standards; apply when relevant |
    | `ai/config/skills/` | On-demand skills; invoke only when the user explicitly requests |
    | `ai/output/specs/` | Source-of-truth system behavior specs; read when needed or when requirements are unclear |
-   | `ai/output/changes/archive/` | Archived change history; read when needed or when requirements are unclear |
+   | `ai/output/changes/archive/` | Archived change records (proposal/design); read design Decisions & proposal Why for past rationale, or for prior art when scoping a similar change — current behavior specs live in `ai/output/specs/` |
    | `ai/output/memories/` | Bad cases & lessons; read when facing blockers or seeking proven experience |
    | `modules/` | Independent projects, each its own git repo + guidance file |
    | `readonly-dependencies/` | Read-only dependency references; never modify |

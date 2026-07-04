@@ -51,7 +51,7 @@ After running `/ai-env-init`, the following directory structure is generated in 
 │   │   └── {user}/{seq}/{prd}.md
 │   └── output/                       # Output directory
 │       ├── changes/                  # Changes directory (explore/propose output)
-│       │   └── archive/              # Archived change history; read when needed or when requirements are unclear
+│       │   └── archive/              # Archived change records (proposal/design); read design Decisions & proposal Why for past rationale, or for prior art when scoping a similar change — current behavior specs live in `ai/output/specs/`
 │       ├── memories/                 # Bad cases & lessons; read when needed for long-term context
 │       │   └── {memory}.md
 │       └── specs/                    # Source-of-truth system behavior specs; read when needed or when requirements are unclear
