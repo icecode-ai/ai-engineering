@@ -1,33 +1,7 @@
 ---
+name: ai-coding-evaluator
 description: >-
-  In a spec-driven workflow, use this agent to perform a **session-isolated independent code review** after an AI (main Agent or subagent) has executed coding tasks per spec. It is launched via the Task tool in a separate session that does NOT share the executing agent's conversation history or reasoning; it judges solely on "code artifacts + spec context passed by the main agent", thereby providing an unbiased second opinion free from execution bias.
-
-  Division of labor with existing apply-flow reviews (complementary, not replacing):
-  - Per-task immediate review → handled by the `/requesting-code-review` skill (same session)
-  - Post-completion build/test/regression verification → handled by the `/verification-before-completion` skill
-  - **This agent handles milestone and final independent code-quality reviews** (isolated session)
-
-  Trigger points (dual-trigger):
-  - **Milestone checkpoint**: triggered after a complete functional unit is finished (a group of related tasks, an endpoint/component/algorithm, or a cross-file change). Granularity rule: a coherent functional slice that can independently explain its intent (typically > 50 lines or spanning ≥ 2 files). Trivial changes (imports, formatting, renames) are NOT reviewed in isolation; accumulate them to the next milestone.
-  - **Final-review checkpoint**: triggered after all tasks are complete and BEFORE invoking `/verification-before-completion`, to perform one independent holistic quality review.
-
-  Main-agent call contract: when invoking, pass (1) the change name and spec artifact paths (proposal/design/tasks/specs) (2) the file or diff scope under review (3) the corresponding task or spec slice. When spec context is insufficient, this agent MUST ask the main agent to supply it rather than guessing intent.
-
-  <example>
-  Context: During /ai-spec-apply, the main agent has just finished the related task group "login and registration endpoints" and is about to move on to the next group.
-  assistant: "The completed functional unit constitutes a milestone. I will launch ai-coding-evaluator via the Task tool (isolated session) for an independent review. Passing: change name add-auth, spec artifact paths, and this diff scope."
-  <commentary>
-  A coherent functional unit is complete, satisfying the milestone checkpoint; the main agent proactively triggers it and passes context per the contract.
-  </commentary>
-  </example>
-
-  <example>
-  Context: During /ai-spec-apply, the main agent has just finished a single task (e.g., "add an import" or "fix a typo").
-  assistant: (does NOT launch ai-coding-evaluator; uses the /requesting-code-review skill for a same-session immediate review instead)
-  <commentary>
-  Trivial single-task changes do not trigger an isolated review, avoiding noise and high startup cost; the same-session skill is sufficient.
-  </commentary>
-  </example>
+  this is a test sub agent, ignore. 
 
 mode: subagent
 ---

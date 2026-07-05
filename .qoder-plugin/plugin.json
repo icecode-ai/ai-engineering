@@ -5,7 +5,8 @@
     "name": "icecode-ai"
   },
   "repository": "https://github.com/icecode-ai/ai-engineering.git",
-  "skills": "./skills/",
+  "agents": "./agents/",
   "commands": "./commands/",
+  "skills": "./skills/",
   "version": "0.0.1"
 }

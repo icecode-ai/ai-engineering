@@ -84,7 +84,63 @@ Writing rules: short sections and bullets; include only what an agent would othe
     echo "Environment initialized at: ${PROJECT_ROOT}"
    ```
 
-2. **Materialize registered repos from `ai/config/git.tsv`**
+2. **Sync plugin `ai/` templates into project `ai/`**
+
+   The plugin ships template content under its own `ai/` (currently `ai/config/rules/**`, `ai/config/skills/**`, plus `ai/config/git.tsv` and `ai/config/spec-config.yaml` as starters). Sync them into the project's `ai/` so the project has the standard rules/skills.
+
+   - `config/git.tsv` and `config/spec-config.yaml`: copy ONLY if absent in the project — once present they are the user's owned registry & spec config, never overwritten.
+   - Everything else under the plugin's `ai/`: mirror into the project's `ai/` (overwrite changed files; delete local files that no longer exist in the plugin) so plugin updates propagate on re-init and removed templates are cleaned up.
+   - Paths present only in the project's `ai/` (e.g. `ai/input/`, `ai/output/`) are not touched — the mirror operates per top-level entry that exists in the source.
+
+   **Locate `PLUGIN_ROOT`**: resolve at runtime — you (the Agent) know where you loaded this command from; the plugin root is the parent of `commands/` (it also contains `skills/`, `agents/`, `ai/`). Set `PLUGIN_ROOT` in the script below to that absolute path before running.
+
+   ```bash
+   set -euo pipefail
+   PROJECT_ROOT="$(pwd)"
+   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+   done
+   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+   cd "$PROJECT_ROOT"
+
+   PLUGIN_ROOT=""
+
+   SRC="${PLUGIN_ROOT}/ai"
+   DST="${PROJECT_ROOT}/ai"
+
+   if [ -z "$PLUGIN_ROOT" ] || [ ! -d "$SRC" ]; then
+     echo "PLUGIN_ROOT not set or plugin ai/ missing at '${SRC}' — skip template sync."
+     echo "Set PLUGIN_ROOT to the plugin root (parent of commands/) and re-run this step."
+   elif ! command -v rsync >/dev/null 2>&1; then
+     echo "rsync not available — skip template sync (install rsync to enable)."
+   else
+     for f in config/git.tsv config/spec-config.yaml; do
+       if [ -f "$SRC/$f" ] && [ ! -f "$DST/$f" ]; then
+         mkdir -p "$(dirname "$DST/$f")"
+         cp "$SRC/$f" "$DST/$f"
+         echo "copied (new): $f"
+       else
+         echo "skip (exists or no source): $f"
+       fi
+     done
+
+     find "$SRC" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d '' entry; do
+       name="$(basename "$entry")"
+       if [ "$name" = "config" ]; then
+         rsync -a --delete --exclude='/git.tsv' --exclude='/spec-config.yaml' \
+           "$SRC/config/" "$DST/config/"
+         echo "mirrored: config/ (git.tsv & spec-config.yaml preserved)"
+       else
+         rsync -a --delete "$SRC/$name/" "$DST/$name/"
+         echo "mirrored: $name/"
+       fi
+     done
+
+     echo "Template sync complete."
+   fi
+   ```
+
+3. **Materialize registered repos from `ai/config/git.tsv`**
 
    After creating directories, clone each module/dependency registered in `ai/config/git.tsv` so later steps can read their code. The registry is a tab-separated file (`# path<TAB>url<TAB>branch`); each row records a gitlink path, its remote URL, and branch. The gitlink SHA (mode 160000) in MAIN's tree pins the exact commit; the registry supplies URL + branch.
 
@@ -130,7 +186,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
    fi
    ```
 
-3. **Generate guidance file for each module**
+4. **Generate guidance file for each module**
 
    For each directory under `modules/`, generate or update its guidance files following the **Module guidance file generation methodology** above (dual-write: keep `AGENTS.md` and `CLAUDE.md` in sync). Module guidance files do NOT carry the `readonly-dependencies/` marking.
 
@@ -141,7 +197,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
    done
    ```
 
-4. **Generate main project guidance file**
+5. **Generate main project guidance file**
 
    Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 
