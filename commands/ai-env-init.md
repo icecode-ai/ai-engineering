@@ -186,5 +186,5 @@ Writing rules: short sections and bullets; include only what an agent would othe
 
 **Guardrails**
 - `readonly-dependencies/` is a read-only knowledge base — never write, modify, or delete files inside it
-- Do NOT add `modules/` to `.gitignore` (but `readonly-dependencies/` should be added)
+- Do NOT add `modules/` or `readonly-dependencies/` (top-level) to `.gitignore`; only `readonly-dependencies/*/*` (depth-2 contents) is ignored so dependency gitlinks stay trackable
 - Synchronously maintain BOTH `AGENTS.md` and `CLAUDE.md` for the main project and each module

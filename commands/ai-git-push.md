@@ -5,7 +5,7 @@ argument-hint: [<target>]
 
 Push local commits to git remotes. Supports pushing for the main project and modules.
 
-**IMPORTANT**: Never push anything under `readonly-dependencies/*/` — it is a read-only knowledge base.
+**IMPORTANT**: Never push the dependency repos under `readonly-dependencies/*/` directly — they are read-only knowledge bases. Recording their gitlink (commit pointer) in the MAIN repo is, however, expected behavior (see Step 3).
 
 **Input**: One optional argument — the target scope. Defaults to `ALL`.
 
@@ -90,28 +90,25 @@ Push local commits to git remotes. Supports pushing for the main project and mod
 
 3. **Stage and commit uncommitted changes (with risk interception)**
 
-   Before pulling, commit any uncommitted work in scope so later merge and push can proceed cleanly. Process each repository in scope — `MAIN`, or every module under `modules/` for `ALL`, or the single named module for `{module}`. **Never touch `readonly-dependencies/`.**
+   Before pulling, commit any uncommitted work in scope so later merge and push can proceed cleanly. Process each repository in scope — `MAIN`, or every module under `modules/` for `ALL`, or the single named module for `{module}`. For the `ALL` target, **process modules first, then MAIN** — this lets MAIN's `git add -A` capture each module's latest HEAD and refresh its gitlink. Recording `readonly-dependencies/<dep>` gitlinks in MAIN is expected; but never directly modify/pull/merge/push the dependency repos themselves.
 
    a. List candidate files (modified, staged, and untracked, excluding gitignored) in the repository: `git status --porcelain --untracked-files=all`.
    b. If there are no candidates, skip this repository.
-   c. **Risk interception** — for each candidate, check:
+   c. **Risk interception** — for each candidate, check the following **exhaustive** list of risk categories:
       - Large file: size > 10 MB (`stat -f%z "$f"` on macOS / `stat -c%s "$f"` on Linux).
       - Suspicious filename: matches `*.env`, `*.pem`, `*.key`, `id_rsa`, `id_ed25519`, `*.p12`, `*.pfx`, `credentials*`, `secrets*`, `.npmrc`, `.pypirc`.
       - Secret content: text files containing `PRIVATE KEY`, `BEGIN RSA`, `BEGIN OPENSSH PRIVATE KEY`, `BEGIN PGP PRIVATE KEY`, or obvious high-entropy API keys/tokens (read the file to judge).
       - Unignored artifact paths: `node_modules/`, `dist/`, `build/`, `out/`, `target/`, `.next/`, `__pycache__/`, `coverage/`, `*.log`.
+
+      **Nested git repos under `modules/*/` and `readonly-dependencies/*/` are expected by design** (each module/dependency is an independent git repo; see `ai-module-add.md` / `ai-dependency-add.md`). They are NOT risk items — do NOT prompt include/exclude/abort for them. They will be recorded as gitlinks in step e.
    d. **When a candidate is flagged, pause and ask the user per item**: "include" (add it anyway), "exclude" (skip it and keep it in the working tree), or "abort" (stop the entire push). Do not silently commit flagged files.
-   e. After all flagged items are resolved, stage the remaining candidates with `git add -A` (respects `.gitignore`); for any "exclude" item that was staged, unstage it with `git restore --staged <file>`.
+   e. After all flagged items are resolved, stage the remaining candidates with `git add -A` (respects `.gitignore`); for any "exclude" item that was staged, unstage it with `git restore --staged <file>`. `git add -A` records `modules/<name>` and `readonly-dependencies/<dep>` as **gitlinks** (tree entry mode 160000 — a commit pointer to the nested repo's current HEAD); this is the desired behavior. MAIN stores only the commit pointer, never the nested repo's internal files. **Never create a `.gitmodules` file** — these are bare gitlinks, not submodules.
    f. Generate a conventional-commit message from the diff and the active change in `ai/output/changes/` (the non-archived change matching this work): `feat(scope): <summary> [ai-change: <change-name>]`. Choose type (`feat`/`fix`/`refactor`/`docs`/`chore`/`test`) and scope from the diff. If multiple unrelated changes are present, split into multiple logical commits. If there is no active change, use `chore: <summary>` without the tag.
    g. Commit with `git commit -m "<message>"`. Do not push yet.
 
 4. **Pull latest content for the target scope**
 
    ```bash
-   if [ "$target" = "MAIN" ] || [ "$target" = "ALL" ]; then
-     echo "=== Pull MAIN ==="
-     git pull 2>&1 || echo "Pull conflicts in MAIN — will auto-resolve"
-   fi
-
    if [ "$target" = "ALL" ]; then
      for dir in "${PROJECT_ROOT}/modules"/*/; do
        [ -d "$dir/.git" ] || continue
@@ -121,6 +118,11 @@ Push local commits to git remotes. Supports pushing for the main project and mod
    elif [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
      echo "=== Pull module: $target ==="
      (cd "${PROJECT_ROOT}/modules/$target" && git pull 2>&1) || echo "Pull conflicts in $target — will auto-resolve"
+   fi
+
+   if [ "$target" = "MAIN" ] || [ "$target" = "ALL" ]; then
+     echo "=== Pull MAIN ==="
+     git pull 2>&1 || echo "Pull conflicts in MAIN — will auto-resolve"
    fi
    ```
 
@@ -144,12 +146,6 @@ Push local commits to git remotes. Supports pushing for the main project and mod
      echo "$branch"
    }
 
-   if [ "$target" = "MAIN" ] || [ "$target" = "ALL" ]; then
-     echo "=== Merge mainline into MAIN ==="
-     mainline=$(detect_mainline)
-     git merge "$mainline" 2>&1 || echo "Merge conflicts in MAIN — will auto-resolve"
-   fi
-
    if [ "$target" = "ALL" ]; then
      for dir in "${PROJECT_ROOT}/modules"/*/; do
        [ -d "$dir/.git" ] || continue
@@ -159,6 +155,12 @@ Push local commits to git remotes. Supports pushing for the main project and mod
    elif [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
      echo "=== Merge mainline into module: $target ==="
      (cd "${PROJECT_ROOT}/modules/$target" && mainline=$(detect_mainline) && git merge "$mainline" 2>&1) || echo "Merge conflicts in $target — will auto-resolve"
+   fi
+
+   if [ "$target" = "MAIN" ] || [ "$target" = "ALL" ]; then
+     echo "=== Merge mainline into MAIN ==="
+     mainline=$(detect_mainline)
+     git merge "$mainline" 2>&1 || echo "Merge conflicts in MAIN — will auto-resolve"
    fi
    ```
 
@@ -174,6 +176,7 @@ Push local commits to git remotes. Supports pushing for the main project and mod
    4. Stage each resolved file with `git add <file>`.
    5. Finalize the merge with `git commit` (default merge message) if the merge is still in progress.
    6. Do not abort the merge, do not discard changes, do not ask for confirmation — resolve and proceed.
+   7. **Gitlink conflicts** under `modules/` or `readonly-dependencies/` (tree-level SHA conflicts, shown as `CONFLICT (submodule)` or a modified gitlink entry): resolve to the **current working-tree HEAD** of the nested repo (i.e. the commit the nested repo is actually checked out at). Record it with `git add modules/<name>` / `git add readonly-dependencies/<dep>`.
 
    Repeat for every repository (MAIN and modules) that has conflicts.
 
@@ -182,15 +185,17 @@ Push local commits to git remotes. Supports pushing for the main project and mod
    **If target is `ALL`**:
 
    ```bash
-   echo "=== MAIN ==="
-   git push 2>&1 || echo "Push failed for MAIN"
-
    for dir in "${PROJECT_ROOT}/modules"/*/; do
      [ -d "$dir/.git" ] || continue
      echo "=== Module: $(basename "$dir") ==="
      (cd "$dir" && git push 2>&1) || echo "Push failed for $(basename "$dir")"
    done
+
+   echo "=== MAIN ==="
+   git push 2>&1 || echo "Push failed for MAIN"
    ```
+
+   Pushing modules before MAIN ensures each gitlink's target commit exists on the module's remote before MAIN references it.
 
    **If target is `MAIN`**:
 
@@ -215,7 +220,9 @@ Push local commits to git remotes. Supports pushing for the main project and mod
    ```
 
 **Guardrails**
-- Never push anything under `readonly-dependencies/*/` — it is read-only and excluded from pull/merge/commit/push
+- `readonly-dependencies/*/` repos are read-only: never directly pull/merge/push/modify them. Their gitlink may be recorded in MAIN and carried by MAIN's push — that is the only allowed interaction
+- Never add `modules/` to `.gitignore` (per `ai-env-init.md`); modules are tracked as gitlinks in MAIN
+- Never create a `.gitmodules` file — modules and readonly-dependencies are recorded as bare gitlinks (commit pointers), not submodules
 - For `ALL` or `MAIN` targets, always check `ai/output/changes/` for incomplete tasks or unarchived changes before pushing (fail-fast)
 - Before pushing: stage+commit uncommitted work with risk interception (step 3), pull latest (step 4), merge mainline into the current branch (step 5), and auto-resolve any conflicts (step 6)
 - Risk interception (step 3) pauses to ask the user per flagged file (include/exclude/abort); never silently commit secrets, large files, or unignored artifacts
