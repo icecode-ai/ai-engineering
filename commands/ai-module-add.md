@@ -9,7 +9,13 @@ Add a new module to the project by cloning a git repository into the `modules/` 
 
 **Steps**
 
-1. **Clone the repository into modules/**
+1. **Resolve missing arguments**
+
+   **If no `<git-url>` argument is provided**, use the **AskUserQuestion tool** (open-ended, no preset options) to ask the user for the git repository URL. Do not proceed until a valid URL is provided.
+
+   The `<branch-name>` argument is optional — do not prompt for it; if absent, the default branch is used.
+
+2. **Clone the repository into modules/**
 
    Derive the module directory name from the repository name. If the second argument is provided, use it as the branch to clone.
 
@@ -42,7 +48,7 @@ Add a new module to the project by cloning a git repository into the `modules/` 
    fi
    ```
 
-2. **Generate guidance file for the new module**
+3. **Generate guidance file for the new module**
 
    **Precondition**: the clone succeeded. If cloning failed (URL invalid/inaccessible) or the user declined to overwrite an existing module, **STOP** — do not generate any guidance file.
 
@@ -70,7 +76,7 @@ Add a new module to the project by cloning a git repository into the `modules/` 
    Preserve user-specific content: keep the user's special references/sections (e.g. development specs, custom conventions); update only the factual, project-derived portions.
    Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
 
-3. **Re-generate the main project guidance file**
+4. **Re-generate the main project guidance file**
 
    Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 

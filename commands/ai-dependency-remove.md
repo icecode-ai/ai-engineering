@@ -9,7 +9,35 @@ Remove a dependency from the `readonly-dependencies/` directory and update the p
 
 **Steps**
 
-1. **Remove the dependency directory**
+1. **Resolve missing argument**
+
+   **If no `<dependency-name>` argument is provided**, list available dependencies and ask the user to select:
+
+   ```bash
+   set -euo pipefail
+   PROJECT_ROOT="$(pwd)"
+   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+   done
+   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+
+   if [ -d "${PROJECT_ROOT}/readonly-dependencies" ]; then
+     found=false
+     for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
+       [ -d "$d" ] || continue
+       echo "$(basename "$d")"
+       found=true
+     done
+     [ "$found" = false ] && echo "(no dependencies found)"
+   else
+     echo "(no readonly-dependencies directory)"
+   fi
+   ```
+
+   - If no dependencies exist, inform the user and **STOP** — do not proceed.
+   - Otherwise, use the **AskUserQuestion tool** to let the user select from the dependencies listed above (preset options, `multiple: false`; the user may type a custom name if needed).
+
+2. **Remove the dependency directory**
 
    ```bash
    set -euo pipefail
@@ -30,7 +58,7 @@ Remove a dependency from the `readonly-dependencies/` directory and update the p
    rm -rf "${PROJECT_ROOT}/readonly-dependencies/$name"
    ```
 
-2. **Re-generate the main project guidance file**
+3. **Re-generate the main project guidance file**
 
    **Precondition**: removal succeeded. If removal failed (dependency not found / invalid name / aborted), **STOP** — do not generate the guidance file.
 

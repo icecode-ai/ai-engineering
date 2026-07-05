@@ -15,7 +15,49 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
 **Steps**
 
-1. **Checkout branch based on target scope**
+1. **Resolve missing arguments**
+
+   This command requires two arguments: `<target>` and `<branch>`. Resolve each missing one via the **AskUserQuestion tool** before running the checkout. The bash `exit 1` in step 2 stays as a safety net.
+
+   **a. If `<target>` is not provided**, enumerate candidates and ask the user to select:
+
+   ```bash
+   set -euo pipefail
+   PROJECT_ROOT="$(pwd)"
+   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+   done
+   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+
+   echo "MAIN"
+   [ -d "${PROJECT_ROOT}/modules" ] && for d in "${PROJECT_ROOT}/modules"/*/; do
+     [ -d "$d" ] || continue
+     echo "module:$(basename "$d")"
+   done
+   [ -d "${PROJECT_ROOT}/readonly-dependencies" ] && for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
+     [ -d "$d" ] || continue
+     echo "dependency:$(basename "$d")"
+   done
+   ```
+
+   Use the **AskUserQuestion tool** to let the user select from the candidates above (preset options, `multiple: false`; the user may type a custom name). The selected value becomes `<target>` (use the bare name for modules/dependencies, e.g. `module:foo` → `foo`).
+
+   **b. If `<branch>` is not provided** (after `<target>` is determined), enumerate branches in the target repository and ask the user to select:
+
+   ```bash
+   # $target_repo = the directory of the selected target:
+   #   MAIN → "$PROJECT_ROOT"
+   #   module   → "$PROJECT_ROOT/modules/$target"
+   #   dependency → "$PROJECT_ROOT/readonly-dependencies/$target"
+   (cd "$target_repo" 2>/dev/null && {
+     git branch --format='%(refname:short)' 2>/dev/null
+     git ls-remote --heads origin 2>/dev/null | awk '{print $2}' | sed 's|refs/heads/||'
+   } | sort -u) || echo "(unable to list branches)"
+   ```
+
+   Use the **AskUserQuestion tool** to let the user select a branch from the list above (preset options, `multiple: false`; the user may type a custom branch name). If the target repository has no branches or is not a git repo, inform the user and **STOP**.
+
+2. **Checkout branch based on target scope**
 
    Extract arguments and determine target scope:
 
@@ -62,7 +104,7 @@ Checkout a git branch across the project. Supports switching branches on the mai
    fi
    ```
 
-2. **Resolve checkout conflicts automatically**
+3. **Resolve checkout conflicts automatically**
 
    If `git checkout` reported that local uncommitted changes would be overwritten (the checkout did not complete), automatically recover without discarding local changes and without asking the user:
 
@@ -79,12 +121,12 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
    If checkout failed for a reason other than local-change conflicts (e.g., the branch does not exist), report it and stop.
 
-   **Outcome gate** (after step 1 + step 2): determine the final checkout outcome for the target.
+   **Outcome gate** (after step 2 + step 3): determine the final checkout outcome for the target.
    - **No update** — output contains `Already on '...'` (already on that branch). **STOP** — do not generate any guidance file.
    - **Failed** — checkout could not complete (e.g., branch does not exist). **STOP**.
-   - **Updated** — output contains `Switched to ...`. Proceed to step 3 (module targets only) and step 4.
+   - **Updated** — output contains `Switched to ...`. Proceed to step 4 (module targets only) and step 5.
 
-3. **Generate guidance file for the target module (module targets only)**
+4. **Generate guidance file for the target module (module targets only)**
 
    If the target is a **module**, generate or update its guidance file at `modules/$target/`. Skip this step for `MAIN` and dependency targets — module guidance files are only for modules.
 
@@ -111,7 +153,7 @@ Checkout a git branch across the project. Supports switching branches on the mai
    Module guidance files do NOT carry the `readonly-dependencies/` marking.
    Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
 
-4. **Generate main project guidance file (all targets)**
+5. **Generate main project guidance file (all targets)**
 
    Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 
@@ -206,6 +248,6 @@ Checkout a git branch across the project. Supports switching branches on the mai
    - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) in each file — update only the template-derived portions.
 
 **Guardrails**
-- If checkout fails due to local-change conflicts, auto-recover via stash (step 2) without discarding changes
+- If checkout fails due to local-change conflicts, auto-recover via stash (step 3) without discarding changes
 - Validate the branch exists on the target repository before switching
 - If checkout produced no update (`Already on ...`) or failed, do not generate any guidance file

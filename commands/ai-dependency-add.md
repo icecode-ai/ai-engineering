@@ -9,7 +9,13 @@ Add a dependency project to the `readonly-dependencies/` directory. Dependencies
 
 **Steps**
 
-1. **Clone the repository into readonly-dependencies/**
+1. **Resolve missing arguments**
+
+   **If no `<git-url>` argument is provided**, use the **AskUserQuestion tool** (open-ended, no preset options) to ask the user for the git repository URL. Do not proceed until a valid URL is provided.
+
+   The `<branch-name>` argument is optional — do not prompt for it; if absent, the default branch is used.
+
+2. **Clone the repository into readonly-dependencies/**
 
    If `readonly-dependencies/$dep_name` already exists, ask the user whether to overwrite. On confirm, remove the existing directory and re-clone; on decline, abort.
 
@@ -42,7 +48,7 @@ Add a dependency project to the `readonly-dependencies/` directory. Dependencies
    fi
    ```
 
-2. **Re-generate the main project guidance file**
+3. **Re-generate the main project guidance file**
 
    **Precondition**: the clone succeeded. If cloning failed (URL invalid/inaccessible) or the user declined to overwrite an existing dependency, **STOP** — do not generate the guidance file.
 
