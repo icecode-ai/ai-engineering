@@ -32,7 +32,9 @@ Remove a module from the `modules/` directory and update the project guidance.
 
 2. **Re-generate the main project guidance file**
 
-   Detect the target guidance file at the project root (`CLAUDE.md` for Claude Code, `AGENTS.md` for other agents). Generate or update it using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here.
+   **Precondition**: removal succeeded. If removal failed (module not found / invalid name / aborted), **STOP** — do not generate the guidance file.
+
+   Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 
    **Template** — keep all fixed sections verbatim; fill only the scanned tables:
 
@@ -59,7 +61,7 @@ Remove a module from the `modules/` directory and update the project guidance.
 
    | Module Name | Path | Guidance File | Description |
    |-------------|------|---------------|-------------|
-   | <module> | `modules/<module>` | `modules/<module>/<AGENTS or CLAUDE>.md` | <description> |
+   | <module> | `modules/<module>` | `modules/<module>/AGENTS.md` | <description> |
 
    ## readonly-dependencies
 
@@ -71,7 +73,7 @@ Remove a module from the `modules/` directory and update the project guidance.
 
    ## rules
 
-   Rules
+   Rules & standards, apply when relevant.
 
    | Rule | Path | Description |
    |----------|------|-------------|
@@ -81,7 +83,7 @@ Remove a module from the `modules/` directory and update the project guidance.
 
    When working under `modules/`, read the standards in the following order:
 
-   1. The module's guidance file (`AGENTS.md`, or `CLAUDE.md` for Claude Code) at the module root
+   1. Module guidance file: `modules/<module>/AGENTS.md`
    2. Rules under `ai/config/rules/` relevant to the module's tech stack, if any
 
    In case of conflict, the module guidance file takes precedence.
@@ -97,8 +99,11 @@ Remove a module from the `modules/` directory and update the project guidance.
    echo "PROJECT:$(basename "$PROJECT_ROOT")"
    for d in "${PROJECT_ROOT}/modules"/*/; do
      [ -d "$d" ] || continue
-     gf="AGENTS.md"; [ -f "${d}CLAUDE.md" ] && gf="CLAUDE.md"
-     echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gf"
+      gfs=""
+      [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
+      [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
+      [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
+      echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
    done
    for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
      [ -d "$d" ] || continue
@@ -118,10 +123,10 @@ Remove a module from the `modules/` directory and update the project guidance.
    - Empty table → header row only (keep the section)
 
    **Incremental update**:
-   - If the target file already exists, regenerate from the template and compare. If differences are only wording/formatting/unchanged facts, leave as-is. Update ONLY on substantive changes (added/removed/renamed modules, dependencies, or rules).
-   - If the other-environment guidance file exists instead (e.g. targeting `CLAUDE.md` but only `AGENTS.md` present), use it as a reference, generate the target from the template, and leave the other file in place. Keep both in sync.
-   - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) — update only the template-derived portions.
+   - Apply the template to BOTH `AGENTS.md` and `CLAUDE.md`. For each file, if it already exists, regenerate from the template and compare; update ONLY on substantive changes (added/removed/renamed modules, dependencies, or rules). Keep both files identical in their template-derived portions.
+   - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) in each file — update only the template-derived portions.
 
 **Guardrails**
 - Confirm with the user before removing, especially if there are uncommitted changes in the module
 - If the module directory does not exist, inform the user and stop
+- If removal failed or was aborted, do not generate the main project guidance file

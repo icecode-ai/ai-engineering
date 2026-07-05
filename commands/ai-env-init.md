@@ -6,9 +6,11 @@ Initialize or update the project environment. Sets up the standard directory str
 
 **Module guidance file generation methodology**
 
-Target file & environment:
-- **Claude Code** → `CLAUDE.md`. Run the `/init` skill; afterward re-merge any user-specific sections it may have overwritten.
-- **Other agents** → `AGENTS.md`. Generate via the approach below.
+Dual-write policy: every module keeps BOTH `CLAUDE.md` and `AGENTS.md` in sync. Decide per module:
+- **Both missing** → investigate (approach below) and generate BOTH `CLAUDE.md` and `AGENTS.md` with identical content.
+- **`CLAUDE.md` exists, `AGENTS.md` missing** → copy `CLAUDE.md` to `AGENTS.md`.
+- **`AGENTS.md` exists, `CLAUDE.md` missing** → copy `AGENTS.md` to `CLAUDE.md`.
+- **Both exist** → skip; do not regenerate.
 
 How to investigate:
 - Read `README*`, root manifests, workspace config, lockfiles; build/test/lint/formatter/typecheck/codegen config; CI workflows; existing instruction files (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`, `.cursorrules`, `.github/copilot-instructions.md`); `opencode.json`.
@@ -22,11 +24,6 @@ What to extract (high-signal, repo-specific only):
 - framework/toolchain quirks: generated code, migrations, codegen, build artifacts, env loading, dev servers, deploy flow
 - repo-specific style/workflow conventions differing from defaults; testing quirks (fixtures, integration prerequisites, snapshots, services, flaky suites)
 - constraints from existing instruction files worth preserving
-
-Create vs. update:
-- **Target missing** — Claude Code: run `/init` (fallback: the approach above). Other agents: use the approach above.
-- **Other-environment file exists instead** (e.g. targeting `CLAUDE.md` but only `AGENTS.md` present) — treat it as the primary fact source, re-verify against current sources, generate the target from it, and leave the other file in place. Keep both files in sync when facts change.
-- **Target exists** — re-extract current facts and compare. If only wording/formatting/unchanged facts differ, leave as-is. If substantive differences exist (new/changed commands, architecture, added/removed modules or dependencies): Claude Code runs `/init` then re-merges user-specific sections; other agents update in place.
 
 Preserve user-specific content: keep the user's special references/sections (e.g. development specs, custom conventions); update only the factual, project-derived portions.
 Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
@@ -79,40 +76,12 @@ Writing rules: short sections and bullets; include only what an agent would othe
      echo "'${entry}' already in .gitignore"
    fi
 
-   config_file="${PROJECT_ROOT}/ai/config/spec-config.yaml"
-   if [ ! -f "$config_file" ]; then
-     {
-       echo 'schema: spec-driven'
-       echo ''
-       echo '# Project context (optional)'
-       echo '# This is shown to AI when creating artifacts.'
-       echo '# Add your tech stack, conventions, style guides, domain knowledge, etc.'
-       echo '# Example:'
-       echo '#   context: |'
-       echo '#     Tech stack: TypeScript, React, Node.js'
-       echo '#     We use conventional commits'
-       echo '#     Domain: e-commerce platform'
-       echo ''
-       echo '# Per-artifact rules (optional)'
-       echo '# Add custom rules for specific artifacts.'
-       echo '# Example:'
-       echo '#   rules:'
-       echo '#     proposal:'
-       echo '#       - Keep proposals under 500 words'
-       echo '#       - Always include a "Non-goals" section'
-       echo '#     tasks:'
-       echo '#       - Break tasks into chunks of max 2 hours'
-     } > "$config_file"
-     echo "Created: ai/config/spec-config.yaml"
-   else
-     echo "Exists: ai/config/spec-config.yaml"
-   fi
-   echo "Environment initialized at: ${PROJECT_ROOT}"
+    echo "Environment initialized at: ${PROJECT_ROOT}"
    ```
 
 2. **Generate guidance file for each module**
 
-   For each directory under `modules/`, generate or update its guidance file (`modules/$module/CLAUDE.md` for Claude Code, `modules/$module/AGENTS.md` for other agents) following the **Module guidance file generation methodology** above. Module guidance files do NOT carry the `readonly-dependencies/` marking.
+   For each directory under `modules/`, generate or update its guidance files following the **Module guidance file generation methodology** above (dual-write: keep `AGENTS.md` and `CLAUDE.md` in sync). Module guidance files do NOT carry the `readonly-dependencies/` marking.
 
    ```bash
    for module in "${PROJECT_ROOT}/modules"/*/; do
@@ -123,7 +92,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
 
 3. **Generate main project guidance file**
 
-   Detect the target guidance file at the project root (`CLAUDE.md` for Claude Code, `AGENTS.md` for other agents). Generate or update it using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here.
+   Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 
    **Template** — keep all fixed sections verbatim; fill only the scanned tables:
 
@@ -150,7 +119,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
 
    | Module Name | Path | Guidance File | Description |
    |-------------|------|---------------|-------------|
-   | <module> | `modules/<module>` | `modules/<module>/<AGENTS or CLAUDE>.md` | <description> |
+   | <module> | `modules/<module>` | `modules/<module>/AGENTS.md` | <description> |
 
    ## readonly-dependencies
 
@@ -162,7 +131,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
 
    ## rules
 
-   Rules
+   Rules & standards, apply when relevant.
 
    | Rule | Path | Description |
    |----------|------|-------------|
@@ -172,7 +141,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
 
    When working under `modules/`, read the standards in the following order:
 
-   1. The module's guidance file (`AGENTS.md`, or `CLAUDE.md` for Claude Code) at the module root
+   1. Module guidance file: `modules/<module>/AGENTS.md`
    2. Rules under `ai/config/rules/` relevant to the module's tech stack, if any
 
    In case of conflict, the module guidance file takes precedence.
@@ -188,8 +157,11 @@ Writing rules: short sections and bullets; include only what an agent would othe
    echo "PROJECT:$(basename "$PROJECT_ROOT")"
    for d in "${PROJECT_ROOT}/modules"/*/; do
      [ -d "$d" ] || continue
-     gf="AGENTS.md"; [ -f "${d}CLAUDE.md" ] && gf="CLAUDE.md"
-     echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gf"
+      gfs=""
+      [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
+      [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
+      [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
+      echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
    done
    for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
      [ -d "$d" ] || continue
@@ -209,11 +181,10 @@ Writing rules: short sections and bullets; include only what an agent would othe
    - Empty table → header row only (keep the section)
 
    **Incremental update**:
-   - If the target file already exists, regenerate from the template and compare. If differences are only wording/formatting/unchanged facts, leave as-is. Update ONLY on substantive changes (added/removed/renamed modules, dependencies, or rules).
-   - If the other-environment guidance file exists instead (e.g. targeting `CLAUDE.md` but only `AGENTS.md` present), use it as a reference, generate the target from the template, and leave the other file in place. Keep both in sync.
-   - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) — update only the template-derived portions.
+   - Apply the template to BOTH `AGENTS.md` and `CLAUDE.md`. For each file, if it already exists, regenerate from the template and compare; update ONLY on substantive changes (added/removed/renamed modules, dependencies, or rules). Keep both files identical in their template-derived portions.
+   - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) in each file — update only the template-derived portions.
 
 **Guardrails**
 - `readonly-dependencies/` is a read-only knowledge base — never write, modify, or delete files inside it
 - Do NOT add `modules/` to `.gitignore` (but `readonly-dependencies/` should be added)
-- For Claude Code, use `CLAUDE.md` as guidance file; for other agents, use `AGENTS.md`
+- Synchronously maintain BOTH `AGENTS.md` and `CLAUDE.md` for the main project and each module
