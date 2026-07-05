@@ -73,16 +73,8 @@ Writing rules: short sections and bullets; include only what an agent would othe
      printf '%s\n' "$entry" >> "$gitignore_file"
      echo "Added '${entry}' to .gitignore"
    else
-     echo "'${entry}' already in .gitignore"
-   fi
-
-   git_tsv="${PROJECT_ROOT}/ai/config/git.tsv"
-   if [ ! -f "$git_tsv" ]; then
-     printf '# path\turl\tbranch\n' > "$git_tsv"
-     echo "Created: ai/config/git.tsv"
-   else
-     echo "Exists: ai/config/git.tsv"
-   fi
+    echo "'${entry}' already in .gitignore"
+    fi
 
     echo "Environment initialized at: ${PROJECT_ROOT}"
    ```
