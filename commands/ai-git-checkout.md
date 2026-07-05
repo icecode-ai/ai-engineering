@@ -124,7 +124,30 @@ Checkout a git branch across the project. Supports switching branches on the mai
    **Outcome gate** (after step 2 + step 3): determine the final checkout outcome for the target.
    - **No update** — output contains `Already on '...'` (already on that branch). **STOP** — do not generate any guidance file.
    - **Failed** — checkout could not complete (e.g., branch does not exist). **STOP**.
-   - **Updated** — output contains `Switched to ...`. Proceed to step 4 (module targets only) and step 5.
+   - **Updated** — output contains `Switched to ...`. Run the registry sync below, then proceed to step 4 (module targets only) and step 5.
+
+   **Registry sync** (on `Updated`, module/dependency targets only — MAIN has no registry entry): update the `branch` field in `ai/config/git.tsv` for the target path so the registry reflects the newly checked-out branch. Relies on `$target`/`$branch` from step 2 (persistent shell).
+
+   ```bash
+   set -euo pipefail
+   PROJECT_ROOT="$(pwd)"
+   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+   done
+   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+   cd "$PROJECT_ROOT"
+
+   git_tsv="ai/config/git.tsv"
+   path=""
+   if [ -n "${target:-}" ] && [ -d "modules/${target:-}/.git" ]; then path="modules/$target"
+   elif [ -n "${target:-}" ] && [ -d "readonly-dependencies/${target:-}/.git" ]; then path="readonly-dependencies/$target"
+   fi
+   if [ -n "$path" ] && [ -n "${branch:-}" ] && [ -f "$git_tsv" ]; then
+     tmp="$(mktemp)"
+     awk -F'\t' -v OFS='\t' -v p="$path" -v b="$branch" '$1==p {$3=b} {print}' "$git_tsv" > "$tmp" && mv "$tmp" "$git_tsv"
+     echo "Updated $path branch → $branch in ai/config/git.tsv"
+   fi
+   ```
 
 4. **Generate guidance file for the target module (module targets only)**
 

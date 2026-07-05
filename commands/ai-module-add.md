@@ -46,6 +46,17 @@ Add a new module to the project by cloning a git repository into the `modules/` 
    else
      git clone "$url" "$module_dir"
    fi
+
+   # register in ai/config/git.tsv (path<TAB>url<TAB>branch)
+   branch="$(git -C "$module_dir" rev-parse --abbrev-ref HEAD)"
+   git_tsv="${PROJECT_ROOT}/ai/config/git.tsv"
+   [ -f "$git_tsv" ] || printf '# path\turl\tbranch\n' > "$git_tsv"
+   if awk -F'\t' -v p="modules/$module_name" '$1==p {found=1} END{exit !found}' "$git_tsv"; then
+     echo "Already registered in ai/config/git.tsv"
+   else
+     printf '%s\t%s\t%s\n' "modules/$module_name" "$url" "$branch" >> "$git_tsv"
+     echo "Registered modules/$module_name in ai/config/git.tsv"
+   fi
    ```
 
 3. **Generate guidance file for the new module**

@@ -46,6 +46,17 @@ Add a dependency project to the `readonly-dependencies/` directory. Dependencies
    else
      git clone "$url" "$dep_dir"
    fi
+
+   # register in ai/config/git.tsv (path<TAB>url<TAB>branch)
+   branch="$(git -C "$dep_dir" rev-parse --abbrev-ref HEAD)"
+   git_tsv="${PROJECT_ROOT}/ai/config/git.tsv"
+   [ -f "$git_tsv" ] || printf '# path\turl\tbranch\n' > "$git_tsv"
+   if awk -F'\t' -v p="readonly-dependencies/$dep_name" '$1==p {found=1} END{exit !found}' "$git_tsv"; then
+     echo "Already registered in ai/config/git.tsv"
+   else
+     printf '%s\t%s\t%s\n' "readonly-dependencies/$dep_name" "$url" "$branch" >> "$git_tsv"
+     echo "Registered readonly-dependencies/$dep_name in ai/config/git.tsv"
+   fi
    ```
 
 3. **Re-generate the main project guidance file**

@@ -56,6 +56,14 @@ Remove a module from the `modules/` directory and update the project guidance.
      exit 1
    fi
    rm -rf "${PROJECT_ROOT}/modules/$name"
+
+   # remove from ai/config/git.tsv
+   git_tsv="${PROJECT_ROOT}/ai/config/git.tsv"
+   if [ -f "$git_tsv" ] && awk -F'\t' -v p="modules/$name" '$1==p {found=1} END{exit !found}' "$git_tsv"; then
+     tmp="$(mktemp)"
+     awk -F'\t' -v p="modules/$name" '$1!=p' "$git_tsv" > "$tmp" && mv "$tmp" "$git_tsv"
+     echo "Removed modules/$name from ai/config/git.tsv"
+   fi
    ```
 
 3. **Re-generate the main project guidance file**

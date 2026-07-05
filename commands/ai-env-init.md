@@ -76,10 +76,64 @@ Writing rules: short sections and bullets; include only what an agent would othe
      echo "'${entry}' already in .gitignore"
    fi
 
+   git_tsv="${PROJECT_ROOT}/ai/config/git.tsv"
+   if [ ! -f "$git_tsv" ]; then
+     printf '# path\turl\tbranch\n' > "$git_tsv"
+     echo "Created: ai/config/git.tsv"
+   else
+     echo "Exists: ai/config/git.tsv"
+   fi
+
     echo "Environment initialized at: ${PROJECT_ROOT}"
    ```
 
-2. **Generate guidance file for each module**
+2. **Materialize registered repos from `ai/config/git.tsv`**
+
+   After creating directories, clone each module/dependency registered in `ai/config/git.tsv` so later steps can read their code. The registry is a tab-separated file (`# path<TAB>url<TAB>branch`); each row records a gitlink path, its remote URL, and branch. The gitlink SHA (mode 160000) in MAIN's tree pins the exact commit; the registry supplies URL + branch.
+
+   For each row: if the path directory is already populated, skip (re-init safe); otherwise clone and land on the recorded branch at the recorded gitlink SHA, so downstream reproduces the exact branch + commit upstream recorded. Skip gracefully when MAIN is not yet a git repo (first init before any commit) or the registry is absent.
+
+   ```bash
+   set -euo pipefail
+   PROJECT_ROOT="$(pwd)"
+   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+   done
+   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+   cd "$PROJECT_ROOT"
+
+   registry="ai/config/git.tsv"
+   if [ ! -f "$registry" ]; then
+     echo "No ai/config/git.tsv — skip materialization."
+   elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+     echo "MAIN not a git repo yet — skip materialization."
+   else
+     while IFS=$'\t' read -r path url branch; do
+       case "$path" in ''|\#*) continue;; esac
+       if [ -e "$path" ] && [ -n "$(ls -A "$path" 2>/dev/null)" ]; then
+         echo "skip (populated): $path"
+         continue
+       fi
+       mkdir -p "$path"
+       sha="$(git ls-tree HEAD -- "$path" 2>/dev/null | awk '$2=="commit"{print $3}' || true)"
+       if [ -n "$sha" ]; then
+         if git clone "$url" "$path" && git -C "$path" checkout -B "$branch" "$sha"; then
+           echo "materialized (branch $branch @ $sha): $path"
+         else
+           echo "FAILED: $path — check url/branch/sha"
+         fi
+       else
+         if git clone --branch "$branch" "$url" "$path"; then
+           echo "materialized (branch $branch @ tip): $path"
+         else
+           echo "FAILED: $path — check url/branch"
+         fi
+       fi
+     done < "$registry"
+   fi
+   ```
+
+3. **Generate guidance file for each module**
 
    For each directory under `modules/`, generate or update its guidance files following the **Module guidance file generation methodology** above (dual-write: keep `AGENTS.md` and `CLAUDE.md` in sync). Module guidance files do NOT carry the `readonly-dependencies/` marking.
 
@@ -90,7 +144,7 @@ Writing rules: short sections and bullets; include only what an agent would othe
    done
    ```
 
-3. **Generate main project guidance file**
+4. **Generate main project guidance file**
 
    Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 
@@ -187,4 +241,5 @@ Writing rules: short sections and bullets; include only what an agent would othe
 **Guardrails**
 - `readonly-dependencies/` is a read-only knowledge base — never write, modify, or delete files inside it
 - Do NOT add `modules/` or `readonly-dependencies/` (top-level) to `.gitignore`; only `readonly-dependencies/*/*` (depth-2 contents) is ignored so dependency gitlinks stay trackable
+- `ai/config/git.tsv` is the tracked registry of module/dependency repos (path → url + branch); keep it committed — `ai-env-init` uses it to materialize gitlink repos, and `ai-module-add`/`ai-dependency-add`/`ai-module-remove`/`ai-dependency-remove`/`ai-git-checkout` keep it in sync
 - Synchronously maintain BOTH `AGENTS.md` and `CLAUDE.md` for the main project and each module
