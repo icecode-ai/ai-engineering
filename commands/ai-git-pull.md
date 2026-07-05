@@ -7,6 +7,8 @@ Pull the latest content from git remotes. Supports pulling for the main project,
 
 **Input**: One optional argument — the target scope. Defaults to `ALL`.
 
+User-provided arguments: `$ARGUMENTS` (value is the target scope, optional; if empty, defaults to ALL)
+
 | Target | Scope |
 |--------|-------|
 | `ALL` (default) | Main project + all modules + all dependencies |

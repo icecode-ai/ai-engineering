@@ -7,11 +7,13 @@ Remove a dependency from the `readonly-dependencies/` directory and update the p
 
 **Input**: One argument — the dependency directory name to remove.
 
+User-provided arguments: `$ARGUMENTS` (value is the dependency directory name to remove)
+
 **Steps**
 
 1. **Resolve missing argument**
 
-   **If no `<dependency-name>` argument is provided**, list available dependencies and ask the user to select:
+   Check `User-provided arguments` above. **If `$ARGUMENTS` is non-empty**, use the value directly as the dependency-name and skip the listing and selection below. **If empty**, list available dependencies and ask the user to select:
 
    ```bash
    set -euo pipefail

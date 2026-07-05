@@ -9,6 +9,8 @@ Push local commits to git remotes. Supports pushing for the main project and mod
 
 **Input**: One optional argument — the target scope. Defaults to `ALL`.
 
+User-provided arguments: `$ARGUMENTS` (value is the target scope, optional; if empty, defaults to ALL)
+
 | Target | Scope |
 |--------|-------|
 | `ALL` (default) | Main project + all modules |

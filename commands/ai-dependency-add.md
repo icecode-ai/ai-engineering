@@ -7,11 +7,13 @@ Add a dependency project to the `readonly-dependencies/` directory. Dependencies
 
 **Input**: Up to two arguments — the git repository URL, and an optional branch name (defaults to the default branch).
 
+User-provided arguments: `$ARGUMENTS` (first value is the git URL; second value, if present, is the branch — otherwise the default branch is used)
+
 **Steps**
 
 1. **Resolve missing arguments**
 
-   **If no `<git-url>` argument is provided**, use the **AskUserQuestion tool** (open-ended, no preset options) to ask the user for the git repository URL. Do not proceed until a valid URL is provided.
+   Check `User-provided arguments` above. **If `$ARGUMENTS` is empty (no argument passed)**, use the **AskUserQuestion tool** (open-ended, no preset options) to ask the user for the git repository URL. Do not proceed until a valid URL is provided. **If `$ARGUMENTS` is non-empty**, take the first value as the git URL, skip the prompt, and proceed directly to step 2.
 
    The `<branch-name>` argument is optional — do not prompt for it; if absent, the default branch is used.
 

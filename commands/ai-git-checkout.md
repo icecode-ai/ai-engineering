@@ -7,6 +7,8 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
 **Input**: Two required arguments — the target scope and the branch name.
 
+User-provided arguments: `$ARGUMENTS` (first value is the target, second is the branch)
+
 | Target | Scope |
 |--------|-------|
 | `MAIN` | Root project git repository |
@@ -17,9 +19,9 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
 1. **Resolve missing arguments**
 
-   This command requires two arguments: `<target>` and `<branch>`. Resolve each missing one via the **AskUserQuestion tool** before running the checkout. The bash `exit 1` in step 2 stays as a safety net.
+   Check `User-provided arguments` above: if `$ARGUMENTS` provides a target → skip a; if it provides a branch → skip b; run the corresponding step only for whatever is missing. The bash `exit 1` in step 2 stays as a safety net.
 
-   **a. If `<target>` is not provided**, enumerate candidates and ask the user to select:
+   **a. If `$ARGUMENTS` does not provide a target**, enumerate candidates and ask the user to select:
 
    ```bash
    set -euo pipefail
@@ -42,7 +44,7 @@ Checkout a git branch across the project. Supports switching branches on the mai
 
    Use the **AskUserQuestion tool** to let the user select from the candidates above (preset options, `multiple: false`; the user may type a custom name). The selected value becomes `<target>` (use the bare name for modules/dependencies, e.g. `module:foo` → `foo`).
 
-   **b. If `<branch>` is not provided** (after `<target>` is determined), enumerate branches in the target repository and ask the user to select:
+   **b. If `$ARGUMENTS` does not provide a branch** (after the target is determined), enumerate branches in the target repository and ask the user to select:
 
    ```bash
    # $target_repo = the directory of the selected target:

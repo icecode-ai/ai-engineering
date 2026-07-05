@@ -7,11 +7,13 @@ Remove a module from the `modules/` directory and update the project guidance.
 
 **Input**: One argument — the module directory name to remove.
 
+User-provided arguments: `$ARGUMENTS` (value is the module directory name to remove)
+
 **Steps**
 
 1. **Resolve missing argument**
 
-   **If no `<module-name>` argument is provided**, list available modules and ask the user to select:
+   Check `User-provided arguments` above. **If `$ARGUMENTS` is non-empty**, use the value directly as the module-name and skip the listing and selection below. **If empty**, list available modules and ask the user to select:
 
    ```bash
    set -euo pipefail
