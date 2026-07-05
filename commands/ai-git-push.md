@@ -5,7 +5,7 @@ argument-hint: [<target>]
 
 Push local commits to git remotes. Supports pushing for the main project and modules.
 
-**IMPORTANT**: Never push anything under `readonly-dependencies/` — it is a read-only knowledge base.
+**IMPORTANT**: Never push anything under `readonly-dependencies/*/` — it is a read-only knowledge base.
 
 **Input**: One optional argument — the target scope. Defaults to `ALL`.
 
@@ -215,7 +215,7 @@ Push local commits to git remotes. Supports pushing for the main project and mod
    ```
 
 **Guardrails**
-- Never push anything under `readonly-dependencies/` — it is read-only and excluded from pull/merge/commit/push
+- Never push anything under `readonly-dependencies/*/` — it is read-only and excluded from pull/merge/commit/push
 - For `ALL` or `MAIN` targets, always check `ai/output/changes/` for incomplete tasks or unarchived changes before pushing (fail-fast)
 - Before pushing: stage+commit uncommitted work with risk interception (step 3), pull latest (step 4), merge mainline into the current branch (step 5), and auto-resolve any conflicts (step 6)
 - Risk interception (step 3) pauses to ask the user per flagged file (include/exclude/abort); never silently commit secrets, large files, or unignored artifacts
