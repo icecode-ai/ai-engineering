@@ -1,0 +1,1 @@
+阅读 `ai/config/rules/java/Java性能优化.md`
