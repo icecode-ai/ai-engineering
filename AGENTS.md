@@ -1,15 +1,19 @@
-这是一个插件项目，会被用户安装到各种 Agent 中，比如 `Claude Code`、`OpenCode`、`Qoder` 等
+# ai-engineering
 
-安装方式阅读 `README.md` 文件
+## Overview
 
-用户安装后，以下内容会缓存在Agent指定缓存路径，但是作用域是`项目`级别，内容包括：
-1. `commands/` 目录下的指令
-2. `skills/` 目录下的技能
-3. `agents/` 目录下的 `自定义SubAgent`
+This is a plugin project that users install into various Agents, such as `Claude Code`, `OpenCode`, `Qoder`, etc.
 
-以下内容 当用户执行 `/ai-env-init` 指令后，会同步拷贝到 `用户的项目路径`
-* `ai/` 目录下的内容，拷贝到 `用户项目` 的 `ai/` 目录
+For installation instructions, read the `README.md` file.
 
-本项目 2 个 `skills` 目录的区别
-* `skills/` 目录下存放 `自动触发的技能`，Agent 会默认加载
-* `ai/config/skills/` 目录下存放 `被动触发的技能`，只有用户明确指定调用时，才会触发
+After installation, the following content is cached in the Agent's designated cache path, scoped at the `project` level. The content includes:
+1. Commands under the `commands/` directory
+2. Skills under the `skills/` directory
+3. Custom SubAgents under the `agents/` directory
+
+The following content is synchronized and copied to the `user's project path` after the user runs the `/ai-env-init` command:
+* Content under the `ai/` directory is copied to the `ai/` directory in the `user's project`
+
+The difference between the 2 `skills` directories in this project:
+* The `skills/` directory stores `auto-triggered skills`, which the Agent loads by default
+* The `ai/config/skills/` directory stores `passively-triggered skills`, which are only triggered when the user explicitly calls them
