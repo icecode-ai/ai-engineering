@@ -78,10 +78,10 @@ Writing rules: short sections and bullets; include only what an agent would othe
      printf '%s\n' "$entry" >> "$gitignore_file"
      echo "Added '${entry}' to .gitignore"
    else
-    echo "'${entry}' already in .gitignore"
-    fi
+     echo "'${entry}' already in .gitignore"
+   fi
 
-    echo "Environment initialized at: ${PROJECT_ROOT}"
+   echo "Environment initialized at: ${PROJECT_ROOT}"
    ```
 
 2. **Sync plugin `ai/` templates into project `ai/`**
@@ -155,12 +155,12 @@ Writing rules: short sections and bullets; include only what an agent would othe
    [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
    cd "$PROJECT_ROOT"
 
-    registry="ai/config/git.tsv"
-    if [ ! -s "$registry" ] || ! awk -F'\t' '{if($1!="" && $1 !~ /^#/){f=1; exit}} END{exit !f}' "$registry" 2>/dev/null; then
-      echo "No ai/config/git.tsv (missing or empty) — skip materialization."
-    elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-      echo "MAIN not a git repo yet — skip materialization."
-    else
+   registry="ai/config/git.tsv"
+   if [ ! -s "$registry" ] || ! awk -F'\t' '{if($1!="" && $1 !~ /^#/){f=1; exit}} END{exit !f}' "$registry" 2>/dev/null; then
+     echo "No ai/config/git.tsv (missing or empty) — skip materialization."
+   elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+     echo "MAIN not a git repo yet — skip materialization."
+   else
      while IFS=$'\t' read -r path url branch; do
        case "$path" in ''|\#*) continue;; esac
        if [ -e "$path" ] && [ -n "$(ls -A "$path" 2>/dev/null)" ]; then
@@ -264,11 +264,11 @@ Writing rules: short sections and bullets; include only what an agent would othe
    echo "PROJECT:$(basename "$PROJECT_ROOT")"
    for d in "${PROJECT_ROOT}/modules"/*/; do
      [ -d "$d" ] || continue
-      gfs=""
-      [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
-      [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
-      [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
-      echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
+     gfs=""
+     [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
+     [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
+     [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
+     echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
    done
    for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
      [ -d "$d" ] || continue

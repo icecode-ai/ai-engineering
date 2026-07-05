@@ -245,11 +245,11 @@ User-provided arguments: `$ARGUMENTS` (first value is the target, second is the 
    echo "PROJECT:$(basename "$PROJECT_ROOT")"
    for d in "${PROJECT_ROOT}/modules"/*/; do
      [ -d "$d" ] || continue
-      gfs=""
-      [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
-      [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
-      [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
-      echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
+     gfs=""
+     [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
+     [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
+     [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
+     echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
    done
    for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
      [ -d "$d" ] || continue

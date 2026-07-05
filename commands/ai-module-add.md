@@ -87,6 +87,7 @@ User-provided arguments: `$ARGUMENTS` (first value is the git URL; second value,
    - constraints from existing instruction files worth preserving
 
    Preserve user-specific content: keep the user's special references/sections (e.g. development specs, custom conventions); update only the factual, project-derived portions.
+   Module guidance files do NOT carry the `readonly-dependencies/` marking.
    Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
 
 4. **Re-generate the main project guidance file**
@@ -156,11 +157,11 @@ User-provided arguments: `$ARGUMENTS` (first value is the git URL; second value,
    echo "PROJECT:$(basename "$PROJECT_ROOT")"
    for d in "${PROJECT_ROOT}/modules"/*/; do
      [ -d "$d" ] || continue
-      gfs=""
-      [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
-      [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
-      [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
-      echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
+     gfs=""
+     [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
+     [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
+     [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
+     echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
    done
    for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
      [ -d "$d" ] || continue
