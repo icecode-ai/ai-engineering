@@ -10,4 +10,6 @@
 
 也就是当用户调用 `/ai-spec-explore` 这个指令时，触发以下步骤
 1. 调用 `goal-spec-explore` 技能探索需求
-2. 当探索完成时，用户 如回复 `创建` 或调用 `/ai-spec-propose` 指令，开始创建变更
+2. 当探索完成时
+* 用户 如回复 `创建`，调用 `ai/config/skills/goal-spec-propose/SKILL.md` 开始创建变更
+* 或提示用户调用 `/ai-spec-propose` 指令，开始创建变更

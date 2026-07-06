@@ -147,27 +147,11 @@ If the user mentions a change or you detect one is relevant:
 ## Ending Discovery
 
 There's no required ending. Discovery might:
-- **Flow into a proposal**: "Ready to start? I can create a change proposal."
 - **Result in artifact updates**: "Updated design.md with these decisions"
 - **Just provide clarity**: User has what they need, moves on
 - **Continue later**: "We can pick this up anytime"
 
 When things crystallize, you might offer a summary — but it's optional. Sometimes the thinking IS the value.
-
-### Offer to create a change
-
-When exploration reaches a natural conclusion (decisions crystallized, user seems ready to move forward), **ask the user whether they want to create a change**. For example:
-
-> "Exploration looks complete. Would you like to create a change proposal from this? Reply to confirm, or run `/ai-spec-propose` directly."
-
-If the user declines or wants to continue exploring, respect that — no pressure.
-
-If the user replies affirmatively — e.g. "创建", "创建变更", "创建变更吧", "创建吧", "好", "yes", "create" — **directly create the change** by delegating to the `goal-spec-propose` skill:
-
-1. Derive a kebab-case change name from the exploration topic (e.g., "add user authentication" → `add-user-auth`).
-2. Read and follow `${PROJECT_ROOT}/ai/config/skills/goal-spec-propose/SKILL.md`, passing the derived change name. That skill creates the change directory and generates all artifacts (proposal, specs, design, tasks) in one step. Carry the exploration context into the proposal.
-
-If the user runs `/ai-spec-propose` directly, that command handles the full flow independently.
 
 ---
 
