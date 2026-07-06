@@ -82,6 +82,7 @@ Depending on what the user brings, you might:
 At the start, quickly check what changes exist:
 
 ```bash
+set -euo pipefail
 PROJECT_ROOT="$(pwd)"
 while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
   PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"

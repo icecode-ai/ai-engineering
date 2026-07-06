@@ -45,6 +45,7 @@ What to extract (high-signal, repo-specific only):
 - constraints from existing instruction files worth preserving
 
 Preserve user-specific content: keep the user's special references/sections (e.g. development specs, custom conventions); update only the factual, project-derived portions.
+Module guidance files do NOT carry the `readonly-dependencies/` marking.
 Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
 
 ## Steps
@@ -81,7 +82,7 @@ bash "${PROJECT_ROOT}/ai/config/skills/goal-env-init/scripts/materialize-repos.s
 
 ### 4. Generate guidance file for each module
 
-For each directory under `modules/`, generate or update its guidance files following the **Module guidance file generation methodology** above (dual-write: keep `AGENTS.md` and `CLAUDE.md` in sync). Module guidance files do NOT carry the `readonly-dependencies/` marking.
+For each directory under `modules/`, generate or update its guidance files following the **Module guidance file generation methodology** above (dual-write: keep `AGENTS.md` and `CLAUDE.md` in sync).
 
 ```bash
 for module in "${PROJECT_ROOT}/modules"/*/; do

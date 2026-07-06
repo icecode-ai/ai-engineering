@@ -31,8 +31,6 @@ while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PR
 done
 [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
 cd "$PROJECT_ROOT"
-
-target="${1:-ALL}"
 ```
 
 ## Steps
@@ -40,6 +38,10 @@ target="${1:-ALL}"
 ### 1. Determine project root and target scope
 
 See the `Resolve PROJECT_ROOT` block above. Derive `target` from `$ARGUMENTS` (default `ALL`).
+
+```bash
+target="${1:-ALL}"
+```
 
 ### 2. If target is `ALL` or `MAIN` — check for incomplete changes before pushing
 

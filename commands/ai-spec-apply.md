@@ -1,5 +1,5 @@
 ---
-description: Implement tasks from a spec change
+description: Implement tasks from a spec change via subagent-driven development with two-stage review
 argument-hint: [<change-name>] [--worktree]
 ---
 
@@ -9,4 +9,4 @@ Resolve `PROJECT_ROOT` (the directory containing both `ai/` and `modules/`), the
 
 `${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/SKILL.md`
 
-Pass through the user's arguments: `$ARGUMENTS` (change name, and optional `--worktree` for git worktree isolation).
+Pass through the user's arguments: `$ARGUMENTS`
