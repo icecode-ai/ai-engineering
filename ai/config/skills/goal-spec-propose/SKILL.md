@@ -187,5 +187,5 @@ After completing all artifacts, summarize:
 - Create ALL artifacts needed for implementation (proposal, specs, design, tasks)
 - Always read dependency artifacts before creating a new one
 - If a change with that name already exists, ask if user wants to continue it or create a new one
-- The `.openspec.yaml` metadata file is required for change tracking
+- The `.spec.yaml` metadata file is required for change tracking
 - tasks.md MUST follow the fine-grained structure above (exact paths, complete code, no placeholders, Parallelizable flag) — this is what `/ai-spec-apply`'s subagent-driven execution depends on

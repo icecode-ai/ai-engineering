@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create a spec change directory with .openspec.yaml metadata.
+# Create a spec change directory with .spec.yaml metadata.
 # Usage: create-change.sh <change-name>
 # Exits 1 if the change already exists and is non-empty.
 set -euo pipefail
@@ -23,5 +23,5 @@ mkdir -p "$change_dir"
 {
   echo 'schema: spec-driven'
   echo "created: $(date +%Y-%m-%d)"
-} > "$change_dir/.openspec.yaml"
+} > "$change_dir/.spec.yaml"
 echo "Created change directory: $change_dir"

@@ -98,6 +98,6 @@ Review the archive if this was not intentional.
 ## Guardrails
 - Always prompt for change selection if not provided
 - Don't block archive on warnings — just inform and confirm
-- Preserve `.openspec.yaml` when archiving (it moves with the directory)
+- Preserve `.spec.yaml` when archiving (it moves with the directory)
 - Show clear summary of what happened
 - If delta specs exist, always run the sync assessment and show the summary before prompting

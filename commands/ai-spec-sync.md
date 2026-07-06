@@ -26,7 +26,7 @@ change_name="${1:-}"
 
 # Discover available specs (from a change, or from ai/output/specs/)
 echo "=== Available specs ==="
-if [ -n "$change_name" ] && [ -f "${PROJECT_ROOT}/ai/output/changes/$change_name/.openspec.yaml" ]; then
+if [ -n "$change_name" ] && [ -f "${PROJECT_ROOT}/ai/output/changes/$change_name/.spec.yaml" ]; then
   change_specs="${PROJECT_ROOT}/ai/output/changes/$change_name/specs"
   if [ -d "$change_specs" ]; then
     echo "From change '$change_name':"
