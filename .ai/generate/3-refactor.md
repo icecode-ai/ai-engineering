@@ -14,7 +14,7 @@
 
 ## 重构需求
 
-### 创建 skill 规范
+### skill 规范
 
 1、新建 skill 都放在 `ai/config/skills/` 目录下 
 
