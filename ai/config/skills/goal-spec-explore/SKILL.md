@@ -1,6 +1,7 @@
 ---
 name: goal-spec-explore
 description: Enter explore mode - think through ideas, investigate problems, clarify requirements
+argument-hint: [<topic-or-description>]
 disable-model-invocation: true
 ---
 
@@ -34,25 +35,29 @@ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wher
 
 Depending on what the user brings, you might:
 
-**Explore the problem space**
+### Explore the problem space
+
 - Ask clarifying questions that emerge from what they said
 - Challenge assumptions
 - Reframe the problem
 - Find analogies
 
-**Investigate the codebase**
+### Investigate the codebase
+
 - Map existing architecture relevant to the discussion
 - Find integration points
 - Identify patterns already in use
 - Surface hidden complexity
 
-**Compare options**
+### Compare options
+
 - Brainstorm multiple approaches
 - Build comparison tables
 - Sketch tradeoffs
 - Recommend a path (if asked)
 
-**Visualize**
+### Visualize
+
 ```
 ┌─────────────────────────────────────────┐
 │     Use ASCII diagrams liberally        │
@@ -70,7 +75,8 @@ Depending on what the user brings, you might:
 └─────────────────────────────────────────┘
 ```
 
-**Surface risks and unknowns**
+### Surface risks and unknowns
+
 - Identify what could go wrong
 - Find gaps in understanding
 - Suggest spikes or investigations
@@ -102,34 +108,39 @@ If the user mentioned a specific change name, read its artifacts for context.
 
 If the user mentions a change or you detect one is relevant:
 
-1. **Check artifact status**
-   ```bash
-   change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
-   for artifact in proposal.md design.md tasks.md; do
-     if [ -f "$change_dir/$artifact" ]; then
-       echo "✓ $artifact"
-     else
-       echo "○ $artifact (not yet created)"
-     fi
-   done
-   ```
-   Read existing artifacts for context.
+### 1. Check artifact status
 
-2. **Reference them naturally in conversation**
-   - "Your design mentions using Redis, but we just realized SQLite fits better..."
-   - "The proposal scopes this to premium users, but we're now thinking everyone..."
+```bash
+change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
+for artifact in proposal.md design.md tasks.md; do
+  if [ -f "$change_dir/$artifact" ]; then
+    echo "✓ $artifact"
+  else
+    echo "○ $artifact (not yet created)"
+  fi
+done
+```
 
-3. **Offer to capture when decisions are made**
+Read existing artifacts for context.
 
-   | Insight Type | Where to Capture |
-   |---|---|
-   | New requirement discovered | `ai/output/specs/<capability>/spec.md` |
-   | Requirement changed | `ai/output/specs/<capability>/spec.md` |
-   | Design decision made | `ai/output/changes/<name>/design.md` |
-   | Scope changed | `ai/output/changes/<name>/proposal.md` |
-   | New work identified | `ai/output/changes/<name>/tasks.md` |
+### 2. Reference them naturally in conversation
 
-4. **The user decides** — Offer and move on. Don't pressure. Don't auto-capture.
+- "Your design mentions using Redis, but we just realized SQLite fits better..."
+- "The proposal scopes this to premium users, but we're now thinking everyone..."
+
+### 3. Offer to capture when decisions are made
+
+| Insight Type | Where to Capture |
+|---|---|
+| New requirement discovered | `ai/output/specs/<capability>/spec.md` |
+| Requirement changed | `ai/output/specs/<capability>/spec.md` |
+| Design decision made | `ai/output/changes/<name>/design.md` |
+| Scope changed | `ai/output/changes/<name>/proposal.md` |
+| New work identified | `ai/output/changes/<name>/tasks.md` |
+
+### 4. The user decides
+
+Offer and move on. Don't pressure. Don't auto-capture.
 
 ---
 

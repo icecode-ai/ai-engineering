@@ -26,13 +26,13 @@ for change in "$changes_dir"/*/; do
       has_incomplete=true
     fi
   else
-    echo "⚠ Change '$change_name' is missing tasks.md"
+    echo "✗ Change '$change_name' is missing tasks.md"
     has_incomplete=true
   fi
 
   for artifact in proposal.md design.md tasks.md; do
     if [ ! -f "${change}${artifact}" ]; then
-      echo "⚠ Change '$change_name' is missing $artifact"
+      echo "✗ Change '$change_name' is missing $artifact"
       has_incomplete=true
     fi
   done

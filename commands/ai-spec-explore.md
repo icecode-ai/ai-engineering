@@ -1,10 +1,13 @@
 ---
 description: Enter explore mode - think through ideas, investigate problems, clarify requirements
+argument-hint: [<topic-or-description>]
 ---
 
 Invoke the `goal-spec-explore` skill (a passive, non-auto-triggered skill) to enter explore mode — think through ideas, investigate problems, clarify requirements. When exploration concludes, offer to transition into creating a change.
 
-## 1. Explore
+## Steps
+
+### 1. Explore
 
 Resolve `PROJECT_ROOT` (the directory containing both `ai/` and `modules/`), then read and follow the skill instructions at:
 
@@ -14,7 +17,7 @@ Pass through the user's arguments: `$ARGUMENTS`
 
 The skill is pure exploration — it does not create any change. You drive the exploration conversation per the skill's stance and guardrails.
 
-## 2. Transition to creating a change
+### 2. Transition to creating a change
 
 When exploration reaches a natural conclusion (decisions crystallized, user seems ready to move forward), **ask the user whether they want to create a change**. For example:
 

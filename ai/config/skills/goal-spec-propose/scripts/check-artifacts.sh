@@ -19,7 +19,7 @@ for artifact in proposal.md design.md tasks.md; do
   if [ -f "$change_dir/$artifact" ]; then
     echo "✓ $artifact"
   else
-    echo "○ $artifact (pending)"
+    echo "✗ $artifact (missing)"
   fi
 done
 specs_dir="$change_dir/specs"

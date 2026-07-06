@@ -6,7 +6,7 @@
 set -euo pipefail
 tasks_file="${1:-}"
 n="${2:-}"
-[ -z "$tasks_file" ] || [ -z "$n" ] && { echo "Usage: task-brief.sh <tasks-file> <task-number> [out-file]"; exit 1; }
+{ [ -z "$tasks_file" ] || [ -z "$n" ]; } && { echo "Usage: task-brief.sh <tasks-file> <task-number> [out-file]"; exit 1; }
 [ -f "$tasks_file" ] || { echo "tasks-file not found: $tasks_file"; exit 1; }
 out="${3:-/dev/stdout}"
 

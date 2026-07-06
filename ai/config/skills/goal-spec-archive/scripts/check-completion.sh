@@ -17,7 +17,7 @@ change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
 
 incomplete=false
 for artifact in proposal.md design.md tasks.md; do
-  if [ ! -f "$change_dir/$artifact" ]; then echo "⚠ $artifact (incomplete)"; incomplete=true; fi
+  if [ ! -f "$change_dir/$artifact" ]; then echo "✗ $artifact (missing)"; incomplete=true; fi
 done
 tasks_file="$change_dir/tasks.md"
 if [ -f "$tasks_file" ]; then

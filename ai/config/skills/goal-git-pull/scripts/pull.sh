@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Pull latest git content for MAIN, a module, a dependency, or ALL.
 # Usage: pull.sh <target>   (target: ALL | MAIN | <module-name> | <dependency-name>)
-# Printout is per-repo; pull failures print a "conflicts detected" line for auto-resolution.
+# Printout is per-repo; conflicts (unmerged paths) print an auto-resolve line,
+# other pull failures print a "see output above" line.
 set -euo pipefail
 target="${1:-ALL}"
 
@@ -16,7 +17,13 @@ pull_one() {
   local label="$1" dir="$2"
   [ -d "$dir/.git" ] || { echo "=== $label: not a git repository, skip ==="; return; }
   echo "=== $label ==="
-  (cd "$dir" && git pull 2>&1) || echo "Pull failed for $label, conflicts detected — will auto-resolve"
+  (cd "$dir" && git pull 2>&1) || {
+    if [ -n "$(cd "$dir" && git diff --name-only --diff-filter=U 2>/dev/null)" ]; then
+      echo "Pull conflicts in $label — will auto-resolve"
+    else
+      echo "Pull failed in $label — see output above"
+    fi
+  }
 }
 
 case "$target" in

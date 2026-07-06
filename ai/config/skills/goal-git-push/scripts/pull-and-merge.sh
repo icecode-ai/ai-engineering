@@ -15,11 +15,39 @@ detect_mainline() {
   local branch
   branch=$(git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null | cut -d/ -f2) || branch=""
   if [ -z "$branch" ]; then
-    if git show-ref --verify --quiet refs/heads/main 2>/dev/null; then branch="main"
-    elif git show-ref --verify --quiet refs/heads/master 2>/dev/null; then branch="master"
-    else branch="main"; fi
+    if git show-ref --verify --quiet refs/heads/main 2>/dev/null; then
+      branch="main"
+    elif git show-ref --verify --quiet refs/heads/master 2>/dev/null; then
+      branch="master"
+    else
+      branch="main"
+    fi
   fi
   echo "$branch"
+}
+
+# pull_one <dir> <name>: git pull in <dir>; conflicts (unmerged paths) are auto-resolvable.
+pull_one() {
+  local dir="$1" name="$2"
+  (cd "$dir" && git pull 2>&1) || {
+    if [ -n "$(cd "$dir" && git diff --name-only --diff-filter=U 2>/dev/null)" ]; then
+      echo "Pull conflicts in $name — will auto-resolve"
+    else
+      echo "Pull failed in $name — see output above"
+    fi
+  }
+}
+
+# merge_one <dir> <name>: merge mainline in <dir>; conflicts (unmerged paths) are auto-resolvable.
+merge_one() {
+  local dir="$1" name="$2"
+  (cd "$dir" && mainline=$(detect_mainline) && git merge "$mainline" 2>&1) || {
+    if [ -n "$(cd "$dir" && git diff --name-only --diff-filter=U 2>/dev/null)" ]; then
+      echo "Merge conflicts in $name — will auto-resolve"
+    else
+      echo "Merge failed in $name — see output above"
+    fi
+  }
 }
 
 # Pull modules
@@ -27,11 +55,11 @@ if [ "$target" = "ALL" ]; then
   for dir in "${PROJECT_ROOT}/modules"/*/; do
     [ -d "$dir/.git" ] || continue
     echo "=== Pull module: $(basename "$dir") ==="
-    (cd "$dir" && git pull 2>&1) || echo "Pull conflicts in $(basename "$dir") — will auto-resolve"
+    pull_one "$dir" "module $(basename "$dir")"
   done
 elif [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
   echo "=== Pull module: $target ==="
-  (cd "${PROJECT_ROOT}/modules/$target" && git pull 2>&1) || echo "Pull conflicts in $target — will auto-resolve"
+  pull_one "${PROJECT_ROOT}/modules/$target" "module $target"
 fi
 
 # Merge mainline into modules
@@ -39,18 +67,17 @@ if [ "$target" = "ALL" ]; then
   for dir in "${PROJECT_ROOT}/modules"/*/; do
     [ -d "$dir/.git" ] || continue
     echo "=== Merge mainline into module: $(basename "$dir") ==="
-    (cd "$dir" && mainline=$(detect_mainline) && git merge "$mainline" 2>&1) || echo "Merge conflicts in $(basename "$dir") — will auto-resolve"
+    merge_one "$dir" "module $(basename "$dir")"
   done
 elif [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
   echo "=== Merge mainline into module: $target ==="
-  (cd "${PROJECT_ROOT}/modules/$target" && mainline=$(detect_mainline) && git merge "$mainline" 2>&1) || echo "Merge conflicts in $target — will auto-resolve"
+  merge_one "${PROJECT_ROOT}/modules/$target" "module $target"
 fi
 
 # Pull + merge MAIN
 if [ "$target" = "MAIN" ] || [ "$target" = "ALL" ]; then
   echo "=== Pull MAIN ==="
-  git pull 2>&1 || echo "Pull conflicts in MAIN — will auto-resolve"
+  pull_one "$PROJECT_ROOT" "MAIN"
   echo "=== Merge mainline into MAIN ==="
-  mainline=$(detect_mainline)
-  git merge "$mainline" 2>&1 || echo "Merge conflicts in MAIN — will auto-resolve"
+  merge_one "$PROJECT_ROOT" "MAIN"
 fi

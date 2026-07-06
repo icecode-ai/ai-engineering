@@ -4,7 +4,7 @@ description: Initialize or update project environment for AI-assisted developmen
 
 Initialize or update the project environment. Sets up the standard directory structure (`ai/`, `modules/`, `readonly-dependencies/`) and generates guidance files for the main project and each module.
 
-**Module guidance file generation methodology**
+## Module guidance file generation methodology
 
 Dual-write policy: every module keeps BOTH `CLAUDE.md` and `AGENTS.md` in sync. Decide per module:
 - **Both missing** → investigate (approach below) and generate BOTH `CLAUDE.md` and `AGENTS.md` with identical content.
@@ -12,12 +12,15 @@ Dual-write policy: every module keeps BOTH `CLAUDE.md` and `AGENTS.md` in sync. 
 - **`AGENTS.md` exists, `CLAUDE.md` missing** → copy `AGENTS.md` to `CLAUDE.md`.
 - **Both exist** → skip; do not regenerate.
 
-How to investigate:
+### How to investigate
+
 - Read `README*`, root manifests, workspace config, lockfiles; build/test/lint/formatter/typecheck/codegen config; CI workflows; existing instruction files (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`, `.cursorrules`, `.github/copilot-instructions.md`); `opencode.json`.
 - Prefer executable sources of truth over prose; if docs conflict with config/scripts, trust the executable source.
 - If architecture is still unclear, inspect a few representative code files for real entrypoints and package boundaries.
 
-What to extract (high-signal, repo-specific only):
+### What to extract
+
+High-signal, repo-specific only:
 - exact developer commands, especially non-obvious ones; how to run a single test/package/focused verification
 - required command order when it matters (e.g. `lint -> typecheck -> test`)
 - monorepo/multi-package boundaries, major directory ownership, real app/library entrypoints
@@ -25,273 +28,295 @@ What to extract (high-signal, repo-specific only):
 - repo-specific style/workflow conventions differing from defaults; testing quirks (fixtures, integration prerequisites, snapshots, services, flaky suites)
 - constraints from existing instruction files worth preserving
 
-Preserve user-specific content: keep the user's special references/sections (e.g. development specs, custom conventions); update only the factual, project-derived portions.
-Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
+### Preserve user-specific content
 
-**Steps**
+Keep the user's special references/sections (e.g. development specs, custom conventions); update only the factual, project-derived portions.
 
-1. **Discover project root, create standard directories, and configure .gitignore**
+### Writing rules
 
-   ```bash
-   set -euo pipefail
-   PROJECT_ROOT="$(pwd)"
-   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-   done
-   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-   cd "$PROJECT_ROOT"
+Short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
 
-   DIRS=(
-     "ai"
-     "ai/config"
-     "ai/config/rules"
-     "ai/config/skills"
-     "ai/input"
-     "ai/input/common"
-     "ai/input/common/references"
-     "ai/input/jim"
-     "ai/input/jim/0"
-     "ai/input/jim/1"
-     "ai/output/changes"
-     "ai/output/changes/archive"
-     "ai/output/memories"
-     "ai/output/specs"
-     "modules"
-     "readonly-dependencies"
-   )
-   for dir in "${DIRS[@]}"; do
-     target="${PROJECT_ROOT}/${dir}"
-     if [ ! -d "$target" ]; then
-       mkdir -p "$target"
-       echo "Created: ${dir}/"
-     else
-       echo "Exists: ${dir}/"
-     fi
-   done
+## Steps
 
-   gitignore_file="${PROJECT_ROOT}/.gitignore"
-   entry="readonly-dependencies/*/*"
-   if [ ! -f "$gitignore_file" ]; then
-     printf '%s\n' "$entry" > "$gitignore_file"
-     echo "Created .gitignore with readonly-dependencies entry"
-   elif ! grep -qF "$entry" "$gitignore_file"; then
-     printf '%s\n' "$entry" >> "$gitignore_file"
-     echo "Added '${entry}' to .gitignore"
-   else
-     echo "'${entry}' already in .gitignore"
-   fi
+### 1. Discover project root, create standard directories, and configure .gitignore
 
-   echo "Environment initialized at: ${PROJECT_ROOT}"
-   ```
+```bash
+set -euo pipefail
+PROJECT_ROOT="$(pwd)"
+while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+done
+[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+cd "$PROJECT_ROOT"
 
-2. **Sync plugin `ai/` templates into project `ai/`**
+DIRS=(
+  "ai"
+  "ai/config"
+  "ai/config/rules"
+  "ai/config/skills"
+  "ai/input"
+  "ai/input/common"
+  "ai/input/common/references"
+  "ai/input/jim"
+  "ai/input/jim/0"
+  "ai/input/jim/1"
+  "ai/output/changes"
+  "ai/output/changes/archive"
+  "ai/output/memories"
+  "ai/output/specs"
+  "modules"
+  "readonly-dependencies"
+)
+for dir in "${DIRS[@]}"; do
+  target="${PROJECT_ROOT}/${dir}"
+  if [ ! -d "$target" ]; then
+    mkdir -p "$target"
+    echo "Created: ${dir}/"
+  else
+    echo "Exists: ${dir}/"
+  fi
+done
 
-   The plugin ships template content under its own `ai/` (currently `ai/config/rules/**`, `ai/config/skills/**`, plus `ai/config/git.tsv` and `ai/config/spec-config.yaml` as starters). Sync them into the project's `ai/` so the project has the standard rules/skills.
+gitignore_file="${PROJECT_ROOT}/.gitignore"
+entry="readonly-dependencies/*/*"
+if [ ! -f "$gitignore_file" ]; then
+  printf '%s\n' "$entry" > "$gitignore_file"
+  echo "Created .gitignore with readonly-dependencies entry"
+elif ! grep -qF "$entry" "$gitignore_file"; then
+  printf '%s\n' "$entry" >> "$gitignore_file"
+  echo "Added '${entry}' to .gitignore"
+else
+  echo "'${entry}' already in .gitignore"
+fi
 
-    - `config/git.tsv` and `config/spec-config.yaml`: copy ONLY if absent in the project — once present they are the user's owned registry & spec config, never overwritten.
-    - Everything else under the plugin's `ai/`: mirror into the project's `ai/` (overwrite changed files; delete local files that no longer exist in the plugin) so plugin updates propagate on re-init and removed templates are cleaned up.
-    - Paths present only in the project's `ai/` (e.g. `ai/input/`, `ai/output/`) are not touched — the mirror operates per top-level entry that exists in the source.
+echo "Environment initialized at: ${PROJECT_ROOT}"
+```
 
-   **Locate `PLUGIN_ROOT`**: resolve at runtime — you (the Agent) know where you loaded this command from; the plugin root is the parent of `commands/` (it also contains `skills/`, `agents/`, `ai/`). Set `PLUGIN_ROOT` in the script below to that absolute path before running.
+### 2. Sync plugin `ai/` templates into project `ai/`
 
-   ```bash
-   set -euo pipefail
-   PROJECT_ROOT="$(pwd)"
-   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-   done
-   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-   cd "$PROJECT_ROOT"
+The plugin ships template content under its own `ai/` (currently `ai/config/rules/**`, `ai/config/skills/**`, plus `ai/config/git.tsv` and `ai/config/spec-config.yaml` as starters). Sync them into the project's `ai/` so the project has the standard rules/skills.
 
-   PLUGIN_ROOT=""
+- `config/git.tsv` and `config/spec-config.yaml`: copy ONLY if absent in the project — once present they are the user's owned registry & spec config, never overwritten.
+- Everything else under the plugin's `ai/`: mirror into the project's `ai/` (overwrite changed files; delete local files that no longer exist in the plugin) so plugin updates propagate on re-init and removed templates are cleaned up.
+- Paths present only in the project's `ai/` (e.g. `ai/input/`, `ai/output/`) are not touched — the mirror operates per top-level entry that exists in the source.
 
-   SRC="${PLUGIN_ROOT}/ai"
-   DST="${PROJECT_ROOT}/ai"
+**Locate `PLUGIN_ROOT`**: resolve at runtime — you (the Agent) know where you loaded this command from; the plugin root is the parent of `commands/` (it also contains `skills/`, `agents/`, `ai/`). Set `PLUGIN_ROOT` in the script below to that absolute path before running.
 
-   if [ -z "$PLUGIN_ROOT" ] || [ ! -d "$SRC" ]; then
-     echo "PLUGIN_ROOT not set or plugin ai/ missing at '${SRC}' — skip template sync."
-     echo "Set PLUGIN_ROOT to the plugin root (parent of commands/) and re-run this step."
-   elif ! command -v rsync >/dev/null 2>&1; then
-     echo "rsync not available — skip template sync (install rsync to enable)."
-   else
-     for f in config/git.tsv config/spec-config.yaml; do
-       if [ -f "$SRC/$f" ] && [ ! -f "$DST/$f" ]; then
-         mkdir -p "$(dirname "$DST/$f")"
-         cp "$SRC/$f" "$DST/$f"
-         echo "copied (new): $f"
-       else
-         echo "skip (exists or no source): $f"
-       fi
-     done
+```bash
+set -euo pipefail
+PROJECT_ROOT="$(pwd)"
+while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+done
+[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+cd "$PROJECT_ROOT"
 
-     find "$SRC" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d '' entry; do
-       name="$(basename "$entry")"
-       if [ "$name" = "config" ]; then
-         rsync -a --delete --exclude='/git.tsv' --exclude='/spec-config.yaml' \
-           "$SRC/config/" "$DST/config/"
-         echo "mirrored: config/ (git.tsv & spec-config.yaml preserved)"
-       else
-         rsync -a --delete "$SRC/$name/" "$DST/$name/"
-         echo "mirrored: $name/"
-       fi
-     done
+PLUGIN_ROOT=""
 
-     echo "Template sync complete."
-   fi
-   ```
+SRC="${PLUGIN_ROOT}/ai"
+DST="${PROJECT_ROOT}/ai"
 
-3. **Materialize registered repos from `ai/config/git.tsv`**
+if [ -z "$PLUGIN_ROOT" ] || [ ! -d "$SRC" ]; then
+  echo "PLUGIN_ROOT not set or plugin ai/ missing at '${SRC}' — skip template sync."
+  echo "Set PLUGIN_ROOT to the plugin root (parent of commands/) and re-run this step."
+elif ! command -v rsync >/dev/null 2>&1; then
+  echo "rsync not available — skip template sync (install rsync to enable)."
+else
+  for f in config/git.tsv config/spec-config.yaml; do
+    if [ -f "$SRC/$f" ] && [ ! -f "$DST/$f" ]; then
+      mkdir -p "$(dirname "$DST/$f")"
+      cp "$SRC/$f" "$DST/$f"
+      echo "copied (new): $f"
+    else
+      echo "skip (exists or no source): $f"
+    fi
+  done
 
-   After creating directories, clone each module/dependency registered in `ai/config/git.tsv` so later steps can read their code. The registry is a tab-separated file (`# path<TAB>url<TAB>branch`); each row records a gitlink path, its remote URL, and branch. The gitlink SHA (mode 160000) in MAIN's tree pins the exact commit; the registry supplies URL + branch.
+  find "$SRC" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d '' entry; do
+    name="$(basename "$entry")"
+    if [ "$name" = "config" ]; then
+      rsync -a --delete --exclude='/git.tsv' --exclude='/spec-config.yaml' \
+        "$SRC/config/" "$DST/config/"
+      echo "mirrored: config/ (git.tsv & spec-config.yaml preserved)"
+    else
+      rsync -a --delete "$SRC/$name/" "$DST/$name/"
+      echo "mirrored: $name/"
+    fi
+  done
 
-   For each row: if the path directory is already populated, skip (re-init safe); otherwise clone and land on the recorded branch at the recorded gitlink SHA, so downstream reproduces the exact branch + commit upstream recorded. Skip gracefully when MAIN is not yet a git repo (first init before any commit), or the registry is absent or empty (no non-comment rows).
+  echo "Template sync complete."
+fi
+```
 
-   ```bash
-   set -euo pipefail
-   PROJECT_ROOT="$(pwd)"
-   while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-   done
-   [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-   cd "$PROJECT_ROOT"
+### 3. Materialize registered repos from `ai/config/git.tsv`
 
-   registry="ai/config/git.tsv"
-   if [ ! -s "$registry" ] || ! awk -F'\t' '{if($1!="" && $1 !~ /^#/){f=1; exit}} END{exit !f}' "$registry" 2>/dev/null; then
-     echo "No ai/config/git.tsv (missing or empty) — skip materialization."
-   elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-     echo "MAIN not a git repo yet — skip materialization."
-   else
-     while IFS=$'\t' read -r path url branch; do
-       case "$path" in ''|\#*) continue;; esac
-       if [ -e "$path" ] && [ -n "$(ls -A "$path" 2>/dev/null)" ]; then
-         echo "skip (populated): $path"
-         continue
-       fi
-       mkdir -p "$path"
-       sha="$(git ls-tree HEAD -- "$path" 2>/dev/null | awk '$2=="commit"{print $3}' || true)"
-       if [ -n "$sha" ]; then
-         if git clone "$url" "$path" && git -C "$path" checkout -B "$branch" "$sha"; then
-           echo "materialized (branch $branch @ $sha): $path"
-         else
-           echo "FAILED: $path — check url/branch/sha"
-         fi
-       else
-         if git clone --branch "$branch" "$url" "$path"; then
-           echo "materialized (branch $branch @ tip): $path"
-         else
-           echo "FAILED: $path — check url/branch"
-         fi
-       fi
-     done < "$registry"
-   fi
-   ```
+After creating directories, clone each module/dependency registered in `ai/config/git.tsv` so later steps can read their code. The registry is a tab-separated file (`# path<TAB>url<TAB>branch`); each row records a gitlink path, its remote URL, and branch. The gitlink SHA (mode 160000) in MAIN's tree pins the exact commit; the registry supplies URL + branch.
 
-4. **Generate guidance file for each module**
+For each row: if the path directory is already populated, skip (re-init safe); otherwise clone and land on the recorded branch at the recorded gitlink SHA, so downstream reproduces the exact branch + commit upstream recorded. Skip gracefully when MAIN is not yet a git repo (first init before any commit), or the registry is absent or empty (no non-comment rows).
 
-   For each directory under `modules/`, generate or update its guidance files following the **Module guidance file generation methodology** above (dual-write: keep `AGENTS.md` and `CLAUDE.md` in sync). Module guidance files do NOT carry the `readonly-dependencies/` marking.
+```bash
+set -euo pipefail
+PROJECT_ROOT="$(pwd)"
+while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+done
+[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+cd "$PROJECT_ROOT"
 
-   ```bash
-   for module in "${PROJECT_ROOT}/modules"/*/; do
-     [ -d "$module" ] || continue
-     echo "Processing module: $(basename "$module")"
-   done
-   ```
+registry="ai/config/git.tsv"
+if [ ! -s "$registry" ] || ! awk -F'\t' '{if($1!="" && $1 !~ /^#/){f=1; exit}} END{exit !f}' "$registry" 2>/dev/null; then
+  echo "No ai/config/git.tsv (missing or empty) — skip materialization."
+elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "MAIN not a git repo yet — skip materialization."
+else
+  while IFS=$'\t' read -r path url branch; do
+    case "$path" in ''|\#*) continue;; esac
+    if [ -e "$path" ] && [ -n "$(ls -A "$path" 2>/dev/null)" ]; then
+      echo "skip (populated): $path"
+      continue
+    fi
+    mkdir -p "$path"
+    sha="$(git ls-tree HEAD -- "$path" 2>/dev/null | awk '$2=="commit"{print $3}' || true)"
+    if [ -n "$sha" ]; then
+      if git clone "$url" "$path" && git -C "$path" checkout -B "$branch" "$sha"; then
+        echo "materialized (branch $branch @ $sha): $path"
+      else
+        echo "FAILED: $path — check url/branch/sha"
+      fi
+    else
+      if git clone --branch "$branch" "$url" "$path"; then
+        echo "materialized (branch $branch @ tip): $path"
+      else
+        echo "FAILED: $path — check url/branch"
+      fi
+    fi
+  done < "$registry"
+fi
+```
 
-5. **Generate main project guidance file**
+### 4. Generate guidance file for each module
 
-   Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
+For each directory under `modules/`, generate or update its guidance files following the **Module guidance file generation methodology** above (dual-write: keep `AGENTS.md` and `CLAUDE.md` in sync). Module guidance files do NOT carry the `readonly-dependencies/` marking.
 
-   **Template** — keep all fixed sections verbatim; fill only the scanned tables:
+```bash
+set -euo pipefail
+PROJECT_ROOT="$(pwd)"
+while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+done
+[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+cd "$PROJECT_ROOT"
 
-   ```markdown
-   # <ProjectName>
+for module in "${PROJECT_ROOT}/modules"/*/; do
+  [ -d "$module" ] || continue
+  echo "Processing module: $(basename "$module")"
+done
+```
 
-   This is a multi-project workspace, **not** a buildable project. There is no build / test / lint / typecheck / task runner at the root.
+### 5. Generate main project guidance file
 
-   ## Directory Structure
+Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 
-   | Path | Description |
-   |------|-------------|
-   | `ai/config/rules/` | Rules & standards; apply when relevant |
-   | `ai/config/skills/` | On-demand skills; invoke only when the user explicitly requests |
-   | `ai/output/specs/` | Source-of-truth system behavior specs; read when needed or when requirements are unclear |
-   | `ai/output/changes/archive/` | Archived change records (proposal/design); read design Decisions & proposal Why for past rationale, or for prior art when scoping a similar change — current behavior specs live in `ai/output/specs/` |
-   | `ai/output/memories/` | Bad cases & lessons; read when facing blockers or seeking proven experience |
-   | `modules/` | Independent projects, each its own git repo + guidance file |
-   | `readonly-dependencies/` | Read-only dependency references; never modify |
+**Template** — keep all fixed sections verbatim; fill only the scanned tables:
 
-   ## modules
+```markdown
+# <ProjectName>
 
-   Each project under `modules/` is an independent git repository with its own git remote, toolchain, and `guidance file`.
+This is a multi-project workspace, **not** a buildable project. There is no build / test / lint / typecheck / task runner at the root.
 
-   | Module Name | Path | Guidance File | Description |
-   |-------------|------|---------------|-------------|
-   | <module> | `modules/<module>` | `modules/<module>/AGENTS.md` | <description> |
+## Directory Structure
 
-   ## readonly-dependencies
+| Path | Description |
+|------|-------------|
+| `ai/config/rules/` | Rules & standards; apply when relevant |
+| `ai/config/skills/` | On-demand skills; invoke only when the user explicitly requests |
+| `ai/output/specs/` | Source-of-truth system behavior specs; read when needed or when requirements are unclear |
+| `ai/output/changes/archive/` | Archived change records (proposal/design); read design Decisions & proposal Why for past rationale, or for prior art when scoping a similar change — current behavior specs live in `ai/output/specs/` |
+| `ai/output/memories/` | Bad cases & lessons; read when facing blockers or seeking proven experience |
+| `modules/` | Independent projects, each its own git repo + guidance file |
+| `readonly-dependencies/` | Read-only dependency references; never modify |
 
-   Stores **read-only references** to private dependencies for local reading. Not part of the build; depended on by modules.
+## modules
 
-   | Dependency Name | Path | Description |
-   |-----------------|------|-------------|
-   | <dependency> | `readonly-dependencies/<dependency>` | <description> |
+Each project under `modules/` is an independent git repository with its own git remote, toolchain, and `guidance file`.
 
-   ## rules
+| Module Name | Path | Guidance File | Description |
+|-------------|------|---------------|-------------|
+| <module> | `modules/<module>` | `modules/<module>/AGENTS.md` | <description> |
 
-   Rules & standards, apply when relevant.
+## readonly-dependencies
 
-   | Rule | Path | Description |
-   |----------|------|-------------|
-   | <rule> | `ai/config/rules/<rule_file>` | <description> |
+Stores **read-only references** to private dependencies for local reading. Not part of the build; depended on by modules.
 
-   ## Workflow
+| Dependency Name | Path | Description |
+|-----------------|------|-------------|
+| <dependency> | `readonly-dependencies/<dependency>` | <description> |
 
-   When working under `modules/`, read the standards in the following order:
+## rules
 
-   1. Module guidance file: `modules/<module>/AGENTS.md`
-   2. Rules under `ai/config/rules/` relevant to the module's tech stack, if any
+Rules & standards, apply when relevant.
 
-   In case of conflict, the module guidance file takes precedence.
+| Rule | Path | Description |
+|----------|------|-------------|
+| <rule> | `ai/config/rules/<rule_file>` | <description> |
 
-   ## Guardrails
+## Workflow
 
-   - `readonly-dependencies/` is a read-only knowledge base: writing / modifying / git pushing / deleting files within it is prohibited.
-   ```
+When working under `modules/`, read the standards in the following order:
 
-   **Scan entries** (run this; output drives the tables):
+1. Module guidance file: `modules/<module>/AGENTS.md`
+2. Rules under `ai/config/rules/` relevant to the module's tech stack, if any
 
-   ```bash
-   echo "PROJECT:$(basename "$PROJECT_ROOT")"
-   for d in "${PROJECT_ROOT}/modules"/*/; do
-     [ -d "$d" ] || continue
-     gfs=""
-     [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
-     [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
-     [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
-     echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
-   done
-   for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
-     [ -d "$d" ] || continue
-     echo "D:$(basename "$d")|readonly-dependencies/$(basename "$d")"
-   done
-   for f in "${PROJECT_ROOT}/ai/config/rules"/*; do
-     [ -f "$f" ] || continue
-     echo "R:$(basename "$f")|ai/config/rules/$(basename "$f")"
-   done
-   ```
+In case of conflict, the module guidance file takes precedence.
 
-   **Description** (one line, ≤100 chars, format: `<purpose/domain> — <key tech stack>`):
-    - Read each entry's `README.md` (modules & dependencies) or content (rules)
-    - Prioritize business domain + key frameworks/languages; omit fluff
-    - Examples: `E-commerce backend — Go/Gin/PostgreSQL` · `Coding standards — naming/formatting/structure`
-    - No info available → directory name / filename
-    - Empty table → header row only (keep the section)
+## Guardrails
 
-   **Incremental update**:
-    - Apply the template to BOTH `AGENTS.md` and `CLAUDE.md`. For each file, if it already exists, regenerate from the template and compare; update ONLY on substantive changes (added/removed/renamed modules, dependencies, or rules). Keep both files identical in their template-derived portions.
-    - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) in each file — update only the template-derived portions.
+- `readonly-dependencies/` is a read-only knowledge base: writing / modifying / git pushing / deleting files within it is prohibited.
+```
 
-**Guardrails**
+**Scan entries** (run this; output drives the tables):
+
+```bash
+set -euo pipefail
+PROJECT_ROOT="$(pwd)"
+while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
+  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
+done
+[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
+cd "$PROJECT_ROOT"
+
+echo "PROJECT:$(basename "$PROJECT_ROOT")"
+for d in "${PROJECT_ROOT}/modules"/*/; do
+  [ -d "$d" ] || continue
+  gfs=""
+  [ -f "${d}AGENTS.md" ] && gfs="AGENTS.md"
+  [ -f "${d}CLAUDE.md" ] && gfs="${gfs:+$gfs + }CLAUDE.md"
+  [ -z "$gfs" ] && gfs="AGENTS.md + CLAUDE.md"
+  echo "M:$(basename "$d")|modules/$(basename "$d")|modules/$(basename "$d")/$gfs"
+done
+for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
+  [ -d "$d" ] || continue
+  echo "D:$(basename "$d")|readonly-dependencies/$(basename "$d")"
+done
+for f in "${PROJECT_ROOT}/ai/config/rules"/*; do
+  [ -f "$f" ] || continue
+  echo "R:$(basename "$f")|ai/config/rules/$(basename "$f")"
+done
+```
+
+**Description** (one line, ≤100 chars, format: `<purpose/domain> — <key tech stack>`):
+- Read each entry's `README.md` (modules & dependencies) or content (rules)
+- Prioritize business domain + key frameworks/languages; omit fluff
+- Examples: `E-commerce backend — Go/Gin/PostgreSQL` · `Coding standards — naming/formatting/structure`
+- No info available → directory name / filename
+- Empty table → header row only (keep the section)
+
+**Incremental update**:
+- Apply the template to BOTH `AGENTS.md` and `CLAUDE.md`. For each file, if it already exists, regenerate from the template and compare; update ONLY on substantive changes (added/removed/renamed modules, dependencies, or rules). Keep both files identical in their template-derived portions.
+- Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) in each file — update only the template-derived portions.
+
+## Guardrails
+
 - `readonly-dependencies/` is a read-only knowledge base — never write, modify, or delete files inside it
 - Do NOT add `modules/` or `readonly-dependencies/` (top-level) to `.gitignore`; only `readonly-dependencies/*/*` (depth-2 contents) is ignored so dependency gitlinks stay trackable
 - `ai/config/git.tsv` is the tracked registry of module/dependency repos (path → url + branch); keep it committed — `ai-env-init` uses it to materialize gitlink repos, and `ai-module-add`/`ai-dependency-add`/`ai-module-remove`/`ai-dependency-remove`/`ai-git-checkout` keep it in sync

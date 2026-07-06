@@ -26,9 +26,9 @@ if [ -d "$module_dir" ] && [ -n "$(ls -A "$module_dir" 2>/dev/null)" ]; then
   exit 1
 fi
 if [ -n "$branch" ]; then
-  git clone --branch "$branch" "$url" "$module_dir"
+  git clone --branch "$branch" "$url" "$module_dir" || { echo "CLONE_FAILED: $url"; exit 1; }
 else
-  git clone "$url" "$module_dir"
+  git clone "$url" "$module_dir" || { echo "CLONE_FAILED: $url"; exit 1; }
 fi
 
 # register in ai/config/git.tsv (path<TAB>url<TAB>branch)

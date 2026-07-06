@@ -31,7 +31,13 @@ merge_one() {
   local label="$1" dir="$2"
   [ -d "$dir/.git" ] || { echo "=== $label: not a git repository, skip ==="; return; }
   echo "=== $label ==="
-  (cd "$dir" && mainline=$(detect_mainline) && git merge "$mainline" 2>&1) || echo "Merge failed or conflict in $label, conflicts detected — will auto-resolve"
+  (cd "$dir" && mainline=$(detect_mainline) && git merge "$mainline" 2>&1) || {
+    if [ -n "$(cd "$dir" && git diff --name-only --diff-filter=U 2>/dev/null)" ]; then
+      echo "Merge conflicts in $label — will auto-resolve"
+    else
+      echo "Merge failed in $label — see output above"
+    fi
+  }
 }
 
 case "$target" in

@@ -185,7 +185,15 @@ After ALL tasks are complete, dispatch ONE final code-reviewer subagent for the 
 
 ```bash
 mainline="$(git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null | cut -d/ -f2)" || mainline=""
-[ -z "$mainline" ] && { git show-ref --verify --quiet refs/heads/main 2>/dev/null && mainline="main" || mainline="master"; }
+if [ -z "$mainline" ]; then
+  if git show-ref --verify --quiet refs/heads/main 2>/dev/null; then
+    mainline="main"
+  elif git show-ref --verify --quiet refs/heads/master 2>/dev/null; then
+    mainline="master"
+  else
+    mainline="main"
+  fi
+fi
 MERGE_BASE="$(git merge-base HEAD "$mainline")"
 # If in a worktree, MERGE_BASE is the branch point; otherwise the main branch tip.
 bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$MERGE_BASE" HEAD "$change_dir/sdd/final-review.md"
