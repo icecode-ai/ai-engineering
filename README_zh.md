@@ -10,7 +10,7 @@ https://icecode-ai.github.io/ai-engineering/#overview
 - Git 多仓库管理
 - 只读依赖隔离
 - 增强 OpenSpec 工作流
-- 集成 Superpowers 插件
+- 自包含 Superpowers 风格执行（子代理驱动、TDD、两阶段审查）
 
 ## 安装
 
@@ -65,7 +65,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 
 ## 流程
 
-增强 OpenSpec 工作流，执行过程集成 Superpowers 插件，实现从探索想法到归档的完整闭环。
+增强 OpenSpec 工作流，自包含 Superpowers 风格执行——子代理驱动开发、TDD、两阶段审查——实现从探索想法到归档的完整闭环。无需安装外部 Superpowers 插件。
 
 ```
 1. explore  →  2. propose  →  3. apply  →  4. archive

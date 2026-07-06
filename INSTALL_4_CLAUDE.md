@@ -1,4 +1,4 @@
-# Install AI Engineering and Superpowers (Claude Code)
+# Install AI Engineering (Claude Code)
 
 ## Install
 
@@ -13,15 +13,14 @@ Create `.claude/settings.json` in the project root:
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'for m in ai-engineering-marketplace:ai-engineering superpowers-marketplace:superpowers; do market=${m%%:*}; plug=${m#*:}; [ -d \"$HOME/.claude/plugins/cache/$market\" ] && continue; command -v claude >/dev/null 2>&1 && claude plugin install \"$plug@$market\" --scope project >/dev/null 2>&1; done; true'"
+            "command": "bash -c '[ -d \"$HOME/.claude/plugins/cache/ai-engineering-marketplace\" ] && exit 0; command -v claude >/dev/null 2>&1 && claude plugin install ai-engineering@ai-engineering-marketplace --scope project >/dev/null 2>&1; true'"
           }
         ]
       }
     ]
   },
   "enabledPlugins": {
-    "ai-engineering@ai-engineering-marketplace": true,
-    "superpowers@superpowers-marketplace": true
+    "ai-engineering@ai-engineering-marketplace": true
   },
   "extraKnownMarketplaces": {
     "ai-engineering-marketplace": {
@@ -30,25 +29,16 @@ Create `.claude/settings.json` in the project root:
         "repo": "icecode-ai/ai-engineering"
       },
       "autoUpdate": true
-    },
-    "superpowers-marketplace": {
-      "source": { 
-        "source": "github", 
-        "repo": "obra/superpowers-marketplace"
-      },
-      "autoUpdate": true
     }
   }
 }
 ```
 
-Add the marketplaces and install both plugins:
+Add the marketplace and install the plugin:
 
 ```bash
 claude plugin marketplace add icecode-ai/ai-engineering --scope project
-claude plugin marketplace add obra/superpowers-marketplace --scope project
 claude plugin install ai-engineering@ai-engineering-marketplace --scope project
-claude plugin install superpowers@superpowers-marketplace --scope project
 ```
 
 ## Next Steps

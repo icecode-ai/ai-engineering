@@ -10,7 +10,7 @@ An end-to-end workflow for AI Agents
 - Multi-repo Git management
 - Read-only dependency isolation
 - Enhanced OpenSpec workflow
-- Integrated Superpowers plugin
+- Self-contained Superpowers-style execution (subagent-driven, TDD, two-stage review)
 
 ## Install
 
@@ -65,7 +65,7 @@ After running `/ai-env-init`, the following directory structure is generated in 
 
 ## Workflow
 
-Enhanced OpenSpec workflow with integrated Superpowers plugin, achieving a complete closed loop from exploring ideas to archiving.
+Enhanced OpenSpec workflow with self-contained Superpowers-style execution — subagent-driven development, TDD, and two-stage review — achieving a complete closed loop from exploring ideas to archiving. No external Superpowers plugin required.
 
 ```
 1. explore  →  2. propose  →  3. apply  →  4. archive
