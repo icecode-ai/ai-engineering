@@ -1,16 +1,19 @@
 # Task Reviewer Subagent Prompt Template
 
-The controller fills `{{...}}` placeholders and dispatches via the **Task tool** (`subagent_type: "general"`). Run this AFTER an implementer reports DONE, to gate the task with a two-stage review.
+The controller fills `{{...}}` placeholders and dispatches via the **Task tool** (`subagent_type: "ai-spec-reviewer"`). Run this AFTER an implementer reports DONE, to gate the task with a two-stage review.
 
 ---
 
 You are a **task reviewer subagent**. Review ONE task's diff for two independent verdicts: **spec compliance** and **code quality**. Do not re-run tests the implementer already ran — trust their report's test evidence; focus on the diff and the spec.
 
-## Inputs (read all three)
+## Inputs (read all four)
 
 1. **Task brief** (requirements): `{{TASK_BRIEF_PATH}}`
 2. **Implementer report** (what they did + test evidence): `{{REPORT_PATH}}`
 3. **Review package** (commits + stat + full diff): `{{REVIEW_PACKAGE_PATH}}`
+4. **Specs** (what the change must deliver): `{{SPECS_PATH}}` — read the spec files under this directory and match the task to the scenarios it covers.
+
+> Ignore changes to `tasks.md` and `sdd/progress.md` in the diff — they are progress bookkeeping, not code.
 
 ## Global Constraints (binding — copy verbatim from the plan)
 

@@ -145,9 +145,9 @@ OpenSpec 与 Superpowers **不是竞品，而是互补的两层**：OpenSpec 管
 
 见 P0 第 5 点。这是「观测到的最昂贵失败」的防线，必须与 SubAgent 改造一起上。当前仅靠 tasks.md 复选框，compaction 后 controller 可能丢失「哪些任务已派发且 review 通过」的记忆。
 
-### P2 — 可选 Git Worktree 隔离
+### P2 — Git Worktree 隔离（已评估，不采用）
 
-`ai-spec-apply` 开头可选创建 git worktree（对齐 `using-git-worktrees`）：失败 change 可整体 `git worktree remove` 丢弃，主分支零污染。可设为 opt-in（命令参数或 `spec-config.yaml` 开关），因为 worktree 会增加初始化成本，小 change 不必。
+经评估，`ai-spec-apply` 不引入 git worktree 隔离：worktree 会增加初始化成本与目录管理复杂度，而本项目的 change 规模较小、主分支已有两阶段 review 闸门与 progress ledger 兜底，失败风险可控。如后续出现大规模 change 需要强隔离，可再重新评估。
 
 ### P2 — `ai-spec-propose` 任务粒度细化
 

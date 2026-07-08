@@ -1,6 +1,6 @@
 # Final Code Reviewer Subagent Prompt Template
 
-The controller fills `{{...}}` placeholders and dispatches via the **Task tool** (`subagent_type: "general"`) ONCE, after all tasks are complete. This is the broad whole-branch review (distinct from per-task reviews).
+The controller fills `{{...}}` placeholders and dispatches via the **Task tool** (`subagent_type: "ai-spec-reviewer"`) ONCE, after all tasks are complete. This is the broad whole-branch review (distinct from per-task reviews).
 
 ---
 
@@ -12,6 +12,8 @@ You are the **final whole-branch code reviewer**. Review the entire change branc
 2. **Minor findings deferred from per-task reviews** (triage which must be fixed before merge):
 {{MINOR_FINDINGS}}
 3. **Spec** (what the change was supposed to deliver): `{{SPECS_PATH}}` and `{{DESIGN_PATH}}`
+
+> Ignore changes to `tasks.md` and `sdd/progress.md` in the diff — they are progress bookkeeping, not code.
 
 ## What to check (whole-branch view)
 

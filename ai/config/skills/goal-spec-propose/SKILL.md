@@ -148,7 +148,8 @@ Fill in the template with architecture decisions, technical approach, and trade-
 - [ ] **Step 2: Run test to verify it fails** — `pytest tests/path -v`, expected FAIL
 - [ ] **Step 3: Write minimal implementation**
 - [ ] **Step 4: Run test to verify it passes** — `pytest tests/path -v`, expected PASS
-- [ ] **Step 5: Commit**
+
+> No commit step — in `/ai-spec-apply` the controller commits each task's work, not the implementer.
 
 ### Task 2: ...
 ```
@@ -157,7 +158,7 @@ Fill in the template with architecture decisions, technical approach, and trade-
 - Each task is the smallest unit that carries its own test cycle and a fresh reviewer's gate (2-5 minutes per step). Fold setup/scaffolding/docs into the task whose deliverable needs them.
 - **Exact file paths always** (no "the appropriate file"). **Complete code in every step** that changes code. **Exact commands with expected output**.
 - **No placeholders**: never write "TBD", "TODO", "implement later", "add appropriate error handling", "similar to Task N" (repeat the code), or steps that describe what without showing how.
-- Mark `**Parallelizable:** yes` only for tasks with no shared state and no file overlap with other tasks (enables parallel subagent dispatch in `/ai-spec-apply`). Default `no` for tasks that depend on earlier tasks' Interfaces.
+- Mark `**Parallelizable:** yes` only for tasks with no shared state and no file overlap with other tasks (enables pipeline dispatch in `/ai-spec-apply` — the task's review may overlap the next implementer). Default `no` for tasks that depend on earlier tasks' Interfaces.
 - Order tasks by dependency. Each task ends with an independently testable deliverable.
 - Keep spec-compliance testable: each task should map to one or more spec scenarios.
 
