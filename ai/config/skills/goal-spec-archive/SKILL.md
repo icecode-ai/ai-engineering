@@ -9,26 +9,16 @@ Archive a completed change. Moves the change directory into the archive to keep 
 
 **Input**: Optionally specify a change name after `/ai-spec-archive` (e.g., `/ai-spec-archive add-auth`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
 ### 1. If no change name provided, prompt for selection
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-archive/scripts/list-changes.sh"
+bash "ai/config/skills/goal-spec-archive/scripts/list-changes.sh"
 ```
 
 Use the **AskUserQuestion tool** to let the user select.
@@ -38,7 +28,7 @@ Use the **AskUserQuestion tool** to let the user select.
 ### 2. Check artifact + task completion status
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-archive/scripts/check-completion.sh" "$name"
+bash "ai/config/skills/goal-spec-archive/scripts/check-completion.sh" "$name"
 ```
 
 If the last line is `INCOMPLETE` (some artifacts missing or tasks pending), display the warnings and prompt the user: "Archive anyway?" Proceed if the user confirms.
@@ -48,7 +38,7 @@ If the last line is `INCOMPLETE` (some artifacts missing or tasks pending), disp
 Before archiving, check if the change has delta specs that need to be synced to the main specs directory. Delta specs contain ADDED/MODIFIED/REMOVED/RENAMED requirement sections that need to be merged into the corresponding main spec files.
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-archive/scripts/assess-delta-specs.sh" "$name"
+bash "ai/config/skills/goal-spec-archive/scripts/assess-delta-specs.sh" "$name"
 ```
 
 **If delta specs exist**, for each delta spec:
@@ -63,7 +53,7 @@ bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-archive/scripts/assess-delta-sp
 ### 4. Perform the archive
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-archive/scripts/perform-archive.sh" "$name"
+bash "ai/config/skills/goal-spec-archive/scripts/perform-archive.sh" "$name"
 ```
 
 If the script prints `EXISTS:`, the target archive directory already exists — present the options (rename existing / delete duplicate / wait) and let the user resolve before retrying.

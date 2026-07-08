@@ -9,19 +9,9 @@ Implement tasks from a spec change using **subagent-driven development**: a fres
 
 **Input**: Optionally specify a change name (e.g., `/ai-spec-apply add-auth`). If the change name is omitted, infer from context or prompt.
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
@@ -31,7 +21,7 @@ Parse `$ARGUMENTS`: the change name is the first non-flag token. If a name is pr
 - Infer from conversation context if the user mentioned a change
 - Auto-select if only one active change exists:
   ```bash
-  ls -1 "${PROJECT_ROOT}/ai/output/changes/" 2>/dev/null | grep -v '^archive$'
+  ls -1 "ai/output/changes/" 2>/dev/null | grep -v '^archive$'
   ```
 - If ambiguous or multiple changes exist, use the **AskUserQuestion tool** to let the user select
 
@@ -39,23 +29,10 @@ Always announce: "Using change: <name>" and how to override (e.g., `/ai-spec-app
 
 ### 2. Check artifact status
 
+Let `change_dir` = `ai/output/changes/$name` (use this path in all subsequent steps).
+
 ```bash
-change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
-if [ ! -d "$change_dir" ]; then
-  echo "Change '$name' not found."
-  exit 1
-fi
-echo "=== Change: $name ==="
-all_done=true
-for artifact in proposal.md design.md tasks.md; do
-  if [ -f "$change_dir/$artifact" ]; then echo "✓ $artifact"; else echo "✗ $artifact (missing)"; all_done=false; fi
-done
-if [ -d "$change_dir/specs" ] && [ "$(ls -A "$change_dir/specs" 2>/dev/null)" ]; then
-  echo "✓ specs/"
-else
-  echo "○ specs/ (empty — may need creation)"
-fi
-[ "$all_done" = false ] && echo "Some artifacts are missing. Suggest running /ai-spec-propose $name first."
+bash "ai/config/skills/goal-spec-apply/scripts/check-artifacts.sh" "$name"
 ```
 
 ### 3. Read context files
@@ -73,8 +50,8 @@ Extract the **Global Constraints** block from `tasks.md` — every task's review
 Read the progress ledger so you never re-dispatch a completed task (the single most expensive failure after compaction):
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/ledger.sh" init "$change_dir"
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/ledger.sh" read "$change_dir"
+bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" init "$change_dir"
+bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" read "$change_dir"
 ```
 
 Tasks listed in the ledger as complete are DONE — do not re-dispatch them. Resume at the first task not marked complete. The ledger is committed as `chore(progress)` commits (step 7f), so it survives `git clean -fdx`; if the ledger file is nonetheless missing, recover the "review-passed" task set via `git log --grep='chore(progress)'` — code commits alone cannot tell whether a task's review passed.
@@ -82,7 +59,7 @@ Tasks listed in the ledger as complete are DONE — do not re-dispatch them. Res
 ### 5. Show current progress
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/check-progress.sh" "$name"
+bash "ai/config/skills/goal-spec-apply/scripts/check-progress.sh" "$name"
 ```
 
 ### 6. Pre-flight plan review
@@ -104,16 +81,15 @@ Read the task's `**Parallelizable:**` flag and its `**Interfaces:**` (Consumes/P
 
 ```bash
 # Extract the task's full text to a brief file (single source of requirements)
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/task-brief.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-brief.md"
+bash "ai/config/skills/goal-spec-apply/scripts/task-brief.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-brief.md"
 
 # Record the BASE commit (the commit before this task's work) — never use HEAD~1
-BASE="$(git rev-parse HEAD)"
-echo "$BASE" > "$change_dir/sdd/task-$N-base.sha"
+BASE="$(bash "ai/config/skills/goal-spec-apply/scripts/record-base.sh" "$change_dir" "$N")"
 ```
 
 #### 7c. Dispatch the implementer subagent
 
-Read `${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/references/implementer-prompt.md`, fill the `{{...}}` placeholders:
+Read `ai/config/skills/goal-spec-apply/references/implementer-prompt.md`, fill the `{{...}}` placeholders:
 - `{{TASK_FIT}}` — one line on where this task fits in the project.
 - `{{TASK_BRIEF_PATH}}` — `$change_dir/sdd/task-$N-brief.md` (introduce it as "read this first — it is your requirements, with exact values verbatim").
 - `{{CROSS_TASK_INTERFACES}}` — exact signatures/decisions from earlier tasks this task consumes (from their Produces blocks).
@@ -146,10 +122,10 @@ Generate the review package BEFORE dispatching the next implementer (so the pack
 
 ```bash
 BASE="$(cat "$change_dir/sdd/task-$N-base.sha")"
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$BASE" HEAD "$change_dir/sdd/task-$N-review.md"
+bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$BASE" HEAD "$change_dir/sdd/task-$N-review.md"
 ```
 
-Read `${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/references/task-reviewer-prompt.md`, fill placeholders (`{{TASK_BRIEF_PATH}}`, `{{REPORT_PATH}}`, `{{REVIEW_PACKAGE_PATH}}`, `{{GLOBAL_CONSTRAINTS}}`, `{{SPECS_PATH}}` = `$change_dir/specs`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`).
+Read `ai/config/skills/goal-spec-apply/references/task-reviewer-prompt.md`, fill placeholders (`{{TASK_BRIEF_PATH}}`, `{{REPORT_PATH}}`, `{{REVIEW_PACKAGE_PATH}}`, `{{GLOBAL_CONSTRAINTS}}`, `{{SPECS_PATH}}` = `$change_dir/specs`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`).
 
 **Pipeline dispatch** (only if task N is `Parallelizable: yes` and the next pending task N+1 has no file overlap): dispatch the task-reviewer(N) AND the next implementer(N+1) (7c) in ONE message. The reviewer reads the frozen review-package file, so it is safe to overlap. When both return, process the verdict below and commit N+1's work (7d). **Serial dispatch** (default): dispatch the task-reviewer alone and wait for its verdict before the next implementer.
 
@@ -165,12 +141,10 @@ Never tell a reviewer what not to flag, or pre-rate a finding's severity in the 
 
 ```bash
 # Mark all of task N's step checkboxes done (robust block detection — no manual line counting)
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/mark-task-done.sh" "$change_dir/tasks.md" "$N"
+bash "ai/config/skills/goal-spec-apply/scripts/mark-task-done.sh" "$change_dir/tasks.md" "$N"
 
-# Append to the durable ledger
-HEAD7="$(git rev-parse --short HEAD)"
-BASE7="$(git rev-parse --short "$BASE")"
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/ledger.sh" append "$change_dir" "Task $N: complete (commits $BASE7..$HEAD7, review clean)"
+# Append to the durable ledger (computes the short SHA range internally)
+bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" append-task "$change_dir" "$N" "$BASE"
 
 # Commit the progress bookkeeping so it survives git clean -fdx.
 # The ledger records "review passed" — which code commits alone cannot express.
@@ -185,21 +159,11 @@ Do this in the same turn as the review passes. Then continue to the next pending
 After ALL tasks are complete, dispatch ONE final code-reviewer subagent for the whole branch:
 
 ```bash
-mainline="$(git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null | cut -d/ -f2)" || mainline=""
-if [ -z "$mainline" ]; then
-  if git show-ref --verify --quiet refs/heads/main 2>/dev/null; then
-    mainline="main"
-  elif git show-ref --verify --quiet refs/heads/master 2>/dev/null; then
-    mainline="master"
-  else
-    mainline="main"
-  fi
-fi
-MERGE_BASE="$(git merge-base HEAD "$mainline")"
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$MERGE_BASE" HEAD "$change_dir/sdd/final-review.md"
+MERGE_BASE="$(bash "ai/config/skills/goal-spec-apply/scripts/final-review-base.sh")"
+bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$MERGE_BASE" HEAD "$change_dir/sdd/final-review.md"
 ```
 
-Read `${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/references/code-reviewer-prompt.md`, fill placeholders (`{{REVIEW_PACKAGE_PATH}}`, `{{MINOR_FINDINGS}}` — the accumulated Minor findings from per-task reviews, `{{SPECS_PATH}}`, `{{DESIGN_PATH}}`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`). If findings, dispatch **ONE fix subagent** (`subagent_type: "ai-spec-implementer"`) with the complete findings list (not one fixer per finding); the controller commits the fix. Re-verify affected tests after the fix.
+Read `ai/config/skills/goal-spec-apply/references/code-reviewer-prompt.md`, fill placeholders (`{{REVIEW_PACKAGE_PATH}}`, `{{MINOR_FINDINGS}}` — the accumulated Minor findings from per-task reviews, `{{SPECS_PATH}}`, `{{DESIGN_PATH}}`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`). If findings, dispatch **ONE fix subagent** (`subagent_type: "ai-spec-implementer"`) with the complete findings list (not one fixer per finding); the controller commits the fix. Re-verify affected tests after the fix.
 
 ### 9. Final verification
 
@@ -212,7 +176,7 @@ Run a final verification pass inline (no external skill): ensure the build passe
 ### 10. On completion or pause, show status
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-apply/scripts/check-progress.sh" "$name"
+bash "ai/config/skills/goal-spec-apply/scripts/check-progress.sh" "$name"
 ```
 
 ## Output During Implementation

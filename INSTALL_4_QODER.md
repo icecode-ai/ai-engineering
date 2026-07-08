@@ -22,9 +22,19 @@ Create `.qoder/settings.json` in the project root with:
   },
   "enabledPlugins": {
     "ai-engineering@local": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(bash ai/config/skills/*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git stash *)"
+    ]
   }
 }
 ```
+
+> Launch Qoder from the workspace root (the directory containing `ai/` and `modules/`) — skill script paths are relative to it. Project-level allow rules may require a one-time trust prompt.
 
 After writing `settings.json`, clone the plugin to a temp dir and install it to the current project:
 

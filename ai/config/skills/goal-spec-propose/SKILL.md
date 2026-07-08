@@ -11,19 +11,9 @@ When ready to implement, run `/ai-spec-apply`.
 
 **Input**: The argument after `/ai-spec-propose` is the change name (kebab-case), OR a description of what the user wants to build.
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
@@ -39,7 +29,7 @@ From their description, derive a kebab-case name (e.g., "add user authentication
 ### 2. Create the change directory
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-propose/scripts/create-change.sh" "$name"
+bash "ai/config/skills/goal-spec-propose/scripts/create-change.sh" "$name"
 ```
 
 If it prints `EXISTS:`, ask the user whether to continue with the existing change or create a new one with a different name.
@@ -47,12 +37,12 @@ If it prints `EXISTS:`, ask the user whether to continue with the existing chang
 ### 3. Check artifact status
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-propose/scripts/check-artifacts.sh" "$name"
+bash "ai/config/skills/goal-spec-propose/scripts/check-artifacts.sh" "$name"
 ```
 
 ### 4. Load project config (optional)
 
-Read `${PROJECT_ROOT}/ai/config/spec-config.yaml` if it exists. If present:
+Read `ai/config/spec-config.yaml` if it exists. If present:
 - `context` — apply as background to **every** artifact you generate (proposal, specs, design, tasks).
 - `rules` — for each artifact you generate, apply `rules[<artifactId>]` as mandatory constraints. Valid IDs: `proposal`, `specs`, `design`, `tasks`.
 
@@ -87,11 +77,7 @@ Fill in the template with your analysis of the user's request. Read any existing
 
 **b. Read completed proposal and create specs/**
 
-```bash
-mkdir -p "$change_dir/specs"
-```
-
-Create one or more spec files under `specs/<capability>/spec.md` based on proposal analysis:
+Create one or more spec files under `specs/<capability>/spec.md` based on proposal analysis (use the **Write tool**; it creates parent directories as needed):
 
 ```markdown
 ## ADDED Requirements
@@ -165,8 +151,7 @@ Fill in the template with architecture decisions, technical approach, and trade-
 ### 6. Show final status
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-spec-propose/scripts/check-artifacts.sh" "$name"
-echo "All artifacts created! Ready for implementation."
+bash "ai/config/skills/goal-spec-propose/scripts/check-artifacts.sh" "$name"
 ```
 
 ## Output

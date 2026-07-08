@@ -19,25 +19,15 @@ User-provided arguments: `$ARGUMENTS` (value is the target scope, optional; if e
 | `MAIN` | Root project git repository |
 | `{module-name}` | A specific module in `modules/` |
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
-### 1. Determine project root and target scope
+### 1. Determine target scope
 
-See the `Resolve PROJECT_ROOT` block above. Derive `target` from `$ARGUMENTS` (default `ALL`).
+Derive `target` from `$ARGUMENTS` (default `ALL`).
 
 ```bash
 target="${1:-ALL}"
@@ -48,7 +38,7 @@ target="${1:-ALL}"
 Before pushing the main project, verify there are no incomplete tasks or unarchived changes in `ai/output/changes/`:
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-git-push/scripts/check-incomplete-changes.sh"
+bash "ai/config/skills/goal-git-push/scripts/check-incomplete-changes.sh"
 ```
 
 If the check passes (all tasks complete, no missing artifacts), proceed to step 3 (stage and commit). If incomplete (script exits 1), **stop and prompt the user** to handle the outstanding changes before pushing.
@@ -57,13 +47,14 @@ If the check passes (all tasks complete, no missing artifacts), proceed to step 
 
 Before pulling, commit any uncommitted work in scope so later merge and push can proceed cleanly. Process each repository in scope — `MAIN`, or every module under `modules/` for `ALL`, or the single named module for `{module}`. For the `ALL` target, **process modules first, then MAIN** — this lets MAIN's `git add -A` capture each module's latest HEAD and refresh its gitlink. Recording `readonly-dependencies/<dep>` gitlinks in MAIN is expected; but never directly modify/pull/merge/push the dependency repos themselves.
 
-a. List candidate files (modified, staged, and untracked, excluding gitignored) in the repository: `git status --porcelain --untracked-files=all`.
-b. If there are no candidates, skip this repository.
-c. **Risk interception** — for each candidate, check the following **exhaustive** list of risk categories:
-   - Large file: size > 10 MB (`stat -f%z "$f"` on macOS / `stat -c%s "$f"` on Linux).
-   - Suspicious filename: matches `*.env`, `*.pem`, `*.key`, `id_rsa`, `id_ed25519`, `*.p12`, `*.pfx`, `credentials*`, `secrets*`, `.npmrc`, `.pypirc`.
-   - Secret content: text files containing `PRIVATE KEY`, `BEGIN RSA`, `BEGIN OPENSSH PRIVATE KEY`, `BEGIN PGP PRIVATE KEY`, or obvious high-entropy API keys/tokens (read the file to judge).
-   - Unignored artifact paths: `node_modules/`, `dist/`, `build/`, `out/`, `target/`, `.next/`, `__pycache__/`, `coverage/`, `*.log`.
+a. Run the risk scanner for this repository (`$repo` is `.` for MAIN, or `modules/<name>` for a module). The first output line is `COUNT:<n>` (number of candidate files); subsequent lines flag deterministic risks: `LARGE:<path>` (> 10 MB), `SUSPICIOUS:<path>` (secret/key filename patterns), `ARTIFACT:<path>` (unignored build/artifact paths).
+
+```bash
+bash "ai/config/skills/goal-git-push/scripts/scan-risks.sh" "$repo"
+```
+
+b. If `COUNT:0`, skip this repository (nothing to commit).
+c. **Secret-content check (your judgment)** — for each flagged file and any other candidate worth inspecting, read the file and look for `PRIVATE KEY`, `BEGIN RSA`, `BEGIN OPENSSH PRIVATE KEY`, `BEGIN PGP PRIVATE KEY`, or obvious high-entropy API keys/tokens.
 
    **Nested git repos under `modules/*/` and `readonly-dependencies/*/` are expected by design** (each module/dependency is an independent git repo, added via `/ai-module-add` or `/ai-dependency-add`). They are NOT risk items — do NOT prompt (include/exclude/abort) for them. They will be recorded as gitlinks in step e.
 d. **When a candidate is flagged, pause and ask the user per item**: "include" (add it anyway), "exclude" (skip it and keep it in the working tree), or "abort" (stop the entire push). Do not silently commit flagged files.
@@ -74,7 +65,7 @@ g. Commit with `git commit -m "<message>"`. Do not push yet.
 ### 4. Pull latest and sync mainline into the current branch
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-git-push/scripts/pull-and-merge.sh" "$target"
+bash "ai/config/skills/goal-git-push/scripts/pull-and-merge.sh" "$target"
 ```
 
 Only MAIN and modules are pulled and merged (matching push scope). Dependencies are never pulled/merged here.
@@ -96,7 +87,7 @@ Repeat for every repository (MAIN and modules) that has conflicts.
 ### 6. Push based on target scope
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-git-push/scripts/push.sh" "$target"
+bash "ai/config/skills/goal-git-push/scripts/push.sh" "$target"
 ```
 
 Pushing modules before MAIN ensures each gitlink's target commit exists on the module's remote before MAIN references it.

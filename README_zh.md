@@ -34,6 +34,12 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 
 安装完成后，请**重启 Agent**，并执行 `/ai-env-init` 命令完成环境初始化。
 
+> **在 workspace 根目录启动。** 务必在同时包含 `ai/` 与 `modules/` 的项目根目录启动 Agent——技能脚本路径均相对此根。
+>
+> **权限。** Claude Code 与 Qoder 的安装配置已预放行技能脚本与常规 git 写操作（`add`/`commit`/`stash`），工作流不再逐次弹窗；项目级 allow 规则在一次性 workspace trust 后生效。OpenCode 无需权限配置（bash 默认放行）。
+>
+> **环境要求。** 需 POSIX shell——macOS 与 Linux 自带 bash；Windows 请使用 Git Bash（随 Git for Windows 附带）或 WSL。`/ai-env-init` 用到的 `rsync` 等可选命令缺失时会自动跳过。
+
 ## 工程结构
 
 执行 `/ai-env-init` 后，在你的项目中生成以下目录结构：

@@ -17,19 +17,9 @@ User-provided arguments: `$ARGUMENTS` (first value is the target, second is the 
 | `{module-name}` | A specific module in `modules/` |
 | `{dependency-name}` | A specific dependency in `readonly-dependencies/` |
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
@@ -40,15 +30,7 @@ Check `User-provided arguments` above: if `$ARGUMENTS` provides a target → ski
 **a. If `$ARGUMENTS` does not provide a target**, enumerate candidates and ask the user to select:
 
 ```bash
-echo "MAIN"
-[ -d "${PROJECT_ROOT}/modules" ] && for d in "${PROJECT_ROOT}/modules"/*/; do
-  [ -d "$d" ] || continue
-  echo "module:$(basename "$d")"
-done
-[ -d "${PROJECT_ROOT}/readonly-dependencies" ] && for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do
-  [ -d "$d" ] || continue
-  echo "dependency:$(basename "$d")"
-done
+bash "ai/config/skills/goal-git-checkout/scripts/list-targets.sh"
 ```
 
 Use the **AskUserQuestion tool** to let the user select from the candidates above (preset options, `multiple: false`; the user may type a custom name). The selected value becomes `<target>` (use the bare name for modules/dependencies, e.g. `module:foo` → `foo`).
@@ -56,14 +38,11 @@ Use the **AskUserQuestion tool** to let the user select from the candidates abov
 **b. If `$ARGUMENTS` does not provide a branch** (after the target is determined), enumerate branches in the target repository and ask the user to select:
 
 ```bash
-# $target_repo = the directory of the selected target:
-#   MAIN → "$PROJECT_ROOT"
-#   module   → "$PROJECT_ROOT/modules/$target"
-#   dependency → "$PROJECT_ROOT/readonly-dependencies/$target"
-(cd "$target_repo" 2>/dev/null && {
-  git branch --format='%(refname:short)' 2>/dev/null
-  git ls-remote --heads origin 2>/dev/null | awk '{print $2}' | sed 's|refs/heads/||'
-} | sort -u) || echo "(unable to list branches)"
+# $target_repo = the directory of the selected target (relative to workspace root):
+#   MAIN → "."
+#   module   → "modules/$target"
+#   dependency → "readonly-dependencies/$target"
+bash "ai/config/skills/goal-git-checkout/scripts/list-branches.sh" "$target_repo"
 ```
 
 Use the **AskUserQuestion tool** to let the user select a branch from the list above (preset options, `multiple: false`; the user may type a custom branch name). If the target repository has no branches or is not a git repo, inform the user and **STOP**.
@@ -71,7 +50,7 @@ Use the **AskUserQuestion tool** to let the user select a branch from the list a
 ### 2. Checkout branch based on target scope
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-git-checkout/scripts/checkout.sh" "$target" "$branch"
+bash "ai/config/skills/goal-git-checkout/scripts/checkout.sh" "$target" "$branch"
 ```
 
 ### 3. Resolve checkout conflicts automatically
@@ -99,7 +78,7 @@ If checkout failed for a reason other than local-change conflicts (e.g., the bra
 **Registry sync** (on `Updated`, module/dependency targets only — MAIN has no registry entry): update the `branch` field in `ai/config/git.tsv` for the target path so the registry reflects the newly checked-out branch:
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-git-checkout/scripts/sync-registry.sh" "$target" "$branch"
+bash "ai/config/skills/goal-git-checkout/scripts/sync-registry.sh" "$target" "$branch"
 ```
 
 ### 4. Generate guidance file for the target module (module targets only)
@@ -193,7 +172,7 @@ In case of conflict, the module guidance file takes precedence.
 **Scan entries** (run this; output drives the tables):
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-git-checkout/scripts/scan-entries.sh"
+bash "ai/config/skills/goal-git-checkout/scripts/scan-entries.sh"
 ```
 
 **Description** (one line, ≤100 chars, format: `<purpose/domain> — <key tech stack>`):

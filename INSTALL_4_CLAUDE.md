@@ -22,6 +22,14 @@ Create `.claude/settings.json` in the project root:
   "enabledPlugins": {
     "ai-engineering@ai-engineering-marketplace": true
   },
+  "permissions": {
+    "allow": [
+      "Bash(bash ai/config/skills/*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git stash *)"
+    ]
+  },
   "extraKnownMarketplaces": {
     "ai-engineering-marketplace": {
       "source": { 
@@ -33,6 +41,8 @@ Create `.claude/settings.json` in the project root:
   }
 }
 ```
+
+> Launch Claude Code from the workspace root (the directory containing `ai/` and `modules/`) — skill script paths are relative to it. The `permissions.allow` rules above take effect after a one-time workspace trust dialog.
 
 Add the marketplace and install the plugin:
 

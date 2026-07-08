@@ -11,19 +11,9 @@ Add a new module to the project by cloning a git repository into the `modules/` 
 
 User-provided arguments: `$ARGUMENTS` (first value is the git URL; second value, if present, is the branch — otherwise the default branch is used)
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
@@ -38,7 +28,7 @@ The `<branch-name>` argument is optional — do not prompt for it; if absent, th
 Derive the module directory name from the repository name. If the second argument is provided, use it as the branch to clone.
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-module-add/scripts/clone-and-register.sh" "$url" "$branch"
+bash "ai/config/skills/goal-module-add/scripts/clone-and-register.sh" "$url" "$branch"
 ```
 
 If the script prints `EXISTS:`, it also prints a `PATH:` line. Ask the user whether to delete and re-add. On confirm: `rm -rf "<that path>"` then re-run the script. On decline, abort.
@@ -136,7 +126,7 @@ In case of conflict, the module guidance file takes precedence.
 **Scan entries** (run this; output drives the tables):
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-module-add/scripts/scan-entries.sh"
+bash "ai/config/skills/goal-module-add/scripts/scan-entries.sh"
 ```
 
 **Description** (one line, ≤100 chars, format: `<purpose/domain> — <key tech stack>`):

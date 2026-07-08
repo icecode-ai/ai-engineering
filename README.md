@@ -34,6 +34,12 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 
 After installation, please **restart the Agent** and run `/ai-env-init` to complete environment initialization.
 
+> **Launch from the workspace root.** Always start the agent in the project directory that contains both `ai/` and `modules/` — skill scripts use paths relative to this root.
+>
+> **Permissions.** The Claude Code and Qoder install configs pre-approve skill scripts and routine git writes (`add`/`commit`/`stash`) so workflows don't prompt; project-level allow rules take effect after a one-time workspace trust dialog. OpenCode needs no permission config (bash is allowed by default).
+>
+> **Prerequisites.** A POSIX shell is required — bash ships with macOS and Linux; on Windows use Git Bash (bundled with Git for Windows) or WSL. Optional commands like `rsync` (used by `/ai-env-init`) are skipped gracefully if absent.
+
 ## Engineering Structure
 
 After running `/ai-env-init`, the following directory structure is generated in your project:

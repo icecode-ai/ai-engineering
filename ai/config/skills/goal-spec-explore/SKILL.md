@@ -85,20 +85,7 @@ Depending on what the user brings, you might:
 
 ## Check for Context
 
-At the start, quickly check what changes exist:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-ls -1 "${PROJECT_ROOT}/ai/output/changes/" 2>/dev/null | grep -v '^archive$' || echo "No active changes found"
-```
-
-This tells you if there are active changes and their names.
+At the start, quickly check what changes exist — use the **Glob tool** with pattern `ai/output/changes/*/` and exclude the `archive/` directory. This tells you if there are active changes and their names.
 
 If the user mentioned a specific change name, read its artifacts for context.
 
@@ -110,16 +97,7 @@ If the user mentions a change or you detect one is relevant:
 
 ### 1. Check artifact status
 
-```bash
-change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
-for artifact in proposal.md design.md tasks.md; do
-  if [ -f "$change_dir/$artifact" ]; then
-    echo "✓ $artifact"
-  else
-    echo "○ $artifact (not yet created)"
-  fi
-done
-```
+Use the **Glob tool** with pattern `ai/output/changes/$name/*.md` to see which of `proposal.md`, `design.md`, `tasks.md` already exist (mark ✓) and which are not yet created (mark ○).
 
 Read existing artifacts for context.
 

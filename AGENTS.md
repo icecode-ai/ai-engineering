@@ -17,3 +17,9 @@ The following content is synchronized and copied to the `user's project path` af
 The difference between the 2 `skills` directories in this project:
 * The `skills/` directory stores `auto-triggered skills`, which the Agent loads by default
 * The `ai/config/skills/` directory stores `passively-triggered skills`, which are only triggered when the user explicitly calls them
+
+## Path & permission conventions
+
+- The agent must be launched from the workspace root (the directory containing both `ai/` and `modules/`). Scripts under `ai/config/skills/` are invoked with paths relative to this root — no `PROJECT_ROOT` resolution needed.
+- Claude Code / Qoder: the install config pre-approves `Bash(bash ai/config/skills/*)` and routine git writes (`add`/`commit`/`stash`) via `permissions.allow`; project-level allow rules require a one-time workspace trust.
+- OpenCode: `bash` is allowed by default, so no permission config is needed.

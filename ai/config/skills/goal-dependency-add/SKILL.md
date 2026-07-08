@@ -11,19 +11,9 @@ Add a dependency project to the `readonly-dependencies/` directory. Dependencies
 
 User-provided arguments: `$ARGUMENTS` (first value is the git URL; second value, if present, is the branch — otherwise the default branch is used)
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
@@ -37,10 +27,10 @@ The `<branch-name>` argument is optional — do not prompt for it; if absent, th
 
 If `readonly-dependencies/$dep_name` already exists, ask the user whether to overwrite. On confirm, remove the existing directory and re-clone; on decline, abort.
 
-Run the clone-and-register script (resolves PROJECT_ROOT itself; pass url and optional branch):
+Run the clone-and-register script (it resolves the project root itself; pass url and optional branch):
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-dependency-add/scripts/clone-and-register.sh" "$url" "$branch"
+bash "ai/config/skills/goal-dependency-add/scripts/clone-and-register.sh" "$url" "$branch"
 ```
 
 If the script prints `EXISTS:`, it also prints a `PATH:` line. Ask the user whether to delete and re-add. On confirm: `rm -rf "<that path>"` then re-run the script. On decline, abort.
@@ -111,7 +101,7 @@ In case of conflict, the module guidance file takes precedence.
 **Scan entries** (run this; output drives the tables):
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-dependency-add/scripts/scan-entries.sh"
+bash "ai/config/skills/goal-dependency-add/scripts/scan-entries.sh"
 ```
 
 **Description** (one line, ≤100 chars, format: `<purpose/domain> — <key tech stack>`):

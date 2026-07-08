@@ -11,19 +11,9 @@ Remove a module from the `modules/` directory and update the project guidance.
 
 User-provided arguments: `$ARGUMENTS` (value is the module directory name to remove)
 
-## Resolve PROJECT_ROOT
+## Working directory
 
-All script paths below are resolved from `PROJECT_ROOT` — the directory containing both `ai/` and `modules/`:
-
-```bash
-set -euo pipefail
-PROJECT_ROOT="$(pwd)"
-while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PROJECT_ROOT/modules" ]; }; do
-  PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
-done
-[ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
-```
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
 
 ## Steps
 
@@ -32,9 +22,9 @@ cd "$PROJECT_ROOT"
 Check `User-provided arguments` above. **If `$ARGUMENTS` is non-empty**, use the value directly as the module-name and skip the listing and selection below. **If empty**, list available modules and ask the user to select:
 
 ```bash
-if [ -d "${PROJECT_ROOT}/modules" ]; then
+if [ -d "modules" ]; then
   found=false
-  for d in "${PROJECT_ROOT}/modules"/*/; do
+  for d in "modules"/*/; do
     [ -d "$d" ] || continue
     echo "$(basename "$d")"
     found=true
@@ -51,7 +41,7 @@ fi
 ### 2. Remove the module directory
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-module-remove/scripts/remove-and-unregister.sh" "$name"
+bash "ai/config/skills/goal-module-remove/scripts/remove-and-unregister.sh" "$name"
 ```
 
 ### 3. Re-generate the main project guidance file
@@ -120,7 +110,7 @@ In case of conflict, the module guidance file takes precedence.
 **Scan entries** (run this; output drives the tables):
 
 ```bash
-bash "${PROJECT_ROOT}/ai/config/skills/goal-module-remove/scripts/scan-entries.sh"
+bash "ai/config/skills/goal-module-remove/scripts/scan-entries.sh"
 ```
 
 **Description** (one line, ≤100 chars, format: `<purpose/domain> — <key tech stack>`):
