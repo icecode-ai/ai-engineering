@@ -8,5 +8,5 @@
   "agents": "./agents/",
   "commands": "./commands/",
   "skills": "./skills/",
-  "version": "0.0.1"
+  "version": "0.0.2"
 }

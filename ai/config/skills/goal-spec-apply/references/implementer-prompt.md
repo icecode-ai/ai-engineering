@@ -33,19 +33,19 @@ Classify your task at the start into one of three categories (if unclear, defaul
 
 Follow the Global Constraints block in the brief verbatim (version floors, naming rules, exact values).
 
-Keep changes minimal and scoped to this task. **Do NOT commit** — the controller commits your changes. Suggest a conventional-commit message in your report: `feat(scope): <summary> [ai-change: {{CHANGE_NAME}}]` (or `fix`/`refactor`/`docs`/`chore`/`test` as appropriate).
+Keep changes minimal and scoped to this task. **Do NOT commit or stage** — just write files to disk. Report the files you changed (created/modified paths).
 
 ## Report contract
 
 Write your full report to: `{{REPORT_PATH}}`
 
-Then return ONLY: status, files changed (created/modified paths), suggested commit message, one-line test summary, concerns. Status MUST be one of:
+Then return ONLY: status, files changed (created/modified paths), one-line test summary, concerns. Status MUST be one of:
 
-- **DONE** — implemented, tests pass, self-reviewed (NOT committed — the controller commits).
+- **DONE** — implemented, tests pass, self-reviewed (NOT committed or staged — just written to disk).
 - **DONE_WITH_CONCERNS** — completed but flagging doubts (state them).
 - **NEEDS_CONTEXT** — missing information to proceed (state what).
 - **BLOCKED** — cannot complete (state why).
 
-Your report file must contain: what you changed (files + summary), the tests you wrote/ran with their output, your self-review notes, and your suggested commit message. Do NOT include commit SHAs — you did not commit.
+Your report file must contain: what you changed (files + summary), the tests you wrote/ran with their output, and your self-review notes. Do NOT include commit SHAs — you did not commit.
 
 If you have a question before starting, ask it in your report with status NEEDS_CONTEXT — do not guess on spec-meaning questions.

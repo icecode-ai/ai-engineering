@@ -135,7 +135,7 @@ Fill in the template with architecture decisions, technical approach, and trade-
 - [ ] **Step 3: Write minimal implementation**
 - [ ] **Step 4: Run test to verify it passes** — `pytest tests/path -v`, expected PASS
 
-> No commit step — in `/ai-spec-apply` the controller commits each task's work, not the implementer.
+> No commit step — in `/ai-spec-apply` neither the controller nor the implementer touches git; the user stages and commits when ready.
 
 ### Task 2: ...
 ```

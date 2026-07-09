@@ -5,7 +5,7 @@ argument-hint: [<change-name>]
 disable-model-invocation: true
 ---
 
-Implement tasks from a spec change using **subagent-driven development**: a fresh implementer subagent per task, a two-stage review (spec compliance + code quality) after each, a broad final review, and a durable progress ledger. The controller is the sole git writer; TDD, code review, and verification are built in — no external skills required.
+Implement tasks from a spec change using **subagent-driven development**: a fresh implementer subagent per task, a two-stage review (spec compliance + code quality) after each, a broad final review, and a durable progress ledger. The controller never touches git — implementers write files to disk, the user stages and commits; TDD, code review, and verification are built in — no external skills required.
 
 **Input**: Optionally specify a change name (e.g., `/ai-spec-apply add-auth`). If the change name is omitted, infer from context or prompt.
 
@@ -54,7 +54,7 @@ bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" init "$change_dir"
 bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" read "$change_dir"
 ```
 
-Tasks listed in the ledger as complete are DONE — do not re-dispatch them. Resume at the first task not marked complete. The ledger is committed as `chore(progress)` commits (step 7f), so it survives `git clean -fdx`; if the ledger file is nonetheless missing, recover the "review-passed" task set via `git log --grep='chore(progress)'` — code commits alone cannot tell whether a task's review passed.
+Tasks listed in the ledger as complete are DONE — do not re-dispatch them. Resume at the first task not marked complete. The ledger is a plain file on disk (`sdd/progress.md`), so it survives context compaction. It is NOT committed, so it will not survive `git clean -fdx` — avoid running that while a change is in progress, or back up `sdd/` first.
 
 ### 5. Show current progress
 
@@ -72,19 +72,16 @@ For each pending task (marked `- [ ]` in `tasks.md`, not already in the ledger),
 
 #### 7a. Build the dispatch batch
 
-Read the task's `**Parallelizable:**` flag and its `**Interfaces:**` (Consumes/Produces). **Implementers are always serial** — one implementer at a time. The controller is the sole git committer (see 7d), so concurrent implementers would race on git and build artifacts; `Parallelizable` instead enables **pipeline** overlap of a task's review with the next implementer:
+Read the task's `**Parallelizable:**` flag and its `**Interfaces:**` (Consumes/Produces). **Implementers are always serial** — one implementer at a time. The controller is the sole git writer (see 7d); `Parallelizable` enables **pipeline** overlap of a task's review with the next implementer:
 
-- **Serial** (default, `Parallelizable: no`, or the next task depends on a not-yet-done task): after committing a task's work (7d) and generating its review package (7e), dispatch the task-reviewer alone; wait for its verdict before dispatching the next implementer.
-- **Pipeline** (`Parallelizable: yes` AND the next pending task has no file overlap): after committing task N's work and generating its review package, dispatch the task-reviewer(N) AND the next implementer(N+1) in ONE message (two Task tool calls). The reviewer reads a frozen review-package file, so it is safe to overlap with implementer N+1's writes. Never pipeline tasks that touch the same files.
+- **Serial** (default, `Parallelizable: no`, or the next task depends on a not-yet-done task): after recording a task's file list (7d) and generating its review package (7e), dispatch the task-reviewer alone; wait for its verdict before dispatching the next implementer.
+- **Pipeline** (`Parallelizable: yes` AND the next pending task has no file overlap): after recording task N's file list and generating its review package, dispatch the task-reviewer(N) AND the next implementer(N+1) in ONE message (two Task tool calls). The reviewer reads a frozen review-package file, so it is safe to overlap with implementer N+1's writes. Never pipeline tasks that touch the same files.
 
 #### 7b. Prepare each task's handoff files (do this before dispatching)
 
 ```bash
 # Extract the task's full text to a brief file (single source of requirements)
 bash "ai/config/skills/goal-spec-apply/scripts/task-brief.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-brief.md"
-
-# Record the BASE commit (the commit before this task's work) — never use HEAD~1
-BASE="$(bash "ai/config/skills/goal-spec-apply/scripts/record-base.sh" "$change_dir" "$N")"
 ```
 
 #### 7c. Dispatch the implementer subagent
@@ -95,75 +92,70 @@ Read `ai/config/skills/goal-spec-apply/references/implementer-prompt.md`, fill t
 - `{{CROSS_TASK_INTERFACES}}` — exact signatures/decisions from earlier tasks this task consumes (from their Produces blocks).
 - `{{AMBIGUITY_RESOLUTIONS}}` — your resolution of any ambiguity you noticed in the brief.
 - `{{REPORT_PATH}}` — `$change_dir/sdd/task-$N-report.md`.
-- `{{CHANGE_NAME}}` — the change name (for the commit tag).
 
-Dispatch via the **Task tool** with `subagent_type: "ai-spec-implementer"`. **Do NOT paste accumulated prior-task summaries** — a fresh subagent gets only its task brief, the interfaces, and the global constraints. The implementer does NOT commit; it returns changed files + a suggested commit message (see its report contract).
+Dispatch via the **Task tool** with `subagent_type: "ai-spec-implementer"`. **Do NOT paste accumulated prior-task summaries** — a fresh subagent gets only its task brief, the interfaces, and the global constraints. The implementer does NOT commit or stage; it writes files to disk and returns the changed paths so the controller can generate a review package (see its report contract).
 
-#### 7d. Handle implementer status + commit the task's work
+#### 7d. Handle implementer status + record changed files
 
-The implementer returns one of: **DONE** / **DONE_WITH_CONCERNS** / **NEEDS_CONTEXT** / **BLOCKED**. The implementer does NOT commit — when it reports DONE (or DONE_WITH_CONCERNS you accept), the **controller** is the sole git writer and commits the task's work before review:
+The implementer returns one of: **DONE** / **DONE_WITH_CONCERNS** / **NEEDS_CONTEXT** / **BLOCKED**. The implementer writes files to disk and reports the changed paths — it does NOT commit or stage. The controller **never touches git** (no `add`, no `commit`). When the implementer reports DONE (or DONE_WITH_CONCERNS you accept), the controller records the file list for the review package.
+
+Write the implementer's reported changed files (one path per line) to `$change_dir/sdd/task-$N-files.txt`:
 
 ```bash
-# Stage exactly the files the implementer reported changed, then commit with its suggested message.
-git add <reported-files>            # e.g. git add path/a path/b
-git commit -m "<suggested message> [ai-change: $name]"
+# Controller fills in the implementer's reported paths, e.g.:
+printf '%s\n' modules/foo/src/a.ts modules/foo/src/b.ts > "$change_dir/sdd/task-$N-files.txt"
 ```
 
-- **DONE** → commit the work (above), then proceed to 7e (review).
-- **DONE_WITH_CONCERNS** → read the concerns; if about correctness/scope, address before committing; if observations, commit and proceed to review.
-- **NEEDS_CONTEXT** → provide the missing context and re-dispatch (same task). Do not commit partial work.
+- **DONE** → record file list (above), then proceed to 7e (review).
+- **DONE_WITH_CONCERNS** → read the concerns; if about correctness/scope, address before proceeding; if observations, proceed to review.
+- **NEEDS_CONTEXT** → provide the missing context and re-dispatch (same task). Do not proceed with partial work.
 - **BLOCKED** → assess: context problem (add context, re-dispatch), task too large (split it), plan wrong (escalate to user). Never ignore an escalation or force a retry with no changes.
 
-Recording BASE (7b) before dispatch + this commit after gives a clean `BASE..HEAD` review package containing only this task's work.
+The review package (7e) diffs these files against each repo's HEAD (the pre-change baseline) — no staging or commits needed.
 
 #### 7e. Two-stage task review
 
 Generate the review package BEFORE dispatching the next implementer (so the package is frozen — a pipelined next implementer won't change it):
 
 ```bash
-BASE="$(cat "$change_dir/sdd/task-$N-base.sha")"
-bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$BASE" HEAD "$change_dir/sdd/task-$N-review.md"
+bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$change_dir/sdd/task-$N-files.txt" "$change_dir/sdd/task-$N-review.md"
 ```
 
-Read `ai/config/skills/goal-spec-apply/references/task-reviewer-prompt.md`, fill placeholders (`{{TASK_BRIEF_PATH}}`, `{{REPORT_PATH}}`, `{{REVIEW_PACKAGE_PATH}}`, `{{GLOBAL_CONSTRAINTS}}`, `{{SPECS_PATH}}` = `$change_dir/specs`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`).
+The package diffs each reported file against its owning repo's HEAD (the pre-change baseline), grouped per repo — no commits needed. Read `ai/config/skills/goal-spec-apply/references/task-reviewer-prompt.md`, fill placeholders (`{{TASK_BRIEF_PATH}}`, `{{REPORT_PATH}}`, `{{REVIEW_PACKAGE_PATH}}`, `{{GLOBAL_CONSTRAINTS}}`, `{{SPECS_PATH}}` = `$change_dir/specs`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`).
 
-**Pipeline dispatch** (only if task N is `Parallelizable: yes` and the next pending task N+1 has no file overlap): dispatch the task-reviewer(N) AND the next implementer(N+1) (7c) in ONE message. The reviewer reads the frozen review-package file, so it is safe to overlap. When both return, process the verdict below and commit N+1's work (7d). **Serial dispatch** (default): dispatch the task-reviewer alone and wait for its verdict before the next implementer.
+**Pipeline dispatch** (only if task N is `Parallelizable: yes` and the next pending task N+1 has no file overlap): dispatch the task-reviewer(N) AND the next implementer(N+1) (7c) in ONE message. The reviewer reads the frozen review-package file, so it is safe to overlap. When both return, process the verdict below and record N+1's files (7d). **Serial dispatch** (default): dispatch the task-reviewer alone and wait for its verdict before the next implementer.
 
 The reviewer returns `SPEC: ✅/❌/⚠️` and `QUALITY: Approved/Issues`. Handle:
 - **SPEC ✅ + QUALITY Approved** → mark complete (7f).
-- **SPEC ❌ or Critical/Important issues** → dispatch a fix subagent (`subagent_type: "ai-spec-implementer"`) with all findings + the implementer contract (re-run covering tests, append fix report to the same `task-$N-report.md`); the controller commits the fix, then re-review (7e again). Do not move to the next task while Critical/Important issues are open.
+- **SPEC ❌ or Critical/Important issues** → dispatch a fix subagent (`subagent_type: "ai-spec-implementer"`) with all findings + the implementer contract (re-run covering tests, append fix report to the same `task-$N-report.md`); the controller records the fix's changed files (7d), then re-review (7e again). Do not move to the next task while Critical/Important issues are open.
 - **⚠️ Cannot verify from diff** → you (the controller) resolve each yourself before marking complete; you hold the cross-task context the reviewer lacks. If a real gap, treat as failed spec review.
 - **Minor findings** → record in the ledger; defer to the final review (step 8).
 
 Never tell a reviewer what not to flag, or pre-rate a finding's severity in the dispatch.
 
-#### 7f. Mark task complete + update ledger + commit progress
+#### 7f. Mark task complete + update ledger
 
 ```bash
 # Mark all of task N's step checkboxes done (robust block detection — no manual line counting)
 bash "ai/config/skills/goal-spec-apply/scripts/mark-task-done.sh" "$change_dir/tasks.md" "$N"
 
-# Append to the durable ledger (computes the short SHA range internally)
-bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" append-task "$change_dir" "$N" "$BASE"
-
-# Commit the progress bookkeeping so it survives git clean -fdx.
-# The ledger records "review passed" — which code commits alone cannot express.
-git add "$change_dir/tasks.md" "$change_dir/sdd/progress.md"
-git commit -m "chore(progress): task $N complete (review clean) [ai-change: $name]"
+# Append to the durable ledger (plain file on disk — survives context compaction)
+bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" append-task "$change_dir" "$N"
 ```
 
 Do this in the same turn as the review passes. Then continue to the next pending task (7a).
 
 ### 8. Final whole-branch review
 
-After ALL tasks are complete, dispatch ONE final code-reviewer subagent for the whole branch:
+After ALL tasks are complete, dispatch ONE final code-reviewer subagent for the whole change:
 
 ```bash
-MERGE_BASE="$(bash "ai/config/skills/goal-spec-apply/scripts/final-review-base.sh")"
-bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$MERGE_BASE" HEAD "$change_dir/sdd/final-review.md"
+# Gather every task's reported files into one list
+cat "$change_dir"/sdd/task-*-files.txt | sort -u > "$change_dir/sdd/final-files.txt"
+bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$change_dir/sdd/final-files.txt" "$change_dir/sdd/final-review.md"
 ```
 
-Read `ai/config/skills/goal-spec-apply/references/code-reviewer-prompt.md`, fill placeholders (`{{REVIEW_PACKAGE_PATH}}`, `{{MINOR_FINDINGS}}` — the accumulated Minor findings from per-task reviews, `{{SPECS_PATH}}`, `{{DESIGN_PATH}}`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`). If findings, dispatch **ONE fix subagent** (`subagent_type: "ai-spec-implementer"`) with the complete findings list (not one fixer per finding); the controller commits the fix. Re-verify affected tests after the fix.
+Read `ai/config/skills/goal-spec-apply/references/code-reviewer-prompt.md`, fill placeholders (`{{REVIEW_PACKAGE_PATH}}`, `{{MINOR_FINDINGS}}` — the accumulated Minor findings from per-task reviews, `{{SPECS_PATH}}`, `{{DESIGN_PATH}}`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`). If findings, dispatch **ONE fix subagent** (`subagent_type: "ai-spec-implementer"`) with the complete findings list (not one fixer per finding); the controller records the fix's changed files (7d). Re-verify affected tests after the fix.
 
 ### 9. Final verification
 
@@ -185,13 +177,13 @@ bash "ai/config/skills/goal-spec-apply/scripts/check-progress.sh" "$name"
 ## Implementing: <change-name> (subagent-driven)
 
 [Task 3/7] <task description>
-  ├─ implementer subagent → DONE → controller committed (abc1234)
+  ├─ implementer subagent → DONE → files recorded
   ├─ task reviewer → SPEC ✅, QUALITY Approved
-  └─ progress committed (chore(progress), def5678)
+  └─ ledger updated (task 3 marked complete)
 [Task 4/7] <task description>
-  ├─ implementer subagent → DONE → controller committed
-  ├─ task reviewer → SPEC ❌ (Missing: progress reporting) → fix subagent → controller committed → re-review ✅
-  └─ progress committed
+  ├─ implementer subagent → DONE → files recorded
+  ├─ task reviewer → SPEC ❌ (Missing: progress reporting) → fix subagent → fix applied → re-review ✅
+  └─ ledger updated
 ```
 
 ## Output On Completion
@@ -230,16 +222,16 @@ What would you like to do?
 
 ## Guardrails
 - **Subagent-driven**: dispatch a fresh implementer per task via the Task tool (`subagent_type: "ai-spec-implementer"`) and review via `ai-spec-reviewer`; never implement tasks in the controller session. Implementers are always serial (one at a time); `Parallelizable: yes` enables pipeline overlap of a task's reviewer with the next implementer, not concurrent implementers.
-- **Controller owns git**: implementers and fixers never commit — they report changed files + a suggested commit message. The controller is the sole git writer: it commits each task's code (7d, before review) and a `chore(progress)` commit (7f, after review passes). This avoids git index races and keeps per-task review packages clean.
+- **No git operations**: implementers, fixers, and the controller never touch git — no `add`, no `commit`, no `stash`. Implementers write files to disk and report changed paths. Review packages use read-only `git diff` (tracked files vs HEAD) and `git diff --no-index` (untracked files, shown in full), grouped per repo so nested module repos work. The user stages and commits to whatever branch is checked out in each repo.
 - **Context isolation**: hand the implementer its task brief file + cross-task interfaces + ambiguity resolutions + report contract only. Never paste session history or prior-task summaries.
 - **File handoff**: briefs, reports, and review packages move as files under `$change_dir/sdd/`, not pasted text.
 - **Two-stage review**: every task gets a task-reviewer subagent (spec compliance + code quality) before marking complete. Critical/Important findings must be fixed and re-reviewed. Never skip the re-review.
-- **Durable ledger**: append to `sdd/progress.md` AND commit it (`chore(progress)`) the moment a task's review passes; on resume, trust the ledger (or `git log --grep='chore(progress)'` if the file is gone) over your own recollection. Never re-dispatch a task the ledger marks complete.
+- **Durable ledger**: append to `sdd/progress.md` (a plain file on disk) the moment a task's review passes; on resume, trust the ledger over your own recollection. It survives context compaction but NOT `git clean -fdx` (avoid that mid-change). Never re-dispatch a task the ledger marks complete.
 - **TDD inline**: implementer subagents follow RED-GREEN-REFACTOR (per the implementer-prompt); classify each task Strict TDD / Exploratory / Visual. No external TDD skill.
 - **No pre-judging reviewers**: never write "don't flag X" or "at most Minor" in a review dispatch.
 - **Final review is broad**: one whole-branch reviewer, one consolidated fix subagent for its findings.
 - **Verification inline**: final build + full suite + regression check happens here, no external verification skill.
 - Keep going through tasks until done or blocked; pause on errors/blockers/unclear requirements — don't guess.
 - If implementation reveals a design issue, pause and suggest updating artifacts (`/ai-spec-propose` or edit `design.md`/`tasks.md`).
-- Update the task checkbox AND the ledger AND commit them (`chore(progress)`) immediately after each task's review passes.
+- Update the task checkbox AND the ledger immediately after each task's review passes.
 - No per-task model selection is performed (P3 intentionally not implemented).
