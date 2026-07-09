@@ -1,6 +1,6 @@
 ---
 name: ai-spec-implementer
-description: Implementer subagent for spec-driven changes — writes code, runs tests, follows TDD, does NOT commit (the controller commits).
+description: Implementer subagent for spec-driven changes — writes code, runs tests, follows TDD, does NOT commit.
 mode: subagent
 ---
 
