@@ -62,15 +62,15 @@ e. After all flagged items are resolved, stage the remaining candidates with `gi
 f. Generate a conventional-commit message from the diff and the active change in `ai/output/changes/` (the non-archived change matching this work): `feat(scope): <summary> [ai-change: <change-name>]`. Choose type (`feat`/`fix`/`refactor`/`docs`/`chore`/`test`) and scope from the diff. If multiple unrelated changes are present, split into multiple logical commits. If there is no active change, use `chore: <summary>` without the tag.
 g. Commit with `git commit -m "<message>"`. Do not push yet.
 
-### 4. Pull latest and sync mainline into the current branch
+### 4. Pull latest content
 
 ```bash
-bash "ai/config/skills/goal-git-push/scripts/pull-and-merge.sh" "$target"
+bash "ai/config/skills/goal-git-push/scripts/pull.sh" "$target"
 ```
 
-Only MAIN and modules are pulled and merged (matching push scope). Dependencies are never pulled/merged here.
+Pulls the latest content for the current branch (MAIN + modules only; dependencies are never pulled here). Conflicts (unmerged paths) are reported per-repo and resolved in step 5 before proceeding.
 
-### 5. Resolve conflicts automatically
+### 5. Resolve pull conflicts automatically
 
 If step 4 produced merge conflicts, automatically resolve them without prompting the user:
 
@@ -82,9 +82,31 @@ If step 4 produced merge conflicts, automatically resolve them without prompting
 6. Do not abort the merge, do not discard changes, do not ask for confirmation — resolve and proceed.
 7. **Gitlink conflicts** under `modules/` or `readonly-dependencies/` (tree-level SHA conflicts, shown as `CONFLICT (submodule)` or a modified gitlink entry): resolve to the **current working-tree HEAD** of the nested repo (i.e. the commit the nested repo is actually checked out at). Record it with `git add modules/<name>` / `git add readonly-dependencies/<dep>`.
 
+Repeat for every repository (MAIN and modules) that has conflicts. **Do not proceed to step 6 until all pull conflicts are resolved and committed** — an unfinished merge would block the next phase.
+
+### 6. Merge remote mainline into the current branch
+
+```bash
+bash "ai/config/skills/goal-git-push/scripts/merge-remote-mainline.sh" "$target"
+```
+
+Fetches `origin` and merges `origin/<mainline>` (detected per-repo: `origin/HEAD` → `origin/main` → `origin/master`) into the current branch, for MAIN + modules only. Dependencies are never merged here. This brings the latest mainline into the current branch so the push carries both the branch's and mainline's latest. Conflicts are reported per-repo and resolved in step 7.
+
+### 7. Resolve merge conflicts automatically
+
+If step 6 produced merge conflicts, automatically resolve them without prompting the user:
+
+1. List conflicted files with `git diff --name-only --diff-filter=U` (run inside each repository that conflicted).
+2. For each conflicted file, read the `<<<<<<<`, `=======`, and `>>>>>>>` sections plus the surrounding code and recent commit context to understand both sides' intent.
+3. Edit the file to produce the correct merged result: combine non-overlapping changes from both sides; where they genuinely conflict, choose the semantically correct side based on the code's purpose. Remove all conflict markers.
+4. Stage each resolved file with `git add <file>`.
+5. Finalize the merge with `git commit` (default merge message) if the merge is still in progress.
+6. Do not abort the merge, do not discard changes, do not ask for confirmation — resolve and proceed.
+7. **Gitlink conflicts** under `modules/` or `readonly-dependencies/` (tree-level SHA conflicts, shown as `CONFLICT (submodule)` or a modified gitlink entry): resolve to the **current working-tree HEAD** of the nested repo (i.e. the commit the nested repo is actually checked out at). Record it with `git add modules/<name>` / `git add readonly-dependencies/<dep>`.
+
 Repeat for every repository (MAIN and modules) that has conflicts.
 
-### 6. Push based on target scope
+### 8. Push based on target scope
 
 ```bash
 bash "ai/config/skills/goal-git-push/scripts/push.sh" "$target"
@@ -97,7 +119,8 @@ Pushing modules before MAIN ensures each gitlink's target commit exists on the m
 - Never add `modules/` to `.gitignore` (per `/ai-env-init`); modules are tracked as gitlinks in MAIN
 - Never create a `.gitmodules` file — modules and readonly-dependencies are recorded as bare gitlinks (commit pointers), not submodules
 - For `ALL` or `MAIN` targets, always check `ai/output/changes/` for incomplete tasks or unarchived changes before pushing (fail-fast)
-- Before pushing: stage+commit uncommitted work with risk interception (step 3), pull latest + merge mainline (step 4), and auto-resolve any conflicts (step 5)
+- Before pushing: stage+commit uncommitted work with risk interception (step 3), pull latest (step 4) and resolve pull conflicts (step 5), then merge remote mainline `origin/<mainline>` (step 6) and resolve merge conflicts (step 7)
 - Risk interception (step 3) pauses to ask the user per flagged file (include/exclude/abort); never silently commit secrets, large files, or unignored artifacts
 - Only committed changes are pushed — step 3 ensures uncommitted work (including AI-created files) is committed first
-- If push fails due to remote divergence, inform the user and suggest re-running `/ai-git-push` (which now pulls and merges first)
+- Pull and merge run as two separate phases: pull conflicts must be fully resolved (step 5) before merging remote mainline (step 6), since an unfinished merge blocks the next `git merge`
+- If push fails due to remote divergence, inform the user and suggest re-running `/ai-git-push` (which now pulls, merges remote mainline, and resolves conflicts first)

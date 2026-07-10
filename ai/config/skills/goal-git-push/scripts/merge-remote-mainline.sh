@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-# Merge REMOTE mainline (origin/<mainline>) into current branch for MAIN, a module, a dependency, or ALL.
-# Usage: merge.sh <target>   (target: ALL | MAIN | <module-name> | <dependency-name>)
-# Fetches origin, then merges origin/<mainline> (mainline detected per-repo: origin/HEAD -> origin/main -> origin/master -> main).
+# Merge REMOTE mainline (origin/<mainline>) into current branch for MAIN + modules only
+# (push scope; readonly-dependencies are never merged).
+# Usage: merge-remote-mainline.sh <target>   (target: ALL | MAIN | <module-name>)
+# Fetches origin, then merges origin/<mainline> (mainline detected per-repo:
+# origin/HEAD -> origin/main -> origin/master -> main).
+# Conflicts (unmerged paths) print an auto-resolve line; other merge failures print "see output above".
 set -euo pipefail
 target="${1:-ALL}"
 
@@ -42,9 +45,11 @@ merge_one() {
 
 case "$target" in
   ALL)
+    for d in "${PROJECT_ROOT}/modules"/*/; do
+      [ -d "$d" ] || continue
+      merge_one "Module: $(basename "$d")" "$d"
+    done
     merge_one "MAIN" "$PROJECT_ROOT"
-    for d in "${PROJECT_ROOT}/modules"/*/; do [ -d "$d" ] || continue; merge_one "Module: $(basename "$d")" "$d"; done
-    for d in "${PROJECT_ROOT}/readonly-dependencies"/*/; do [ -d "$d" ] || continue; merge_one "Dependency: $(basename "$d")" "$d"; done
     ;;
   MAIN)
     merge_one "MAIN" "$PROJECT_ROOT"
@@ -52,8 +57,6 @@ case "$target" in
   *)
     if [ -d "${PROJECT_ROOT}/modules/$target/.git" ]; then
       merge_one "Module: $target" "${PROJECT_ROOT}/modules/$target"
-    elif [ -d "${PROJECT_ROOT}/readonly-dependencies/$target/.git" ]; then
-      merge_one "Dependency: $target" "${PROJECT_ROOT}/readonly-dependencies/$target"
     else
       echo "Target '$target' not found or is not a git repository"
       exit 1

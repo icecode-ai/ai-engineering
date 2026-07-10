@@ -1,11 +1,11 @@
 ---
 name: goal-git-merge
-description: Merge mainline branch into current branch across MAIN, modules, and dependencies
+description: Merge remote mainline (origin/<mainline>) into current branch across MAIN, modules, and dependencies
 argument-hint: [<target>]
 disable-model-invocation: true
 ---
 
-Merge the mainline branch into the current branch across git repositories.
+Merge the **remote mainline** (`origin/<mainline>`) into the current branch across git repositories. Fetches `origin` first, then merges `origin/<mainline>` (mainline detected per-repo: `origin/HEAD` → `origin/main` → `origin/master`).
 
 **Input**: One optional argument — the target scope. Defaults to `ALL`.
 
@@ -157,6 +157,7 @@ bash "ai/config/skills/goal-git-merge/scripts/scan-entries.sh"
 - Preserve any user-specific content outside the fixed template (e.g. custom development specs the user appended) in each file — update only the template-derived portions.
 
 ## Guardrails
-- Validate the mainline branch exists before attempting merge (detected dynamically per repo)
-- For dependencies, merge only syncs the dependency's own `main` into its current branch — do not edit the knowledge content inside `readonly-dependencies/`
+- Validate the remote mainline branch exists before attempting merge (detected dynamically per repo: `origin/HEAD` → `origin/main` → `origin/master`)
+- Fetch `origin` before merging so `origin/<mainline>` is up to date
+- For dependencies, merge only syncs the dependency's own remote mainline (`origin/<mainline>`) into its current branch — do not edit the knowledge content inside `readonly-dependencies/`
 - If a repository produced no update (`Already up to date.`) or failed, skip guidance generation for it
