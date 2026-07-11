@@ -664,9 +664,8 @@
         <p class="overview-desc" data-i18n="overview.desc">为 AI Agent 提供一套端到端工作流</p>
         <div class="tags">
             <span class="tag" data-i18n="overview.tag1">Git 多仓库管理</span>
-            <span class="tag" data-i18n="overview.tag2">只读依赖隔离</span>
-            <span class="tag" data-i18n="overview.tag3">增强 OpenSpec 工作流</span>
-            <span class="tag" data-i18n="overview.tag4">自包含 Superpowers 风格执行</span>
+            <span class="tag" data-i18n="overview.tag3">集成 OpenSpec</span>
+            <span class="tag" data-i18n="overview.tag4">集成 Superpowers</span>
         </div>
     </div>
 </section>
@@ -756,50 +755,233 @@
 <section id="workflow">
     <div class="container">
         <h2 class="section-title" data-i18n="workflow.title">流程</h2>
-        <p class="section-desc" data-i18n="workflow.desc">增强 OpenSpec 工作流，自包含 Superpowers 风格执行——子代理驱动、TDD、两阶段审查——实现从探索想法到归档的完整闭环</p>
 
-        <div class="workflow-flow">
-            <div class="workflow-step">
-                <span class="step-num">1</span>
-                <div class="step-name">explore</div>
-                <div class="step-desc" data-i18n="workflow.step1">探索想法，调研问题，明确需求</div>
+        <div class="workflow-tabs">
+            <button class="workflow-tab active" data-wtab="e2e-auto" data-i18n="workflow.tab.e2e_auto">自动化端到端流程</button>
+            <button class="workflow-tab" data-wtab="e2e-explore" data-i18n="workflow.tab.e2e_explore">探索式端到端流程</button>
+            <button class="workflow-tab" data-wtab="auto" data-i18n="workflow.tab.auto">自动化流程</button>
+            <button class="workflow-tab" data-wtab="manual" data-i18n="workflow.tab.manual">手动流程</button>
+        </div>
+
+        <!-- Panel: 自动化端到端流程 -->
+        <div class="workflow-panel active" data-wpanel="e2e-auto">
+            <p class="workflow-nature" data-i18n="workflow.nature.e2e_auto">全程自动，无需人工干预 · 含 Git 提交、发布、回归测试与归档</p>
+            <div class="workflow-flow workflow-flow--compact">
+                <div class="workflow-step">
+                    <span class="step-num">1</span>
+                    <div class="step-name">explore</div>
+                    <div class="step-desc" data-i18n="workflow.s.explore">探索需求，明确范围</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">2</span>
+                    <div class="step-name">propose</div>
+                    <div class="step-desc" data-i18n="workflow.s.propose">创建变更，生成产物</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">3</span>
+                    <div class="step-name">apply</div>
+                    <div class="step-desc" data-i18n="workflow.s.apply">实现变更，审查验证</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">4</span>
+                    <div class="step-name">push</div>
+                    <div class="step-desc" data-i18n="workflow.s.push">提交并推送代码</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">5</span>
+                    <div class="step-name">release</div>
+                    <div class="step-desc" data-i18n="workflow.s.release">发布到目标环境</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">6</span>
+                    <div class="step-name">test</div>
+                    <div class="step-desc" data-i18n="workflow.s.test">运行回归测试</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">7</span>
+                    <div class="step-name">archive</div>
+                    <div class="step-desc" data-i18n="workflow.s.archive">归档变更，同步规格</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
             </div>
-            <div class="workflow-arrow">&#8594;</div>
-            <div class="workflow-step">
-                <span class="step-num">2</span>
-                <div class="step-name">propose</div>
-                <div class="step-desc" data-i18n="workflow.step2">提出变更，一步生成全部产物</div>
-            </div>
-            <div class="workflow-arrow">&#8594;</div>
-            <div class="workflow-step">
-                <span class="step-num">3</span>
-                <div class="step-name">apply</div>
-                <div class="step-desc" data-i18n="workflow.step3">按 TDD 实现任务、审查、验证</div>
-            </div>
-            <div class="workflow-arrow">&#8594;</div>
-            <div class="workflow-step">
-                <span class="step-num">4</span>
-                <div class="step-name">archive</div>
-                <div class="step-desc" data-i18n="workflow.step4">归档已完成变更，同步规格</div>
+            <div class="cli-block">
+                <div class="cli-header">
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                </div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-goal-e2e-auto @ai/input/jim/0/prd.md</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_auto_1">全自动端到端流程启动，无需干预，正在执行...</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_auto_2">流程完成，报告已生成：ai/output/changes/user-login/report.md</span></div>
             </div>
         </div>
 
-        <div class="cli-block">
-            <div class="cli-header">
-                <span class="cli-dot"></span>
-                <span class="cli-dot"></span>
-                <span class="cli-dot"></span>
+        <!-- Panel: 探索式端到端流程 -->
+        <div class="workflow-panel" data-wpanel="e2e-explore">
+            <p class="workflow-nature" data-i18n="workflow.nature.e2e_explore">关键步骤需用户确认 · 探索、Git 提交、发布、归档前会询问</p>
+            <div class="workflow-flow workflow-flow--compact">
+                <div class="workflow-step">
+                    <span class="step-num">1</span>
+                    <div class="step-name">explore</div>
+                    <div class="step-desc" data-i18n="workflow.s.explore">探索需求，明确范围</div>
+                    <span class="step-badge step-badge--confirm" data-i18n="workflow.mode.confirm">确认</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">2</span>
+                    <div class="step-name">propose</div>
+                    <div class="step-desc" data-i18n="workflow.s.propose">创建变更，生成产物</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">3</span>
+                    <div class="step-name">apply</div>
+                    <div class="step-desc" data-i18n="workflow.s.apply">实现变更，审查验证</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">4</span>
+                    <div class="step-name">push</div>
+                    <div class="step-desc" data-i18n="workflow.s.push">提交并推送代码</div>
+                    <span class="step-badge step-badge--confirm" data-i18n="workflow.mode.confirm">确认</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">5</span>
+                    <div class="step-name">release</div>
+                    <div class="step-desc" data-i18n="workflow.s.release">发布到目标环境</div>
+                    <span class="step-badge step-badge--confirm" data-i18n="workflow.mode.confirm">确认</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">6</span>
+                    <div class="step-name">test</div>
+                    <div class="step-desc" data-i18n="workflow.s.test">运行回归测试</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">7</span>
+                    <div class="step-name">archive</div>
+                    <div class="step-desc" data-i18n="workflow.s.archive">归档变更，同步规格</div>
+                    <span class="step-badge step-badge--confirm" data-i18n="workflow.mode.confirm">确认</span>
+                </div>
             </div>
-            <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-spec-explore @ai/input/jim/0/prd.md</span>
+            <div class="cli-block">
+                <div class="cli-header">
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                </div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-goal-e2e-explore @ai/input/jim/0/prd.md</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_explore_1">探索式端到端流程启动，关键步骤将询问你确认...</span></div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_explore_2">确认提交并发布？</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_explore_3">已提交并发布，继续归档...</span></div>
             </div>
-            <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli">已进入探索模式，正在分析 PRD 并梳理需求...</span>
+        </div>
+
+        <!-- Panel: 自动化流程 -->
+        <div class="workflow-panel" data-wpanel="auto">
+            <p class="workflow-nature" data-i18n="workflow.nature.auto">全程自动，但不含 Git 提交、发布与归档 · 产物留在本地由你提交</p>
+            <div class="workflow-flow">
+                <div class="workflow-step">
+                    <span class="step-num">1</span>
+                    <div class="step-name">explore</div>
+                    <div class="step-desc" data-i18n="workflow.s.explore">探索需求，明确范围</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">2</span>
+                    <div class="step-name">propose</div>
+                    <div class="step-desc" data-i18n="workflow.s.propose">创建变更，生成产物</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">3</span>
+                    <div class="step-name">apply</div>
+                    <div class="step-desc" data-i18n="workflow.s.apply">实现变更，审查验证</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">4</span>
+                    <div class="step-name">test</div>
+                    <div class="step-desc" data-i18n="workflow.s.test">运行回归测试</div>
+                    <span class="step-badge step-badge--auto" data-i18n="workflow.mode.auto">自动</span>
+                </div>
             </div>
-            <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text" data-i18n="workflow.cli2">创建变更 或 /ai-spec-propose</span>
+            <div class="cli-block">
+                <div class="cli-header">
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                </div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-goal-auto @ai/input/jim/0/prd.md</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.auto_1">自动化流程启动，不含 Git 提交与发布，正在执行...</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.auto_2">实现完成，产物已留在本地，报告已生成</span></div>
             </div>
-            <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli3">创建变更中..</span>
+        </div>
+
+        <!-- Panel: 手动流程 -->
+        <div class="workflow-panel" data-wpanel="manual">
+            <p class="workflow-nature" data-i18n="workflow.nature.manual">手动流程 · 逐步执行 /ai-spec-* 命令，完全由你掌控</p>
+            <div class="workflow-flow">
+                <div class="workflow-step">
+                    <span class="step-num">1</span>
+                    <div class="step-name">explore</div>
+                    <div class="step-desc" data-i18n="workflow.s.explore">探索需求，明确范围</div>
+                    <span class="step-badge step-badge--manual" data-i18n="workflow.mode.manual">手动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">2</span>
+                    <div class="step-name">propose</div>
+                    <div class="step-desc" data-i18n="workflow.s.propose">创建变更，生成产物</div>
+                    <span class="step-badge step-badge--manual" data-i18n="workflow.mode.manual">手动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">3</span>
+                    <div class="step-name">apply</div>
+                    <div class="step-desc" data-i18n="workflow.s.apply">实现变更，审查验证</div>
+                    <span class="step-badge step-badge--manual" data-i18n="workflow.mode.manual">手动</span>
+                </div>
+                <div class="workflow-arrow">&#8594;</div>
+                <div class="workflow-step">
+                    <span class="step-num">4</span>
+                    <div class="step-name">archive</div>
+                    <div class="step-desc" data-i18n="workflow.s.archive">归档变更，同步规格</div>
+                    <span class="step-badge step-badge--manual" data-i18n="workflow.mode.manual">手动</span>
+                </div>
             </div>
-            <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span
-                    class="cli-text">/ai-spec-apply</span></div>
+            <div class="cli-block">
+                <div class="cli-header">
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                    <span class="cli-dot"></span>
+                </div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-spec-explore @ai/input/jim/0/prd.md</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli">已进入探索模式，正在分析 PRD 并梳理需求...</span></div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text" data-i18n="workflow.cli2">创建变更 或 /ai-spec-propose</span></div>
+                <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli3">创建变更中..</span></div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-spec-apply</span></div>
+            </div>
         </div>
     </div>
 </section>
@@ -808,7 +990,7 @@
 <section id="commands">
     <div class="container">
         <h2 class="section-title" data-i18n="commands.title">命令</h2>
-        <p class="section-desc" data-i18n="commands.desc">四大类命令，覆盖环境、模块、Spec 工作流与 Git 操作</p>
+        <p class="section-desc" data-i18n="commands.desc">五大类命令，覆盖环境、模块、工作流、Spec 与 Git 操作</p>
 
         <!-- 环境指令 -->
         <div class="cmd-category">
@@ -840,6 +1022,25 @@
                 <div class="cmd-card">
                     <div class="cmd-name">/ai-dependency-remove</div>
                     <div class="cmd-desc" data-i18n="commands.dependency_remove">从 readonly-dependencies/ 目录中删除依赖</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工作流指令 -->
+        <div class="cmd-category">
+            <h3 class="cmd-category-title" data-i18n="commands.cat.goal">工作流指令</h3>
+            <div class="cmd-grid">
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-goal-e2e-auto</div>
+                    <div class="cmd-desc" data-i18n="commands.goal_e2e_auto">自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-goal-e2e-explore</div>
+                    <div class="cmd-desc" data-i18n="commands.goal_e2e_explore">探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认</div>
+                </div>
+                <div class="cmd-card cmd-card--full">
+                    <div class="cmd-name">/ai-goal-auto</div>
+                    <div class="cmd-desc" data-i18n="commands.goal_auto">自动化流程：探索、创建变更、执行、测试，不涉及 git 提交/发布，过程不询问用户</div>
                 </div>
             </div>
         </div>
@@ -893,25 +1094,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- 目标指令 -->
-        <div class="cmd-category">
-            <h3 class="cmd-category-title" data-i18n="commands.cat.goal">目标指令</h3>
-            <div class="cmd-grid">
-                <div class="cmd-card">
-                    <div class="cmd-name">/ai-goal-auto</div>
-                    <div class="cmd-desc" data-i18n="commands.goal_auto">自动化流程：探索、创建变更、执行、测试，不涉及 git 提交/发布，过程不询问用户</div>
-                </div>
-                <div class="cmd-card">
-                    <div class="cmd-name">/ai-goal-e2e-explore</div>
-                    <div class="cmd-desc" data-i18n="commands.goal_e2e_explore">探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认</div>
-                </div>
-                <div class="cmd-card">
-                    <div class="cmd-name">/ai-goal-e2e-auto</div>
-                    <div class="cmd-desc" data-i18n="commands.goal_e2e_auto">自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户</div>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -934,9 +1116,8 @@
             'aria.menu': 'Menu',
             'overview.desc': 'An end-to-end workflow for AI Agents',
             'overview.tag1': 'Multi-repo Git management',
-            'overview.tag2': 'Read-only dependency isolation',
-            'overview.tag3': 'Enhanced OpenSpec workflow',
-            'overview.tag4': 'Self-contained Superpowers-style execution',
+            'overview.tag3': 'Integrated OpenSpec',
+            'overview.tag4': 'Integrated Superpowers',
             'install.title': 'Install',
             'install.hint': 'After installation, please <strong style="color:var(--black);">restart the Agent</strong> and run <code>/ai-env-init</code> to complete environment initialization',
             'common.copy': 'Copy',
@@ -948,7 +1129,7 @@
             'structure.c3': '# AI working directory (process artifacts output)',
             'structure.c4': '# Entry for PRD, initial prompts, prototypes (user\'s only intervention path)',
             'structure.c5': '# Changes directory (explore/propose output)',
-            'structure.c6': '# Archived change records (proposal/design); read design Decisions & proposal Why for past rationale, or for prior art when scoping a similar change — current behavior specs live in `ai/output/specs/`',
+            'structure.c6': '# Archived change history; read when needed or when requirements are unclear',
             'structure.c7': '# Bad cases & lessons; read when needed for long-term context',
             'structure.c8': '# Source-of-truth system behavior specs; read when needed or when requirements are unclear',
             'structure.c9': '# Independent projects, each its own git repo + guidance file',
@@ -961,16 +1142,36 @@
             'structure.c16': '# Spec configuration',
             'structure.c17': '# Output directory',
             'workflow.title': 'Workflow',
-            'workflow.desc': 'Enhanced OpenSpec workflow with self-contained Superpowers-style execution — subagent-driven development, TDD, and two-stage review — achieving a complete closed loop from exploring ideas to archiving',
-            'workflow.step1': 'Explore ideas, investigate problems, clarify requirements',
-            'workflow.step2': 'Propose changes, generate all artifacts in one step',
-            'workflow.step3': 'Implement tasks with TDD, review, verify',
-            'workflow.step4': 'Archive completed changes, sync specs',
+            'workflow.tab.e2e_auto': 'Automated End-to-End',
+            'workflow.tab.e2e_explore': 'Exploratory End-to-End',
+            'workflow.tab.auto': 'Automated',
+            'workflow.tab.manual': 'Manual',
+            'workflow.nature.e2e_auto': 'Fully automated, no user intervention · includes Git push, release, regression testing, and archive',
+            'workflow.nature.e2e_explore': 'User confirmation at key steps · asks before explore, Git push, release, and archive',
+            'workflow.nature.auto': 'Fully automated, but no Git push, release, or archive · artifacts stay local for you to commit',
+            'workflow.nature.manual': 'Manual flow · run /ai-spec-* commands step by step, fully under your control',
+            'workflow.s.explore': 'Explore requirement, clarify scope',
+            'workflow.s.propose': 'Create change, generate artifacts',
+            'workflow.s.apply': 'Implement, review, verify',
+            'workflow.s.push': 'Commit and push code',
+            'workflow.s.release': 'Release to target environment',
+            'workflow.s.test': 'Run regression tests',
+            'workflow.s.archive': 'Archive change, sync specs',
+            'workflow.mode.auto': 'Auto',
+            'workflow.mode.confirm': 'Confirm',
+            'workflow.mode.manual': 'Manual',
+            'workflow.cli.e2e_auto_1': 'Fully automated end-to-end flow started, no intervention needed, executing...',
+            'workflow.cli.e2e_auto_2': 'Flow complete, report generated: ai/output/changes/user-login/report.md',
+            'workflow.cli.e2e_explore_1': 'Exploratory end-to-end flow started, will ask for confirmation at key steps...',
+            'workflow.cli.e2e_explore_2': 'Confirm to commit and release?',
+            'workflow.cli.e2e_explore_3': 'Committed and released, continuing to archive...',
+            'workflow.cli.auto_1': 'Automated flow started, no Git push or release, executing...',
+            'workflow.cli.auto_2': 'Implementation complete, artifacts left local, report generated',
             'workflow.cli': 'Entered exploration mode, analyzing PRD and clarifying requirements...',
             'workflow.cli2': 'create change or /ai-spec-propose',
             'workflow.cli3': 'Creating change...',
             'commands.title': 'Commands',
-            'commands.desc': 'Five categories of commands covering environment, modules, Spec workflow, Git operations, and Goal orchestration',
+            'commands.desc': 'Five categories covering environment, modules, workflow, Spec, and Git operations',
             'commands.cat.env': 'Environment',
             'commands.cat.module': 'Modules & Dependencies',
             'commands.cat.spec': 'Spec',
@@ -989,7 +1190,7 @@
             'commands.git_pull': 'Pull the latest content of all, main project, module, or dependency',
             'commands.git_push': 'Commit and push Git changes of all, main project, or module',
             'commands.git_merge': 'Merge main branch into current branch; supports all, main project, module, dependency',
-            'commands.cat.goal': 'Goal',
+            'commands.cat.goal': 'Workflow',
             'commands.goal_auto': 'Automated requirement flow: explore, propose, apply, and test without git push/release or user prompts',
             'commands.goal_e2e_explore': 'Exploratory end-to-end flow with user confirmations at infra, git, release, and archive steps',
             'commands.goal_e2e_auto': 'Automated end-to-end flow: explore, propose, apply, push, release, test, and archive without user prompts'
@@ -1003,9 +1204,8 @@
             'aria.menu': '菜单',
             'overview.desc': '为 AI Agent 提供一套端到端工作流',
             'overview.tag1': 'Git 多仓库管理',
-            'overview.tag2': '只读依赖隔离',
-            'overview.tag3': '增强 OpenSpec 工作流',
-            'overview.tag4': '自包含 Superpowers 风格执行',
+            'overview.tag3': '集成 OpenSpec',
+            'overview.tag4': '集成 Superpowers',
             'install.title': '安装',
             'install.hint': '安装完成后，请<strong style="color:var(--black);">重启 Agent</strong>，并执行 <code>/ai-env-init</code>命令完成环境初始化',
             'common.copy': '复制',
@@ -1030,16 +1230,36 @@
             'structure.c16': '# 规格配置文件',
             'structure.c17': '# 产物输出目录',
             'workflow.title': '流程',
-            'workflow.desc': '增强 OpenSpec 工作流，自包含 Superpowers 风格执行——子代理驱动、TDD、两阶段审查——实现从探索想法到归档的完整闭环',
-            'workflow.step1': '探索想法，调研问题，明确需求',
-            'workflow.step2': '提出变更，一步生成全部产物',
-            'workflow.step3': '按 TDD 实现任务、审查、验证',
-            'workflow.step4': '归档已完成变更，同步规格',
+            'workflow.tab.e2e_auto': '自动化端到端流程',
+            'workflow.tab.e2e_explore': '探索式端到端流程',
+            'workflow.tab.auto': '自动化流程',
+            'workflow.tab.manual': '手动流程',
+            'workflow.nature.e2e_auto': '全程自动，无需人工干预 · 含 Git 提交、发布、回归测试与归档',
+            'workflow.nature.e2e_explore': '关键步骤需用户确认 · 探索、Git 提交、发布、归档前会询问',
+            'workflow.nature.auto': '全程自动，但不含 Git 提交、发布与归档 · 产物留在本地由你提交',
+            'workflow.nature.manual': '手动流程 · 逐步执行 /ai-spec-* 命令，完全由你掌控',
+            'workflow.s.explore': '探索需求，明确范围',
+            'workflow.s.propose': '创建变更，生成产物',
+            'workflow.s.apply': '实现变更，审查验证',
+            'workflow.s.push': '提交并推送代码',
+            'workflow.s.release': '发布到目标环境',
+            'workflow.s.test': '运行回归测试',
+            'workflow.s.archive': '归档变更，同步规格',
+            'workflow.mode.auto': '自动',
+            'workflow.mode.confirm': '确认',
+            'workflow.mode.manual': '手动',
+            'workflow.cli.e2e_auto_1': '全自动端到端流程启动，无需干预，正在执行...',
+            'workflow.cli.e2e_auto_2': '流程完成，报告已生成：ai/output/changes/user-login/report.md',
+            'workflow.cli.e2e_explore_1': '探索式端到端流程启动，关键步骤将询问你确认...',
+            'workflow.cli.e2e_explore_2': '确认提交并发布？',
+            'workflow.cli.e2e_explore_3': '已提交并发布，继续归档...',
+            'workflow.cli.auto_1': '自动化流程启动，不含 Git 提交与发布，正在执行...',
+            'workflow.cli.auto_2': '实现完成，产物已留在本地，报告已生成',
             'workflow.cli': '已进入探索模式，正在分析 PRD 并梳理需求...',
             'workflow.cli2': '创建变更 或 /ai-spec-propose',
             'workflow.cli3': '创建变更中..',
             'commands.title': '命令',
-            'commands.desc': '五大类命令，覆盖环境、模块、Spec 工作流、Git 操作与目标编排',
+            'commands.desc': '五大类命令，覆盖环境、模块、工作流、Spec 与 Git 操作',
             'commands.cat.env': '环境指令',
             'commands.cat.module': '模块和依赖指令',
             'commands.cat.spec': 'Spec 指令',
@@ -1058,7 +1278,7 @@
             'commands.git_pull': '拉取全部、主项目、模块或依赖的最新内容',
             'commands.git_push': '提交并推送全部、主项目或模块的 Git 更改',
             'commands.git_merge': '将主干代码合并到当前分支，支持全部、主项目、模块、依赖',
-            'commands.cat.goal': '目标指令',
+            'commands.cat.goal': '工作流指令',
             'commands.goal_auto': '自动化流程：探索、创建变更、执行、测试，不涉及 git 提交/发布，过程不询问用户',
             'commands.goal_e2e_explore': '探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认',
             'commands.goal_e2e_auto': '自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户'
@@ -1126,6 +1346,17 @@
             const target = tab.dataset.tab;
             tabs.forEach(t => t.classList.toggle('active', t === tab));
             panels.forEach(p => p.classList.toggle('active', p.dataset.panel === target));
+        });
+    });
+
+    // Workflow tabs
+    const wtabs = document.querySelectorAll('.workflow-tab');
+    const wpanels = document.querySelectorAll('.workflow-panel');
+    wtabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.wtab;
+            wtabs.forEach(t => t.classList.toggle('active', t === tab));
+            wpanels.forEach(p => p.classList.toggle('active', p.dataset.wpanel === target));
         });
     });
 
