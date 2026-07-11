@@ -412,6 +412,89 @@
             color: var(--gray-300);
         }
 
+        /* ===== Workflow Tabs ===== */
+        .workflow-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .workflow-tab {
+            padding: 12px 24px;
+            background: var(--gray-100);
+            border: 0 solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-500);
+            transition: all 0.2s;
+        }
+
+        .workflow-tab.active {
+            background: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+        }
+
+        .workflow-panel {
+            display: none;
+        }
+
+        .workflow-panel.active {
+            display: block;
+        }
+
+        .workflow-nature {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 24px;
+            padding: 12px 16px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border-left: 3px solid var(--black);
+            line-height: 1.6;
+        }
+
+        .workflow-step .step-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .workflow-step .step-badge--auto {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .workflow-step .step-badge--confirm {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .workflow-step .step-badge--manual {
+            background: var(--gray-200);
+            color: var(--gray-600);
+        }
+
+        .workflow-flow--compact .workflow-step {
+            min-width: 100px;
+            padding: 18px 10px;
+        }
+
+        .workflow-flow--compact .step-name {
+            font-size: 14px;
+        }
+
+        .workflow-flow--compact .step-desc {
+            font-size: 11px;
+        }
+
         /* ===== Core Commands ===== */
         .cmd-category {
             margin-bottom: 40px;
@@ -707,7 +790,7 @@
                 <span class="cli-dot"></span>
                 <span class="cli-dot"></span>
             </div>
-            <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-spec-explore @ai/input/tom/0/prd.md</span>
+            <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-spec-explore @ai/input/jim/0/prd.md</span>
             </div>
             <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli">已进入探索模式，正在分析 PRD 并梳理需求...</span>
             </div>
@@ -810,6 +893,25 @@
                 </div>
             </div>
         </div>
+
+        <!-- 目标指令 -->
+        <div class="cmd-category">
+            <h3 class="cmd-category-title" data-i18n="commands.cat.goal">目标指令</h3>
+            <div class="cmd-grid">
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-goal-auto</div>
+                    <div class="cmd-desc" data-i18n="commands.goal_auto">自动化流程：探索、创建变更、执行、测试，不涉及 git 提交/发布，过程不询问用户</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-goal-e2e-explore</div>
+                    <div class="cmd-desc" data-i18n="commands.goal_e2e_explore">探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-name">/ai-goal-e2e-auto</div>
+                    <div class="cmd-desc" data-i18n="commands.goal_e2e_auto">自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户</div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -868,7 +970,7 @@
             'workflow.cli2': 'create change or /ai-spec-propose',
             'workflow.cli3': 'Creating change...',
             'commands.title': 'Commands',
-            'commands.desc': 'Four categories of commands covering environment, modules, Spec workflow, and Git operations',
+            'commands.desc': 'Five categories of commands covering environment, modules, Spec workflow, Git operations, and Goal orchestration',
             'commands.cat.env': 'Environment',
             'commands.cat.module': 'Modules & Dependencies',
             'commands.cat.spec': 'Spec',
@@ -886,7 +988,11 @@
             'commands.git_checkout': 'Checkout a specified branch of the main project, module, or dependency',
             'commands.git_pull': 'Pull the latest content of all, main project, module, or dependency',
             'commands.git_push': 'Commit and push Git changes of all, main project, or module',
-            'commands.git_merge': 'Merge main branch into current branch; supports all, main project, module, dependency'
+            'commands.git_merge': 'Merge main branch into current branch; supports all, main project, module, dependency',
+            'commands.cat.goal': 'Goal',
+            'commands.goal_auto': 'Automated requirement flow: explore, propose, apply, and test without git push/release or user prompts',
+            'commands.goal_e2e_explore': 'Exploratory end-to-end flow with user confirmations at infra, git, release, and archive steps',
+            'commands.goal_e2e_auto': 'Automated end-to-end flow: explore, propose, apply, push, release, test, and archive without user prompts'
         },
         zh: {
             'nav.overview': '概览',
@@ -933,7 +1039,7 @@
             'workflow.cli2': '创建变更 或 /ai-spec-propose',
             'workflow.cli3': '创建变更中..',
             'commands.title': '命令',
-            'commands.desc': '四大类命令，覆盖环境、模块、Spec 工作流与 Git 操作',
+            'commands.desc': '五大类命令，覆盖环境、模块、Spec 工作流、Git 操作与目标编排',
             'commands.cat.env': '环境指令',
             'commands.cat.module': '模块和依赖指令',
             'commands.cat.spec': 'Spec 指令',
@@ -951,7 +1057,11 @@
             'commands.git_checkout': '拉取主项目、模块或依赖的指定分支',
             'commands.git_pull': '拉取全部、主项目、模块或依赖的最新内容',
             'commands.git_push': '提交并推送全部、主项目或模块的 Git 更改',
-            'commands.git_merge': '将主干代码合并到当前分支，支持全部、主项目、模块、依赖'
+            'commands.git_merge': '将主干代码合并到当前分支，支持全部、主项目、模块、依赖',
+            'commands.cat.goal': '目标指令',
+            'commands.goal_auto': '自动化流程：探索、创建变更、执行、测试，不涉及 git 提交/发布，过程不询问用户',
+            'commands.goal_e2e_explore': '探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认',
+            'commands.goal_e2e_auto': '自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户'
         }
     };
 

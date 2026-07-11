@@ -22,6 +22,9 @@
 | ai-spec-apply        | Implement tasks from a spec change                                                         |
 | ai-spec-archive      | Archive a completed change in the experimental workflow                                    |
 | ai-spec-sync         | 将 spec 内容，同步到相关 module 模块                                                                  |
+| ai-goal-auto         | 自动化流程完成需求，不涉及 git 提交/发布，过程不询问用户                                                              |
+| ai-goal-e2e-explore  | 探索式端到端流程完成需求，关键步骤询问用户确认                                                                          |
+| ai-goal-e2e-auto     | 自动化端到端流程完成需求，涉及发布，过程不询问用户                                                                        |
 
 ## 公共规范
 
@@ -444,3 +447,65 @@ Archive a completed change in the experimental workflow
 * 第 3 步：pull 最新内容，冲突按 `公共规范` 中的冲突解决流程处理
 * 第 4 步：将主干分支合并到当前分支，冲突按 `公共规范` 中的冲突解决流程处理
 * 第 5 步：push 推送
+
+### 目标指令
+
+`ai-goal-xx` 相关指令，是编排指令，串联 `goal-requirements-explore`、`goal-spec-explore`、`goal-spec-propose`、`goal-spec-apply`、`goal-git-push`、`goal-spec-archive` 等技能，以及用户项目下 `ai/config/skills` 中的业务技能（基础设施、测试用例、发布等），实现端到端流程
+
+注意点：以下提到 查看 `ai/config/skills` 目录下是否有xx技能，并非是本项目，而是用户用这个插件后，在用户的项目下，扫描用户项目下的 `ai/config/skills`
+
+业务技能发现方式：glob `ai/config/skills/*/SKILL.md`，读取每个 SKILL.md 的 frontmatter `description`，按关键词匹配：
+* 基础设施：database、DB、migration、dynamic config、infrastructure、基础设施、数据库、动态配置
+* 测试用例：regression、test、回归、测试
+* 发布：deploy、publish、release、发布、部署
+
+#### ai-goal-auto
+
+`自动化流程` 完成需求，不涉及 git 提交、发布，过程中不要询问用户
+
+接收 1 个入参
+* 需求：`需求描述` 或 `需求文件` 或 `需求链接地址`
+
+步骤
+1. 调用 `ai/config/skills` 目录下的 `goal-requirements-explore` 技能，传入 `需求`，开始探索需求
+2. 如果 `探索完的需求` 涉及到 `依赖基础设施变更`（数据库、动态配置等），查看 `ai/config/skills` 目录下是否有 `基础设施` 技能，把这些变更加到 `需求` 中（基础设施一般分为 `测试`、`正式` 环境，或 `日常`、`预发`、`线上` 环境，测试环境一般允许直接变更，下一步推送到线上，一般输出 `变更地址` 给到用户去执行）
+3. 调用 `ai/config/skills` 目录下的 `goal-spec-propose` 技能，传入 `探索完的需求`，开始创建变更
+4. 调用 `ai/config/skills` 目录下的 `goal-spec-apply` 技能，传入 `变更名称`，开始执行变更
+5. 执行完成，如果需要执行测试或全量回归测试，查看 `ai/config/skills` 目录下是否有 `测试用例` 相关技能，执行测试用例回归（本地测试）
+6. 输出 `报告`，写入到 `ai/output/changes/<name>/report.md` 文件中，输出报告地址给用户看
+
+#### ai-goal-e2e-explore
+
+`探索式端到端流程` 完成需求
+
+接收 1 个入参
+* 需求：`需求描述` 或 `需求文件` 或 `需求链接地址`
+
+步骤
+1. 调用 `ai/config/skills` 目录下的 `goal-spec-explore` 技能，传入 `需求`，开始探索需求
+2. 如果 `探索完的需求` 涉及到 `依赖基础设施变更`，查看 `ai/config/skills` 目录下是否有 `基础设施` 技能，询问用户是否要把这些变更加到 `需求` 中，用户 `确认` 的话，则 `加进去`（基础设施环境说明同上）
+3. 调用 `ai/config/skills` 目录下的 `goal-spec-propose` 技能，传入 `探索完的需求`，开始创建变更。此过程不询问用户，直接创建变更
+4. 调用 `ai/config/skills` 目录下的 `goal-spec-apply` 技能，传入 `变更名称`，开始执行变更，此过程不询问用户
+5. 执行完成，询问用户是否提交 `git`，用户确认的话，调用 `ai/config/skills` 目录下的 `goal-git-push` 技能，传入 `ALL` 全部提交
+6. 执行完成，如果需要发布，查看 `ai/config/skills` 目录下是否有 `发布` 相关技能，询问用户 `是否发布`。如果用户 `确认`，执行发布流程（发布一般也是先发测试环境）
+7. 发布完成，如果需要执行测试或全量回归测试，查看 `ai/config/skills` 目录下是否有 `测试用例` 相关技能，执行测试用例回归（可能是本地测试，也可能是完成线上回归测试，或其他）。过程如无需要，不询问用户
+8. 输出 `报告`，写入到 `ai/output/changes/<name>/report.md` 文件中，输出报告地址给用户看
+9. 询问用户是否归档，用户确认的话，调用 `ai/config/skills` 目录下的 `goal-spec-archive` 技能，传入 `变更名称`，开始执行归档
+
+#### ai-goal-e2e-auto
+
+`自动化端到端流程` 完成需求，涉及发布，过程中不要询问用户
+
+接收 1 个入参
+* 需求：`需求描述` 或 `需求文件` 或 `需求链接地址`
+
+步骤
+1. 调用 `ai/config/skills` 目录下的 `goal-requirements-explore` 技能，传入 `需求`，开始探索需求
+2. 如果 `探索完的需求` 涉及到 `依赖基础设施变更`，查看 `ai/config/skills` 目录下是否有 `基础设施` 技能，把这些变更加到 `需求` 中（基础设施环境说明同上）
+3. 调用 `ai/config/skills` 目录下的 `goal-spec-propose` 技能，传入 `探索完的需求`，开始创建变更
+4. 调用 `ai/config/skills` 目录下的 `goal-spec-apply` 技能，传入 `变更名称`，开始执行变更
+5. 执行完成，调用 `ai/config/skills` 目录下的 `goal-git-push` 技能，传入 `ALL` 全部提交
+6. 执行完成，如果需要发布，查看 `ai/config/skills` 目录下是否有 `发布` 相关技能，执行发布流程（发布一般也是先发测试环境）
+7. 发布完成，如果需要执行测试或全量回归测试，查看 `ai/config/skills` 目录下是否有 `测试用例` 相关技能，执行测试用例回归（可能是本地测试，也可能是完成线上回归测试，或其他）
+8. 输出 `报告`，写入到 `ai/output/changes/<name>/report.md` 文件中，输出报告地址给用户看
+9. 调用 `ai/config/skills` 目录下的 `goal-spec-archive` 技能，传入 `变更名称`，开始执行归档

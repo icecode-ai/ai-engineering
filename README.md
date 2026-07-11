@@ -83,7 +83,7 @@ Enhanced OpenSpec workflow with self-contained Superpowers-style execution — s
 4. **archive** — Archive completed changes, sync specs
 
 ```bash
-USER> /ai-spec-explore @ai/input/tom/0/prd.md
+USER> /ai-spec-explore @ai/input/jim/0/prd.md
 AI>   Entered exploration mode, analyzing PRD and clarifying requirements...
 USER> create change or /ai-spec-propose
 AI>   Creating change...
@@ -92,7 +92,7 @@ USER> /ai-spec-apply
 
 ## Commands
 
-Four categories of commands covering environment, modules, Spec workflow, and Git operations.
+Five categories of commands covering environment, modules, Spec workflow, Git operations, and Goal orchestration.
 
 ### Environment
 
@@ -119,6 +119,12 @@ Four categories of commands covering environment, modules, Spec workflow, and Gi
 - **`/ai-git-pull`** — Pull the latest content of all, main project, module, or dependency
 - **`/ai-git-push`** — Commit and push Git changes of all, main project, or module
 - **`/ai-git-merge`** — Merge main branch into current branch; supports all, main project, module, dependency
+
+### Goal
+
+- **`/ai-goal-auto`** — Automated requirement flow: explore, propose, apply, and test without git push/release or user prompts
+- **`/ai-goal-e2e-explore`** — Exploratory end-to-end flow with user confirmations at infra, git, release, and archive steps
+- **`/ai-goal-e2e-auto`** — Automated end-to-end flow: explore, propose, apply, push, release, test, and archive without user prompts
 
 ---
 

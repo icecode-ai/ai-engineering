@@ -9,7 +9,7 @@
 5. `安装` 模块：安装方式，用户agent内，告诉 agent `Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/ai-engineering/refs/heads/main/INSTALL_4_{xxx}.md` , 支持 `INSTALL_4_CLAUDE.md`、`INSTALL_4_OPENCODE.md`、`INSTALL_4_QODER.md`
 6. `工程结构` 模块，用户执行完 `/ai-env-init` 之后，生成的项目结构，参考 `README.md`
 7. `流程` 模块：展示增强 OpenSpec 工作流的四步 `explore → propose → apply → archive`，并配一个终端示例对话框，完整对话内容固定为以下 5 行：
-   - `USER> /ai-spec-explore @ai/input/tom/0/prd.md`
+   - `USER> /ai-spec-explore @ai/input/jim/0/prd.md`
    - `AI> 已进入探索模式，正在分析 PRD 并梳理需求...`
    - `USER> 创建变更 或 /ai-spec-propose`
    - `AI> 创建变更中..`

@@ -83,7 +83,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 4. **archive** — 归档已完成变更，同步规格
 
 ```bash
-USER> /ai-spec-explore @ai/input/tom/0/prd.md
+USER> /ai-spec-explore @ai/input/jim/0/prd.md
 AI>   已进入探索模式，正在分析 PRD 并梳理需求...
 USER> 创建变更 或 /ai-spec-propose
 AI>   创建变更中..
@@ -92,7 +92,7 @@ USER> /ai-spec-apply
 
 ## 命令
 
-四大类命令，覆盖环境、模块、Spec 工作流与 Git 操作。
+五大类命令，覆盖环境、模块、Spec 工作流、Git 操作与目标编排。
 
 ### 环境指令
 
@@ -119,6 +119,12 @@ USER> /ai-spec-apply
 - **`/ai-git-pull`** — 拉取全部、主项目、模块或依赖的最新内容
 - **`/ai-git-push`** — 提交并推送全部、主项目或模块的 Git 更改
 - **`/ai-git-merge`** — 将主干代码合并到当前分支，支持全部、主项目、模块、依赖
+
+### 目标指令
+
+- **`/ai-goal-auto`** — 自动化流程：探索、创建变更、执行、测试，不涉及 git 提交/发布，过程不询问用户
+- **`/ai-goal-e2e-explore`** — 探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认
+- **`/ai-goal-e2e-auto`** — 自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户
 
 ---
 
