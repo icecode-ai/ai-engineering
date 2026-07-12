@@ -115,6 +115,7 @@ After writing, print the report path to the user.
 **Ask the user** whether to archive the change. If the user confirms, read and follow `ai/config/skills/goal-spec-archive/SKILL.md`, passing the change name. If the user declines, leave the change active.
 
 ## Guardrails
+
 - **Ask only at designated steps**: infrastructure (2), git push (5), release (6), and archive (9). Steps 3, 4, and 7 proceed without asking.
 - **Carry context between steps**: the explored requirement flows into propose; the change name flows into apply, push, release, testing, report, and archive.
 - **Respect user declines**: if the user declines git push, release, or archive, skip that step and continue.

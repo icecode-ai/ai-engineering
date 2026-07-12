@@ -103,9 +103,6 @@ Write a report to `ai/output/changes/<change-name>/report.md`:
 ## Testing
 <if run: scope and results; else "Skipped — no test skill">
 
-## Archive
-<archived to: ai/output/changes/archive/YYYY-MM-DD-<name>/>
-
 ## Conclusion
 <summary>
 ```
@@ -117,6 +114,7 @@ After writing, print the report path to the user.
 Read and follow `ai/config/skills/goal-spec-archive/SKILL.md`, passing the change name. Do not ask the user.
 
 ## Guardrails
+
 - **No user prompts**: make reasonable decisions autonomously; do not ask the user during the flow.
 - **Carry context between steps**: the explored requirement flows into propose; the change name flows into apply, push, release, testing, report, and archive.
 - **Skip gracefully**: if an optional business skill is not found, skip that step and continue — do not block.
