@@ -1,0 +1,9 @@
+{
+  "name": "ai-engineering-marketplace",
+  "plugins": [
+    {
+      "name": "ai-engineering",
+      "source": "."
+    }
+  ]
+}

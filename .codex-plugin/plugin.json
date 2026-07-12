@@ -1,0 +1,26 @@
+{
+  "name": "ai-engineering",
+  "version": "0.0.3",
+  "description": "AI Engineering",
+  "author": {
+    "name": "icecode-ai"
+  },
+  "repository": "https://github.com/icecode-ai/ai-engineering.git",
+  "license": "MIT",
+  "skills": "./skills/",
+  "hooks": {},
+  "interface": {
+    "displayName": "AI Engineering",
+    "shortDescription": "An end-to-end workflow for AI Agents",
+    "longDescription": "Multi-repo Git management, read-only dependency isolation, enhanced OpenSpec workflow, and self-contained Superpowers-style execution with subagent-driven development, TDD, and two-stage review.",
+    "developerName": "icecode-ai",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/icecode-ai/ai-engineering",
+    "screenshots": []
+  }
+}
