@@ -34,8 +34,8 @@ fi
 while IFS= read -r line; do
   # Strip the 3-character status prefix ("XY ").
   path="${line#???}"
-  # Rename: "new -> old" — keep the new path.
-  path="${path%% -> *}"
+  # Rename: "old -> new" — keep the new path (the file that exists now).
+  path="${path##* -> }"
   # Strip surrounding double quotes (porcelain quotes special chars).
   path="${path#\"}"
   path="${path%\"}"
