@@ -96,6 +96,7 @@ Write a report to `ai/output/changes/<change-name>/report.md`:
 After writing, print the report path to the user.
 
 ## Guardrails
+
 - **No git operations**: do not commit or push — implementation files are left on disk for the user to commit later.
 - **No release**: do not publish or deploy.
 - **No user prompts**: make reasonable decisions autonomously; do not ask the user during the flow.
