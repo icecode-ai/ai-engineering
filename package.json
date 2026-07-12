@@ -3,5 +3,5 @@
   "description": "AI Engineering",
   "type": "module",
   "main": ".opencode/plugins/ai-engineering.js",
-  "version": "0.0.2"
+  "version": "0.0.3"
 }

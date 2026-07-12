@@ -450,10 +450,6 @@
             font-size: 14px;
             color: var(--gray-600);
             margin-bottom: 24px;
-            padding: 12px 16px;
-            background: var(--gray-50);
-            border-radius: 8px;
-            border-left: 3px solid var(--black);
             line-height: 1.6;
         }
 
@@ -663,9 +659,12 @@
         <h1 class="overview-title">AI Engineering</h1>
         <p class="overview-desc" data-i18n="overview.desc">为 AI Agent 提供一套端到端工作流</p>
         <div class="tags">
-            <span class="tag" data-i18n="overview.tag1">Git 多仓库管理</span>
-            <span class="tag" data-i18n="overview.tag3">集成 OpenSpec</span>
-            <span class="tag" data-i18n="overview.tag4">集成 Superpowers</span>
+            <span class="tag" data-i18n="overview.tag1">端到端交付</span>
+            <span class="tag" data-i18n="overview.tag2">自进化</span>
+            <span class="tag" data-i18n="overview.tag3">安全护栏</span>
+            <span class="tag" data-i18n="overview.tag4">断点续跑</span>
+            <span class="tag" data-i18n="overview.tag5">按需扩展</span>
+            <span class="tag" data-i18n="overview.tag6">多仓统管</span>
         </div>
     </div>
 </section>
@@ -727,25 +726,25 @@
 ├── <span class="tree-dir">ai/</span>                               <span
             class="tree-comment" data-i18n="structure.c3"># AI 工作目录（过程产物）</span>
 │   ├── <span class="tree-dir">config/</span>                       <span class="tree-comment" data-i18n="structure.c14"># 配置目录</span>
-│   │   ├── <span class="tree-dir">rules/</span>                    <span class="tree-comment" data-i18n="structure.c13"># AI 执行规则与规范；相关时应用</span>
+│   │   ├── <span class="tree-dir">rules/</span>                    <span class="tree-comment" data-i18n="structure.c13"># AI 执行规则与规范 (需求相关时应用)</span>
 │   │   │   └── {rule}.md
-│   │   ├── <span class="tree-dir">skills/</span>                   <span class="tree-comment" data-i18n="structure.c15"># 按需技能；仅当用户明确请求时调用</span>
+│   │   ├── <span class="tree-dir">skills/</span>                   <span class="tree-comment" data-i18n="structure.c15"># 按需技能 (仅当用户明确请求时调用)</span>
 │   │   └── spec-config.yaml          <span class="tree-comment" data-i18n="structure.c16"># 规格配置文件</span>
-│   ├── <span class="tree-dir">input/</span>                        <span class="tree-comment" data-i18n="structure.c4"># PRD、启始 Prompt、原型等入口 (用户唯一干预路径)</span>
+│   ├── <span class="tree-dir">input/</span>                        <span class="tree-comment" data-i18n="structure.c4"># PRD、启始 Prompt、原型等入口 (用户唯一工作目录)</span>
 │   │   └── {user}/{seq}/{prd}.md
-│   └── <span class="tree-dir">output/</span>                       <span class="tree-comment" data-i18n="structure.c17"># 产物输出目录</span>
+│   └── <span class="tree-dir">output/</span>                       <span class="tree-comment" data-i18n="structure.c17"># 过程产物输出目录</span>
 │       ├── <span class="tree-dir">changes/</span>                  <span class="tree-comment" data-i18n="structure.c5"># 变更目录 (explore/propose 产出)</span>
-│       │   └── <span class="tree-dir">archive/</span>              <span class="tree-comment" data-i18n="structure.c6"># 归档变更历史；需要时或需求不明确时阅读</span>
-│       ├── <span class="tree-dir">memories/</span>                 <span class="tree-comment" data-i18n="structure.c7"># 不良案例与经验；需要时阅读以获取长期上下文</span>
+│       │   └── <span class="tree-dir">archive/</span>              <span class="tree-comment" data-i18n="structure.c6"># 归档变更历史 (需要时或需求不明确时阅读)</span>
+│       ├── <span class="tree-dir">memories/</span>                 <span class="tree-comment" data-i18n="structure.c7"># 不良案例与经验 (需要时阅读以获取长期上下文)</span>
 │       │   └── {memory}.md
-│       └── <span class="tree-dir">specs/</span>                    <span class="tree-comment" data-i18n="structure.c8"># 系统行为规格的事实来源；需要时或需求不明确时阅读</span>
+│       └── <span class="tree-dir">specs/</span>                    <span class="tree-comment" data-i18n="structure.c8"># 系统行为规格的事实来源 (需要时或需求不明确时阅读)</span>
 │           └── {spec}/
 ├── <span class="tree-dir">modules/</span>                          <span
-            class="tree-comment" data-i18n="structure.c9"># 独立项目，每个都是独立 git 仓库 + 指导文件</span>
+            class="tree-comment" data-i18n="structure.c9"># 模块 (结果产物)</span>
 │   └── {module}/                     <span class="tree-comment" data-i18n="structure.c10"># 模块 git 库</span>
 │       └── AGENTS.md
 └── <span class="tree-dir">readonly-dependencies/</span>            <span
-            class="tree-comment" data-i18n="structure.c11"># 只读依赖引用；切勿修改</span>
+            class="tree-comment" data-i18n="structure.c11"># 依赖 (只读，被modules引用的知识)</span>
     └── {dependency}/                 <span class="tree-comment" data-i18n="structure.c12"># 依赖 git 库</span></pre>
         </div>
     </div>
@@ -889,7 +888,7 @@
                 </div>
                 <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text">/ai-goal-e2e-explore @ai/input/jim/0/prd.md</span></div>
                 <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_explore_1">探索式端到端流程启动，关键步骤将询问你确认...</span></div>
-                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_explore_2">确认提交并发布？</span></div>
+                <div class="cli-line cli-user"><span class="cli-label">USER&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_explore_2">确认</span></div>
                 <div class="cli-line cli-ai"><span class="cli-label">AI&gt;</span><span class="cli-text" data-i18n="workflow.cli.e2e_explore_3">已提交并发布，继续归档...</span></div>
             </div>
         </div>
@@ -1030,11 +1029,11 @@
         <div class="cmd-category">
             <h3 class="cmd-category-title" data-i18n="commands.cat.goal">工作流指令</h3>
             <div class="cmd-grid">
-                <div class="cmd-card">
+                <div class="cmd-card cmd-card--full">
                     <div class="cmd-name">/ai-goal-e2e-auto</div>
                     <div class="cmd-desc" data-i18n="commands.goal_e2e_auto">自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户</div>
                 </div>
-                <div class="cmd-card">
+                <div class="cmd-card cmd-card--full">
                     <div class="cmd-name">/ai-goal-e2e-explore</div>
                     <div class="cmd-desc" data-i18n="commands.goal_e2e_explore">探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认</div>
                 </div>
@@ -1115,9 +1114,12 @@
             'nav.commands': 'Commands',
             'aria.menu': 'Menu',
             'overview.desc': 'An end-to-end workflow for AI Agents',
-            'overview.tag1': 'Multi-repo Git management',
-            'overview.tag3': 'Integrated OpenSpec',
-            'overview.tag4': 'Integrated Superpowers',
+            'overview.tag1': 'End-to-end delivery',
+            'overview.tag2': 'Self-evolving',
+            'overview.tag3': 'Safety guardrails',
+            'overview.tag4': 'Resumable',
+            'overview.tag5': 'On-demand skills',
+            'overview.tag6': 'Multi-repo control',
             'install.title': 'Install',
             'install.hint': 'After installation, please <strong style="color:var(--black);">restart the Agent</strong> and run <code>/ai-env-init</code> to complete environment initialization',
             'common.copy': 'Copy',
@@ -1127,20 +1129,20 @@
             'structure.c1': '# Main project root directory',
             'structure.c2': '# Main project guidance file',
             'structure.c3': '# AI working directory (process artifacts output)',
-            'structure.c4': '# Entry for PRD, initial prompts, prototypes (user\'s only intervention path)',
+            'structure.c4': '# Entry for PRD, initial prompts, prototypes (user\'s only working directory)',
             'structure.c5': '# Changes directory (explore/propose output)',
-            'structure.c6': '# Archived change history; read when needed or when requirements are unclear',
-            'structure.c7': '# Bad cases & lessons; read when needed for long-term context',
-            'structure.c8': '# Source-of-truth system behavior specs; read when needed or when requirements are unclear',
-            'structure.c9': '# Independent projects, each its own git repo + guidance file',
+            'structure.c6': '# Archived change history (read when needed or when requirements are unclear)',
+            'structure.c7': '# Bad cases & lessons (read when needed for long-term context)',
+            'structure.c8': '# Source-of-truth system behavior specs (read when needed or when requirements are unclear)',
+            'structure.c9': '# Modules (result artifacts)',
             'structure.c10': '# Module git repository',
-            'structure.c11': '# Read-only dependency references; never modify',
+            'structure.c11': '# Dependencies (read-only, knowledge referenced by modules)',
             'structure.c12': '# Dependency git repository',
-            'structure.c13': '# Rules & standards for AI work; apply when relevant',
+            'structure.c13': '# Rules & standards for AI work (apply when requirement-relevant)',
             'structure.c14': '# Configuration directory',
-            'structure.c15': '# On-demand skills; invoke only when the user explicitly requests',
+            'structure.c15': '# On-demand skills (invoke only when the user explicitly requests)',
             'structure.c16': '# Spec configuration',
-            'structure.c17': '# Output directory',
+            'structure.c17': '# Process artifacts output directory',
             'workflow.title': 'Workflow',
             'workflow.tab.e2e_auto': 'Automated End-to-End',
             'workflow.tab.e2e_explore': 'Exploratory End-to-End',
@@ -1163,7 +1165,7 @@
             'workflow.cli.e2e_auto_1': 'Fully automated end-to-end flow started, no intervention needed, executing...',
             'workflow.cli.e2e_auto_2': 'Flow complete, report generated: ai/output/changes/user-login/report.md',
             'workflow.cli.e2e_explore_1': 'Exploratory end-to-end flow started, will ask for confirmation at key steps...',
-            'workflow.cli.e2e_explore_2': 'Confirm to commit and release?',
+            'workflow.cli.e2e_explore_2': 'Confirm',
             'workflow.cli.e2e_explore_3': 'Committed and released, continuing to archive...',
             'workflow.cli.auto_1': 'Automated flow started, no Git push or release, executing...',
             'workflow.cli.auto_2': 'Implementation complete, artifacts left local, report generated',
@@ -1203,9 +1205,12 @@
             'nav.commands': '命令',
             'aria.menu': '菜单',
             'overview.desc': '为 AI Agent 提供一套端到端工作流',
-            'overview.tag1': 'Git 多仓库管理',
-            'overview.tag3': '集成 OpenSpec',
-            'overview.tag4': '集成 Superpowers',
+            'overview.tag1': '端到端交付',
+            'overview.tag2': '自进化',
+            'overview.tag3': '安全护栏',
+            'overview.tag4': '断点续跑',
+            'overview.tag5': '按需扩展',
+            'overview.tag6': '多仓统管',
             'install.title': '安装',
             'install.hint': '安装完成后，请<strong style="color:var(--black);">重启 Agent</strong>，并执行 <code>/ai-env-init</code>命令完成环境初始化',
             'common.copy': '复制',
@@ -1215,20 +1220,20 @@
             'structure.c1': '# 主项目根目录',
             'structure.c2': '# 主项目指导文件',
             'structure.c3': '# AI 工作目录（过程产物）',
-            'structure.c4': '# PRD、启始 Prompt、原型等入口 (用户唯一干预路径)',
+            'structure.c4': '# PRD、启始 Prompt、原型等入口 (用户唯一工作目录)',
             'structure.c5': '# 变更目录 (explore/propose 产出)',
-            'structure.c6': '# 归档变更历史；需要时或需求不明确时阅读',
-            'structure.c7': '# 不良案例与经验；需要时阅读以获取长期上下文',
-            'structure.c8': '# 系统行为规格的事实来源；需要时或需求不明确时阅读',
-            'structure.c9': '# 独立项目，每个都是独立 git 仓库 + 指导文件',
+            'structure.c6': '# 归档变更历史 (需要时或需求不明确时阅读)',
+            'structure.c7': '# 不良案例与经验 (需要时阅读以获取长期上下文)',
+            'structure.c8': '# 系统行为规格的事实来源 (需要时或需求不明确时阅读)',
+            'structure.c9': '# 模块 (结果产物)',
             'structure.c10': '# 模块 git 库',
-            'structure.c11': '# 只读依赖引用；切勿修改',
+            'structure.c11': '# 依赖 (只读，被modules引用的知识)',
             'structure.c12': '# 依赖 git 库',
-            'structure.c13': '# AI 执行规则与规范；相关时应用',
+            'structure.c13': '# AI 执行规则与规范 (需求相关时应用)',
             'structure.c14': '# 配置目录',
-            'structure.c15': '# 按需技能；仅当用户明确请求时调用',
+            'structure.c15': '# 按需技能 (仅当用户明确请求时调用)',
             'structure.c16': '# 规格配置文件',
-            'structure.c17': '# 产物输出目录',
+            'structure.c17': '# 过程产物输出目录',
             'workflow.title': '流程',
             'workflow.tab.e2e_auto': '自动化端到端流程',
             'workflow.tab.e2e_explore': '探索式端到端流程',
@@ -1251,7 +1256,7 @@
             'workflow.cli.e2e_auto_1': '全自动端到端流程启动，无需干预，正在执行...',
             'workflow.cli.e2e_auto_2': '流程完成，报告已生成：ai/output/changes/user-login/report.md',
             'workflow.cli.e2e_explore_1': '探索式端到端流程启动，关键步骤将询问你确认...',
-            'workflow.cli.e2e_explore_2': '确认提交并发布？',
+            'workflow.cli.e2e_explore_2': '确认',
             'workflow.cli.e2e_explore_3': '已提交并发布，继续归档...',
             'workflow.cli.auto_1': '自动化流程启动，不含 Git 提交与发布，正在执行...',
             'workflow.cli.auto_2': '实现完成，产物已留在本地，报告已生成',
