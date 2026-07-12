@@ -1,6 +1,6 @@
 ---
 name: goal-spec-propose
-description: Propose a new change - create it and generate all artifacts in one step
+description: Propose a new change — create it and generate all artifacts in one step
 argument-hint: [<change-name-or-description>]
 disable-model-invocation: true
 ---

@@ -1,6 +1,6 @@
 ---
 name: goal-spec-explore
-description: Enter explore mode - think through ideas, investigate problems, clarify requirements
+description: Enter explore mode — think through ideas, investigate problems, clarify requirements
 argument-hint: [<topic-or-description>]
 disable-model-invocation: true
 ---
