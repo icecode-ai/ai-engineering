@@ -1,1 +1,1 @@
-Read `ai/config/rules/frontend/0-frontend-common-guidelines.md`
+Read `ai/config/rules/frontend/a-frontend-common-guidelines.md`

@@ -1,1 +1,1 @@
-Read `ai/config/rules/java/0-java-common-guidelines.md`
+Read `ai/config/rules/java/a-java-common-guidelines.md`
