@@ -96,9 +96,8 @@ echo "Environment initialized at: ${PROJECT_ROOT}"
 
 The plugin ships template content under its own `ai/` (currently `ai/config/rules/**`, `ai/config/skills/**`, plus `ai/config/git.tsv` and `ai/config/spec-config.yaml` as starters). Sync them into the project's `ai/` so the project has the standard rules/skills.
 
-- `config/git.tsv` and `config/spec-config.yaml`: copy ONLY if absent in the project — once present they are the user's owned registry & spec config, never overwritten.
-- Everything else under the plugin's `ai/`: mirror into the project's `ai/` (overwrite changed files; delete local files that no longer exist in the plugin) so plugin updates propagate on re-init and removed templates are cleaned up.
-- Paths present only in the project's `ai/` (e.g. `ai/input/`, `ai/output/`) are not touched — the mirror operates per top-level entry that exists in the source.
+- `config/git.tsv`, `config/spec-config.yaml`, and each file under `config/rules/`: copy ONLY if absent in the project — once present they are the user's owned content, never overwritten.
+- `config/skills/`: sync from the plugin — new skills are copied and shared skills are overwritten with the plugin version, but skills that exist only in the project (user's custom skills) are never deleted.
 
 **Locate `PLUGIN_ROOT`**: resolve at runtime — you (the Agent) know where you loaded this command from; the plugin root is the parent of `commands/` (it also contains `skills/`, `agents/`, `ai/`). Set `PLUGIN_ROOT` in the script below to that absolute path before running.
 
@@ -122,6 +121,7 @@ if [ -z "$PLUGIN_ROOT" ] || [ ! -d "$SRC" ]; then
 elif ! command -v rsync >/dev/null 2>&1; then
   echo "rsync not available — skip template sync (install rsync to enable)."
 else
+  # git.tsv & spec-config.yaml: copy only if absent
   for f in config/git.tsv config/spec-config.yaml; do
     if [ -f "$SRC/$f" ] && [ ! -f "$DST/$f" ]; then
       mkdir -p "$(dirname "$DST/$f")"
@@ -132,17 +132,25 @@ else
     fi
   done
 
-  find "$SRC" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d '' entry; do
-    name="$(basename "$entry")"
-    if [ "$name" = "config" ]; then
-      rsync -a --delete --exclude='/git.tsv' --exclude='/spec-config.yaml' \
-        "$SRC/config/" "$DST/config/"
-      echo "mirrored: config/ (git.tsv & spec-config.yaml preserved)"
-    else
-      rsync -a --delete "$SRC/$name/" "$DST/$name/"
-      echo "mirrored: $name/"
-    fi
-  done
+  # rules/: copy each file only if absent (user-owned once present)
+  if [ -d "$SRC/config/rules" ]; then
+    find "$SRC/config/rules" -type f -print0 | while IFS= read -r -d '' rulefile; do
+      rel="${rulefile#$SRC/}"
+      if [ ! -f "$DST/$rel" ]; then
+        mkdir -p "$(dirname "$DST/$rel")"
+        cp "$rulefile" "$DST/$rel"
+        echo "copied (new): $rel"
+      else
+        echo "skip (exists): $rel"
+      fi
+    done
+  fi
+
+  # skills/: sync (copy new + overwrite shared, preserve user's custom skills)
+  if [ -d "$SRC/config/skills" ]; then
+    rsync -a "$SRC/config/skills/" "$DST/config/skills/"
+    echo "synced: config/skills/ (updated, user skills preserved)"
+  fi
 
   echo "Template sync complete."
 fi
