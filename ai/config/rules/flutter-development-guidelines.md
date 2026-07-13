@@ -1,0 +1,1 @@
+Read `ai/config/rules/flutter/0-flutter-common-guidelines.md`

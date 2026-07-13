@@ -1,0 +1,1 @@
+Read `ai/config/rules/frontend/0-frontend-common-guidelines.md`

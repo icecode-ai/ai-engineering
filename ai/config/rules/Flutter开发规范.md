@@ -1,1 +1,0 @@
-阅读 `ai/config/rules/flutter/Flutter性能优化.md`
