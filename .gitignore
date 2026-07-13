@@ -3,7 +3,3 @@
 *.iml
 out
 gen
-
-# Reference source clones (analysis only, not part of project)
-.ai/references/openspec-src/
-.ai/references/superpowers-src/
