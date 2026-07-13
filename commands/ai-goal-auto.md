@@ -16,7 +16,7 @@ Run from the workspace root — the directory containing both `ai/` and `modules
 
 ## Business skill discovery
 
-Several steps reference optional business skills the user may have added under `ai/config/skills/`. Discover them by listing each skill and its description, then matching by keywords:
+Several steps reference optional business skills the user may have added under `ai/config/skills/`. Discover them by listing each skill and its description, then match by semantic understanding:
 
 ```bash
 for d in ai/config/skills/*/; do
@@ -27,10 +27,11 @@ for d in ai/config/skills/*/; do
 done
 ```
 
-Match by description keywords:
-- **Infrastructure**: `database`, `DB`, `migration`, `dynamic config`, `infrastructure`, `基础设施`, `数据库`, `动态配置`
-- **Testing**: `regression`, `test`, `回归`, `测试`
-- **Release**: `deploy`, `publish`, `release`, `发布`, `部署`
+Match each skill's description semantically to one of the following categories. A skill matches a category if its description indicates it handles that category's concerns — do not rely on exact keyword matches.
+
+- **Infrastructure**: database schema changes, migrations, dynamic configuration, infrastructure provisioning
+- **Testing**: regression testing, test execution, test automation
+- **Release**: deployment, publishing, release management
 
 If a matching skill is found, read and follow its `SKILL.md`, passing the relevant context. If none is found, skip that step.
 
