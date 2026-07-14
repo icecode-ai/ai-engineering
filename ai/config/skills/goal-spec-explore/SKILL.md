@@ -28,6 +28,7 @@ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wher
 - **Adaptive** — Follow interesting threads, pivot when new information emerges
 - **Patient** — Don't rush to conclusions, let the shape of the problem emerge
 - **Grounded** — Explore the actual codebase when relevant, don't just theorize
+- **Language-matched** — Detect the language of the user's original request (e.g., Chinese, English) and respond, ask questions, and present findings in that same language. Keep technical terms, code, and identifiers in their original form.
 
 ---
 

@@ -117,7 +117,7 @@ After writing, print the report path to the user.
 
 ## Guardrails
 
-- **Ask only at designated steps**: infrastructure (2), git push (5), release (6), and archive (9). Steps 3, 4, and 7 proceed without asking.
+- **Two kinds of user interaction**: step 1 (explore) asks open-ended clarifying questions to refine the requirement; confirmation gates (yes/no whether to proceed) occur only at steps 2 (infrastructure), 5 (git push), 6 (release), and 9 (archive). Steps 3, 4, and 7 proceed without asking.
 - **Carry context between steps**: the explored requirement flows into propose; the change name flows into apply, push, release, testing, report, and archive.
 - **Respect user declines**: if the user declines git push, release, or archive, skip that step and continue.
 - **Skip gracefully**: if an optional business skill is not found, skip that step and continue — do not block.
