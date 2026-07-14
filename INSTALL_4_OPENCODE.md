@@ -9,7 +9,13 @@ Create `opencode.json` in the project root with:
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
     "ai-engineering@git+https://github.com/icecode-ai/ai-engineering.git"
-  ]
+  ],
+  "permission": {
+    "external_directory": {
+      "/tmp/*": "allow",
+      "/private/tmp/*": "allow"
+    }
+  }
 }
 ```
 
