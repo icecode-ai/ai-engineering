@@ -41,14 +41,21 @@ Before archiving, check if the change has delta specs that need to be synced to 
 bash "ai/config/skills/goal-spec-archive/scripts/assess-delta-specs.sh" "$name"
 ```
 
-**If delta specs exist**, for each delta spec:
-1. Read the delta spec file (`$change_dir/specs/<capability>/spec.md`)
-2. Parse the delta sections: `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements`
-3. Read the corresponding main spec (`ai/output/specs/<capability>/spec.md`) if it exists
-4. Apply the delta operations in order: RENAMED → REMOVED → MODIFIED → ADDED
-5. Write the updated main spec to `ai/output/specs/<capability>/spec.md`
+**If delta specs exist**, for each delta spec — **validate first, then merge atomically**:
 
-**Ask the user** whether to sync before archiving. Options: "Sync now (recommended)", "Archive without syncing". Proceed to archive regardless of choice.
+**3a. Validate each delta** (stop and report on any error — do NOT merge a malformed delta into the source-of-truth main spec):
+1. Read the delta spec file (`$change_dir/specs/<capability>/spec.md`) and the corresponding main spec (`ai/output/specs/<capability>/spec.md`) if it exists.
+2. **New-capability rule**: if the main spec does NOT exist, the delta may contain ONLY `## ADDED Requirements`. Any `## MODIFIED` / `## REMOVED` / `## RENAMED` against a non-existent spec is an error — report it and stop.
+3. **Reference checks**: every requirement named under `## MODIFIED` / `## REMOVED` / `## RENAMED` (the `FROM:` name) MUST exist in the current main spec. If any is missing, report the mismatch and stop.
+4. **REMOVED completeness**: each `## REMOVED Requirements` entry MUST include both **Reason** and **Migration**.
+5. **MODIFIED scenario-drop guard**: if the main spec's requirement has scenarios that the MODIFIED block omits, surface this explicitly ("N scenarios will be dropped") and confirm with the user before proceeding — silent scenario loss is the most common merge mistake.
+
+**3b. Build all merged specs before writing any** (atomicity — an interrupt must not leave main specs half-merged):
+1. For each capability, construct the FULL merged main spec in memory (or a temp string) by applying operations in order: **RENAMED → REMOVED → MODIFIED → ADDED**. (RENAMED first so later sections reference the new name; REMOVED before ADDED so a re-add is allowed.)
+2. Only after EVERY capability's merged spec is built successfully, write them all to `ai/output/specs/<capability>/spec.md` (use the **Write tool**; it creates parent dirs as needed).
+3. If any capability fails to build, write NONE of them — report the failure and leave all main specs unchanged.
+
+**Ask the user** whether to sync before archiving. Options: "Sync now (recommended)", "Archive without syncing". Proceed to archive regardless of choice, but never skip the validation in 3a even if the user chose to sync.
 
 ### 4. Perform the archive
 

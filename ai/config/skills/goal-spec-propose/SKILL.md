@@ -77,16 +77,46 @@ Fill in the template with your analysis of the user's request. Read any existing
 
 **b. Read completed proposal and create specs/**
 
-Create one or more spec files under `specs/<capability>/spec.md` based on proposal analysis (use the **Write tool**; it creates parent directories as needed):
+Create one or more spec files under `specs/<capability>/spec.md` based on proposal analysis (use the **Write tool**; it creates parent directories as needed). A spec file is a **delta** — it describes only what this change adds, modifies, removes, or renames for that capability, not the full spec.
+
+Use only the sections below that apply (a brand-new capability uses only `## ADDED Requirements`; modifying an existing one uses `## MODIFIED` / `## REMOVED` / `## RENAMED` as needed). **Never use `## ADDED Requirements` for a requirement that already exists** — that creates duplicates on merge; use `## MODIFIED Requirements` instead.
 
 ```markdown
 ## ADDED Requirements
 ### Requirement: <!-- name -->
-<!-- text -->
+<!-- Requirement text using SHALL / MUST normative keywords -->
 #### Scenario: <!-- name -->
 - **WHEN** <!-- condition -->
 - **THEN** <!-- expected outcome -->
+
+## MODIFIED Requirements
+### Requirement: <!-- existing name -->
+<!-- The FULL replacement content (not a diff): the complete updated requirement text + all scenarios.
+     Any scenario from the main spec that you omit here is DROPPED on merge, so restate every scenario
+     you want to keep, then add/change the new ones. -->
+#### Scenario: <!-- name -->
+- **WHEN** <!-- condition -->
+- **THEN** <!-- expected outcome -->
+
+## REMOVED Requirements
+### Requirement: <!-- existing name -->
+**Reason:** <!-- why it is being removed -->
+**Migration:** <!-- how existing data/callers/consumers are handled — never omit, write "None" if truly N/A -->
+
+## RENAMED Requirements
+FROM: <!-- old requirement name -->
+TO: <!-- new requirement name -->
+<!-- If the content also changes, follow this block with a ## MODIFIED Requirements entry using the NEW name. -->
 ```
+
+**Spec writing rules (mandatory):**
+- Use **SHALL** / **MUST** normative keywords in requirement bodies; keep them testable.
+- Every requirement MUST have at least one `#### Scenario:` (4 hashes) with WHEN/THEN.
+- A delta spec touches ONE capability per file under `specs/<capability>/spec.md`.
+- `## MODIFIED Requirements` provides the **full replacement** content — the merge replaces the whole requirement, so include every scenario you want to keep.
+- `## REMOVED Requirements` MUST include both **Reason** and **Migration**.
+- `## RENAMED Requirements` uses `FROM:`/`TO:`; if the body also changes, add a MODIFIED entry under the new name.
+- Apply operations in order RENAMED → REMOVED → MODIFIED → ADDED at archive time (the archive skill enforces this).
 
 **c. Create design.md** (how) at `$change_dir/design.md`:
 
@@ -100,9 +130,15 @@ Create one or more spec files under `specs/<capability>/spec.md` based on propos
 ## Decisions
 
 ## Risks / Trade-offs
+
+## Migration Plan
+<!-- Data/API/config migrations needed, in order. Write "None" if not applicable. -->
+
+## Open Questions
+<!-- Unresolved decisions that need input before or during implementation. Write "None" if clear. -->
 ```
 
-Fill in the template with architecture decisions, technical approach, and trade-offs.
+Fill in the template with architecture decisions, technical approach, and trade-offs. The Migration Plan and Open Questions sections are required (write "None" when there is nothing to migrate or no open questions) so downstream tasks and reviewers can see migration steps and pending decisions explicitly.
 
 **d. Create tasks.md** (implementation steps) at `$change_dir/tasks.md` — **use fine-grained, execution-ready task structure** so `/ai-spec-apply` can dispatch one subagent per task with everything it needs:
 

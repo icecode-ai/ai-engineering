@@ -16,7 +16,29 @@ if [ ! -f "$tasks_file" ]; then
   echo "No tasks.md found for change '$name'"
   exit 1
 fi
-total=$(grep -cE '^\s*[-*]\s+\[[ x]\]' "$tasks_file" 2>/dev/null) || total=0
-done_count=$(grep -cE '^\s*[-*]\s+\[[x]\]' "$tasks_file" 2>/dev/null) || done_count=0
-pending=$((total - done_count))
-echo "Progress: $done_count/$total tasks complete ($pending remaining)"
+# Walk the file fence-aware: count task blocks ("### Task N:") and step checkboxes
+# (done + total), ignoring any lines inside ``` code fences so example checkboxes
+# are not mistaken for real steps.
+read total_tasks completed_tasks total_steps done_steps <<EOF
+$(awk '
+  BEGIN { infence=0; intask=0; tt=0; ct=0; ts=0; ds=0; pend=0 }
+  /^```/ { infence=!infence; next }
+  infence { next }
+  /^### Task [0-9]+/ {
+    if (intask) { if (pend==0) ct++; }
+    intask=1; pend=0; tt++; next
+  }
+  /^(## )/ {
+    if (intask) { if (pend==0) ct++; }
+    intask=0; pend=0; next
+  }
+  intask && /^[[:space:]]*[-*][[:space:]]+\[ \]/ { ts++; pend++ }
+  intask && /^[[:space:]]*[-*][[:space:]]+\[x\]/  { ts++; ds++ }
+  END {
+    if (intask && pend==0) ct++
+    print tt+0, ct+0, ts+0, ds+0
+  }
+' "$tasks_file")
+EOF
+pending_steps=$((total_steps - done_steps))
+echo "Progress: $completed_tasks/$total_tasks tasks complete; $done_steps/$total_steps steps done ($pending_steps steps remaining)"

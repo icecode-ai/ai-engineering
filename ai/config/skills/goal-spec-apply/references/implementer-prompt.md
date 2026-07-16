@@ -46,6 +46,16 @@ Then return ONLY: status, files changed (created/modified paths), one-line test 
 - **NEEDS_CONTEXT** — missing information to proceed (state what).
 - **BLOCKED** — cannot complete (state why).
 
-Your report file must contain: what you changed (files + summary), the tests you wrote/ran with their output, and your self-review notes. Do NOT include commit SHAs — you did not commit.
+Your report file MUST contain, in this order:
+
+1. **`## Files Changed`** — one path per line, each prefixed with `Created:` or `Modified:` (e.g. `- Created: \`modules/foo/src/a.ts\``). The controller extracts these verbatim to build the review package, so list every file you touched — missing one means it is never reviewed.
+2. **`## Tests`** — the tests you wrote/ran, with their actual command and output. For **Strict TDD** tasks you MUST include both phases:
+   - **RED**: the command run, the relevant failing output BEFORE implementation, and why the failure was expected (confirms the test fails for the right reason — not a compile error or a wrong-path assertion).
+   - **GREEN**: the command run and the relevant passing output AFTER implementation.
+   - A Strict TDD report with no RED evidence is incomplete — the reviewer cannot confirm you actually observed the test fail.
+   - For **Exploratory**/**Visual** tasks: state how you verified (manual steps, integration test, visual check) and the result.
+3. **`## Self-review`** — run the self-review checklist from your system instructions (Completeness / Quality / Discipline / Testing), then record any notable findings or doubts here.
+
+Do NOT include commit SHAs — you did not commit.
 
 If you have a question before starting, ask it in your report with status NEEDS_CONTEXT — do not guess on spec-meaning questions.

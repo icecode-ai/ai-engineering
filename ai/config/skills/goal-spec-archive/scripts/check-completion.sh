@@ -19,6 +19,11 @@ incomplete=false
 for artifact in proposal.md design.md tasks.md; do
   if [ ! -f "$change_dir/$artifact" ]; then echo "✗ $artifact (missing)"; incomplete=true; fi
 done
+specs_dir="$change_dir/specs"
+if [ ! -d "$specs_dir" ] || [ -z "$(ls -A "$specs_dir" 2>/dev/null)" ]; then
+  echo "⚠ specs/ (missing — no delta specs to sync)"
+  incomplete=true
+fi
 tasks_file="$change_dir/tasks.md"
 if [ -f "$tasks_file" ]; then
   total=$(grep -cE '^\s*[-*]\s+\[[ x]\]' "$tasks_file" 2>/dev/null) || total=0

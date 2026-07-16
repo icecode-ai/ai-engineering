@@ -26,17 +26,38 @@ tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 
 # Map each file to its owning repo toplevel + repo-relative path; sort by repo for grouping.
+# Deleted files (tracked but removed from the working tree) are KEPT so their deletion shows
+# in the diff; only truly unresolvable paths (typos, never-tracked-and-now-gone) are skipped
+# with a warning on stderr so nothing vanishes silently.
 while IFS= read -r f; do
   [ -z "$f" ] && continue
   case "$f" in
     /*) abs="$f" ;;
     *) abs="$PROJECT_ROOT/$f" ;;
   esac
-  [ -e "$abs" ] || continue
   d="$(dirname "$abs")"
-  # canonicalize to physical path (e.g. macOS /tmp -> /private/tmp) so the prefix-strip matches git's physical toplevel
-  abs="$(cd "$d" && pwd -P)/$(basename "$abs")"
-  toplevel="$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" || continue
+  if [ -e "$abs" ]; then
+    # canonicalize to physical path (e.g. macOS /tmp -> /private/tmp) so the prefix-strip matches git's physical toplevel
+    abs="$(cd "$d" && pwd -P)/$(basename "$abs")"
+    toplevel="$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" || { echo "WARN: '$f' is not inside any git repo — skipped" >&2; continue; }
+  else
+    # File no longer on disk — may be a deletion. Resolve the repo from the parent dir,
+    # falling back to PROJECT_ROOT when the whole directory was removed.
+    base_repo=""
+    [ -d "$d" ] && base_repo="$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" || true
+    [ -z "$base_repo" ] && base_repo="$(git -C "$PROJECT_ROOT" rev-parse --show-toplevel 2>/dev/null)" || true
+    if [ -z "$base_repo" ]; then
+      echo "WARN: '$f' not found and not inside any git repo — skipped" >&2; continue
+    fi
+    case "$abs" in
+      "$base_repo"/*) rel="${abs#"$base_repo"/}" ;;
+      *) rel="$f" ;;
+    esac
+    # Keep only if git still tracks it (a real deletion); otherwise it's a stale/typo path.
+    git -C "$base_repo" ls-files --error-unmatch -- "$rel" >/dev/null 2>&1 || { echo "WARN: '$f' not found and not tracked by git — skipped" >&2; continue; }
+    toplevel="$base_repo"
+    abs="${toplevel}/${rel}"
+  fi
   rel="${abs#"$toplevel"/}"
   printf '%s\t%s\n' "$toplevel" "$rel"
 done < "$file_list" | sort > "$tmp"

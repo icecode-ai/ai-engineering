@@ -19,6 +19,7 @@ You are the **final whole-branch code reviewer**. Review the entire change branc
 
 - **Cross-task coherence**: do the tasks fit together? Are interfaces consistent across task boundaries (a function `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug)?
 - **Spec coverage**: does the whole branch deliver every requirement in the spec? Any scenario untested?
+- **Production readiness (whole-branch)**: are migrations applied consistently across tasks? Any breaking API/signature changes without a backward-compatible transition path? Are behavior changes that affect callers or operators documented? Is config/env handled?
 - **Accumulated Minor findings**: triage each — must-fix-before-merge vs. acceptable.
 - **Whole-branch quality**: dead code from aborted approaches, leftover debug, inconsistent error handling across tasks, integration regressions that per-task reviews can't see.
 

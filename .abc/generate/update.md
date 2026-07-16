@@ -25,8 +25,8 @@
 
 | 路径 | 说明 |
 |---|---|
-| `src/prompts/` | AI 提示词模板（explore / propose / apply / archive 等工作流指令的核心来源） |
-| `src/commands/` | 命令定义（对应本项目的 `commands/ai-spec-*.md`） |
+| `src/core/templates/workflows/` | 工作流提示词模板（explore / propose / apply / archive 等的 SkillTemplate + CommandTemplate 核心来源） |
+| `src/commands/` | CLI 命令实现层（change.ts / validate.ts 等）；slash 命令与技能模板来自 `src/core/templates/workflows/*.ts` |
 | `src/core/` | 核心逻辑（delta-spec 合并、artifact 校验等） |
 | `schemas/spec-driven/` | spec-driven schema 定义 |
 | `docs/` | 工作流文档（explore.md / commands.md / overview.md 等） |
@@ -55,8 +55,8 @@
 
 | 本地文件 | 上游来源 | 上游关键路径 |
 |---|---|---|
-| `ai/config/skills/goal-spec-explore/SKILL.md` | OpenSpec explore + SuperPowers brainstorming | OpenSpec `src/prompts/`、`docs/explore.md`；SuperPowers `skills/brainstorming/` |
-| `ai/config/skills/goal-spec-propose/SKILL.md` | OpenSpec propose + SuperPowers writing-plans | OpenSpec `src/prompts/`；SuperPowers `skills/writing-plans/` |
+| `ai/config/skills/goal-spec-explore/SKILL.md` | OpenSpec explore + SuperPowers brainstorming | OpenSpec `src/core/templates/workflows/`、`docs/explore.md`；SuperPowers `skills/brainstorming/` |
+| `ai/config/skills/goal-spec-propose/SKILL.md` | OpenSpec propose + SuperPowers writing-plans | OpenSpec `src/core/templates/workflows/`；SuperPowers `skills/writing-plans/` |
 | `ai/config/skills/goal-spec-propose/scripts/create-change.sh` | OpenSpec `openspec init` 逻辑 | OpenSpec `src/commands/`、`src/core/` |
 | `ai/config/skills/goal-spec-apply/SKILL.md` | SuperPowers subagent-driven-development + executing-plans + TDD + dispatching-parallel-agents | SuperPowers `skills/subagent-driven-development/`、`skills/executing-plans/`、`skills/test-driven-development/`、`skills/dispatching-parallel-agents/` |
 | `ai/config/skills/goal-spec-apply/references/implementer-prompt.md` | SuperPowers subagent 模式 | SuperPowers `skills/subagent-driven-development/` |
@@ -67,7 +67,7 @@
 | `ai/config/skills/goal-spec-apply/scripts/task-brief.sh` | 本地原创 | 无上游对应 |
 | `ai/config/skills/goal-spec-apply/scripts/check-progress.sh` | 本地原创 | 无上游对应 |
 | `ai/config/skills/goal-spec-apply/scripts/mark-task-done.sh` | 本地原创 | 无上游对应 |
-| `ai/config/skills/goal-spec-archive/SKILL.md` | OpenSpec archive + SuperPowers finishing-a-development-branch | OpenSpec `src/prompts/`；SuperPowers `skills/finishing-a-development-branch/` |
+| `ai/config/skills/goal-spec-archive/SKILL.md` | OpenSpec archive + SuperPowers finishing-a-development-branch | OpenSpec `src/core/templates/workflows/`；SuperPowers `skills/finishing-a-development-branch/` |
 | `ai/config/skills/goal-spec-archive/scripts/assess-delta-specs.sh` | OpenSpec delta-spec 合并逻辑 | OpenSpec `src/core/` |
 | `ai/config/skills/goal-spec-archive/scripts/perform-archive.sh` | OpenSpec archive 逻辑 | OpenSpec `src/commands/` |
 | `ai/config/skills/goal-spec-archive/scripts/check-completion.sh` | 本地原创 | 无上游对应 |
@@ -168,7 +168,7 @@ git -C "$TMPDIR/upstream-sync/superpowers" log --oneline -30 -- <KEY_PATHS>
 
 ```bash
 # 如果有 last-sync commit：
-git -C "$TMPDIR/upstream-sync/openspec" diff <LAST_SYNC_SHA>..HEAD -- src/prompts/
+git -C "$TMPDIR/upstream-sync/openspec" diff <LAST_SYNC_SHA>..HEAD -- src/core/templates/workflows/
 git -C "$TMPDIR/upstream-sync/superpowers" diff <LAST_SYNC_SHA>..HEAD -- skills/subagent-driven-development/
 
 # 如果首次同步，直接阅读当前版本的文件内容
@@ -265,7 +265,7 @@ rm -rf "$TMPDIR/upstream-sync"
 
 ## 七、护栏规则
 
-1. **不得修改本地定制清单（第四节）中列出的任何定制内容**。如果上游变更与定制冲突，跳过并在摘要中说明。
+1. **不得修改本地定制清单（第四节）中列出的任何定制内容**。如果上游变更与定制冲突，跳过并在摘要中说明。此规则仅约束"同步时不得让上游覆盖本地定制"，**不阻止**对本地原创/定制文件的独立 bug 修复（例如对 `ledger.sh`、`review-package.sh` 等的修正）——这类修复不在同步工作流范围内，需另行处理。
 2. **每个被修改的文件都必须在变更摘要中说明**「移植了什么」+「保留了什么」。
 3. **如果上游有破坏性变更**（如重命名、路径变更、结构变更、schema 变更），必须在摘要中用 ⚠️ 高亮提示。
 4. **不自动 commit**。所有修改留在工作区，由用户自行决定是否 commit。

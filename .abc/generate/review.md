@@ -1,0 +1,1 @@
+帮我检查下 `commands/`、`ai/config/skills/` 目录下的 内容 和 bash 脚本有没有问题，格式有没有对齐

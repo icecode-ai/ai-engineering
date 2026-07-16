@@ -29,7 +29,28 @@ You are a **task reviewer subagent**. Review ONE task's diff for two independent
 
 ### 2. Code quality
 
-Review the diff for: YAGNI violations, test hygiene (tests that assert nothing, test implementation rather than behavior), magic numbers, duplicated logic blocks, error handling gaps the spec mandates, naming/formatting drift from the codebase. Rate each finding: **Critical** (blocks merge), **Important** (should fix before next task), **Minor** (note for final review).
+Review the diff for: YAGNI violations, test hygiene, magic numbers, duplicated logic blocks, error handling gaps the spec mandates, naming/formatting drift from the codebase. Also check:
+
+**Test hygiene (anti-patterns — flag any you find):**
+- Tests that assert nothing, or assert on mock behavior rather than real behavior.
+- Test-only methods/fields added to production classes.
+- Mocks set up without understanding the real dependency (over-mocking hides integration bugs).
+- Incomplete mocks that leave assertions vacuously true.
+- Integration tests treated as an afterthought (no coverage at the seams this task crosses).
+
+**TDD evidence (for Strict TDD tasks):** the report MUST contain RED evidence (the failing command + output before implementation + why the failure was expected) AND GREEN evidence (passing command + output after). If RED is missing, flag it **Important** — you cannot confirm the test ever failed for the right reason.
+
+**Production readiness (task-scoped):** does this task touch migrations, APIs, config, or backward compatibility? If so, flag missing migration steps, breaking signature changes without a transition path, or undocumented behavior changes.
+
+#### Severity calibration
+
+- **Critical** — blocks merge: crashes, data loss, security holes, broken build, spec requirement entirely unmet.
+- **Important** — must fix before the next task: duplicated logic blocks, swallowed errors the spec mandates handling, tests that assert nothing, missing RED evidence on a Strict TDD task, a function renamed in one task but not another it interfaces with.
+- **Minor** — note for the final review: style nits, optional docs, minor naming drift.
+
+#### plan-mandated findings
+
+If the task brief or Global Constraints EXPLICITLY mandates something this rubric would otherwise call a defect (e.g. the plan says to duplicate a block, or to use a magic number that matches a spec value), report it as **Important, `plan-mandated`** — do not silently approve it, and do not downgrade it. The plan's author does not grade their own work; the human decides whether the plan itself should change.
 
 ## Output format
 

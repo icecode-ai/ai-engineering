@@ -75,7 +75,20 @@ For each pending task (marked `- [ ]` in `tasks.md`, not already in the ledger),
 Read the task's `**Parallelizable:**` flag and its `**Interfaces:**` (Consumes/Produces). **Implementers are always serial** — one implementer at a time. The controller is the sole git writer (see 7d); `Parallelizable` enables **pipeline** overlap of a task's review with the next implementer:
 
 - **Serial** (default, `Parallelizable: no`, or the next task depends on a not-yet-done task): after recording a task's file list (7d) and generating its review package (7e), dispatch the task-reviewer alone; wait for its verdict before dispatching the next implementer.
-- **Pipeline** (`Parallelizable: yes` AND the next pending task has no file overlap): after recording task N's file list and generating its review package, dispatch the task-reviewer(N) AND the next implementer(N+1) in ONE message (two Task tool calls). The reviewer reads a frozen review-package file, so it is safe to overlap with implementer N+1's writes. Never pipeline tasks that touch the same files.
+- **Pipeline** (`Parallelizable: yes` AND the next pending task has no file overlap): after recording task N's file list and generating its review package, dispatch the task-reviewer(N) AND the next implementer(N+1) in ONE message (two Task tool calls). The reviewer reads a frozen review-package file, so it is safe to overlap with implementer N+1's writes. Never pipeline tasks that touch the same files. To check overlap, extract task N+1's planned files (from its `**Files:**` block in `tasks.md`) into a temp list and run:
+  ```bash
+  bash "ai/config/skills/goal-spec-apply/scripts/files-overlap.sh" "$change_dir/sdd/task-$N-files.txt" "$change_dir/sdd/task-$((N+1))-planned.txt"
+  ```
+  Only pipeline if it prints `NO OVERLAP`. If it prints `OVERLAP:`, fall back to serial dispatch.
+
+**Pipeline failure path (when reviewer(N) returns ❌ or Critical while implementer(N+1) already ran):**
+1. Fix task N first (dispatch a fix subagent per 7e). Record the fix's changed files.
+2. Before re-reviewing N, check whether N's fix files overlap N+1's produced files:
+   ```bash
+   bash "ai/config/skills/goal-spec-apply/scripts/files-overlap.sh" "$change_dir/sdd/task-$N-files.txt" "$change_dir/sdd/task-$((N+1))-files.txt"
+   ```
+3. If **NO OVERLAP**: re-review N (7e). Once N passes, proceed to review N+1 normally (its work is unaffected).
+4. If **OVERLAP**: N+1's work is now stale relative to N's fix — **discard N+1's output** (its files are inconsistent with the fix). Re-review N; once N passes, re-dispatch implementer(N+1) fresh (it will see N's fixed state). Do not review or keep N+1's overlapped output.
 
 #### 7b. Prepare each task's handoff files (do this before dispatching)
 
@@ -99,12 +112,13 @@ Dispatch via the **Task tool** with `subagent_type: "ai-spec-implementer"`. **Do
 
 The implementer returns one of: **DONE** / **DONE_WITH_CONCERNS** / **NEEDS_CONTEXT** / **BLOCKED**. The implementer writes files to disk and reports the changed paths — it does NOT commit or stage. The controller **never touches git** (no `add`, no `commit`). When the implementer reports DONE (or DONE_WITH_CONCERNS you accept), the controller records the file list for the review package.
 
-Write the implementer's reported changed files (one path per line) to `$change_dir/sdd/task-$N-files.txt`:
+Write the implementer's reported changed files (one path per line) to `$change_dir/sdd/task-$N-files.txt`. **Do not hand-transcribe paths** — extract them from the implementer's report so no file is silently dropped:
 
 ```bash
-# Controller fills in the implementer's reported paths, e.g.:
-printf '%s\n' modules/foo/src/a.ts modules/foo/src/b.ts > "$change_dir/sdd/task-$N-files.txt"
+bash "ai/config/skills/goal-spec-apply/scripts/extract-files.sh" "$change_dir/sdd/task-$N-report.md" "$change_dir/sdd/task-$N-files.txt"
 ```
+
+If the script exits `2` (no paths could be parsed from the report), read the report and fill `$change_dir/sdd/task-$N-files.txt` manually (one path per line) before proceeding — an empty file list means nothing gets reviewed.
 
 - **DONE** → record file list (above), then proceed to 7e (review).
 - **DONE_WITH_CONCERNS** → read the concerns; if about correctness/scope, address before proceeding; if observations, proceed to review.
@@ -123,11 +137,11 @@ bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$change_dir/s
 
 The package diffs each reported file against its owning repo's HEAD (the pre-change baseline), grouped per repo — no commits needed. Read `ai/config/skills/goal-spec-apply/references/task-reviewer-prompt.md`, fill placeholders (`{{TASK_BRIEF_PATH}}`, `{{REPORT_PATH}}`, `{{REVIEW_PACKAGE_PATH}}`, `{{GLOBAL_CONSTRAINTS}}`, `{{SPECS_PATH}}` = `$change_dir/specs`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`).
 
-**Pipeline dispatch** (only if task N is `Parallelizable: yes` and the next pending task N+1 has no file overlap): dispatch the task-reviewer(N) AND the next implementer(N+1) (7c) in ONE message. The reviewer reads the frozen review-package file, so it is safe to overlap. When both return, process the verdict below and record N+1's files (7d). **Serial dispatch** (default): dispatch the task-reviewer alone and wait for its verdict before the next implementer.
+**Pipeline dispatch** (only if task N is `Parallelizable: yes` and the next pending task N+1 has no file overlap — verify with `files-overlap.sh`): dispatch the task-reviewer(N) AND the next implementer(N+1) (7c) in ONE message. The reviewer reads the frozen review-package file, so it is safe to overlap. When both return, record N+1's files (7d). If reviewer(N) returns ❌ or Critical, follow the **pipeline failure path** in 7a (fix N, then overlap-check N's fix vs N+1's files — discard N+1's work if they overlap). **Serial dispatch** (default): dispatch the task-reviewer alone and wait for its verdict before the next implementer.
 
 The reviewer returns `SPEC: ✅/❌/⚠️` and `QUALITY: Approved/Issues`. Handle:
 - **SPEC ✅ + QUALITY Approved** → mark complete (7f).
-- **SPEC ❌ or Critical/Important issues** → dispatch a fix subagent (`subagent_type: "ai-spec-implementer"`) with all findings + the implementer contract (re-run covering tests, append fix report to the same `task-$N-report.md`); the controller records the fix's changed files (7d), then re-review (7e again). Do not move to the next task while Critical/Important issues are open.
+- **SPEC ❌ or Critical/Important issues** → dispatch a fix subagent (`subagent_type: "ai-spec-implementer"`) with all findings + the implementer contract. Tell the fixer to **read `ai/config/skills/goal-spec-apply/references/receiving-review.md` first** and follow its verify-then-fix process — it must verify each finding before fixing it, push back on wrong ones, and YAGNI-check "implement it properly" suggestions; it must NOT blindly implement every finding. The fixer re-runs covering tests and appends its fix report to the same `task-$N-report.md`; the controller records the fix's changed files (7d via `extract-files.sh`), then re-review (7e again). Do not move to the next task while Critical/Important issues are open.
 - **⚠️ Cannot verify from diff** → you (the controller) resolve each yourself before marking complete; you hold the cross-task context the reviewer lacks. If a real gap, treat as failed spec review.
 - **Minor findings** → record in the ledger; defer to the final review (step 8).
 
@@ -139,7 +153,10 @@ Never tell a reviewer what not to flag, or pre-rate a finding's severity in the 
 # Mark all of task N's step checkboxes done (robust block detection — no manual line counting)
 bash "ai/config/skills/goal-spec-apply/scripts/mark-task-done.sh" "$change_dir/tasks.md" "$N"
 
-# Append to the durable ledger (plain file on disk — survives context compaction)
+# Append to the durable ledger (plain file on disk — survives context compaction).
+# If this task deferred Minor findings to the final review, record them honestly:
+#   bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" append-task "$change_dir" "$N" "review clean; deferred: K minor"
+# Otherwise the default "review clean" is used:
 bash "ai/config/skills/goal-spec-apply/scripts/ledger.sh" append-task "$change_dir" "$N"
 ```
 
@@ -155,15 +172,20 @@ cat "$change_dir"/sdd/task-*-files.txt | sort -u > "$change_dir/sdd/final-files.
 bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$change_dir/sdd/final-files.txt" "$change_dir/sdd/final-review.md"
 ```
 
-Read `ai/config/skills/goal-spec-apply/references/code-reviewer-prompt.md`, fill placeholders (`{{REVIEW_PACKAGE_PATH}}`, `{{MINOR_FINDINGS}}` — the accumulated Minor findings from per-task reviews, `{{SPECS_PATH}}`, `{{DESIGN_PATH}}`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`). If findings, dispatch **ONE fix subagent** (`subagent_type: "ai-spec-implementer"`) with the complete findings list (not one fixer per finding); the controller records the fix's changed files (7d). Re-verify affected tests after the fix.
+Read `ai/config/skills/goal-spec-apply/references/code-reviewer-prompt.md`, fill placeholders (`{{REVIEW_PACKAGE_PATH}}`, `{{MINOR_FINDINGS}}` — the accumulated Minor findings from per-task reviews, `{{SPECS_PATH}}`, `{{DESIGN_PATH}}`), and dispatch via the Task tool (`subagent_type: "ai-spec-reviewer"`). If findings, dispatch **ONE fix subagent** (`subagent_type: "ai-spec-implementer"`) with the complete findings list (not one fixer per finding); tell it to read `ai/config/skills/goal-spec-apply/references/receiving-review.md` first and verify each finding before fixing. The controller records the fix's changed files (7d via `extract-files.sh`). Re-verify affected tests after the fix.
 
 ### 9. Final verification
 
-Run a final verification pass inline (no external skill): ensure the build passes, the full test suite runs clean, and no regressions were introduced. If issues are found, fix them and re-verify. Concretely:
-- Run the project's build command (if any).
-- Run the full test suite (all packages/modules touched by this change).
-- Confirm no previously-passing tests now fail.
-- If the change spans modules, verify each affected module independently.
+Run a final verification pass inline (no external skill). **Do not trust the accumulated subagent reports — re-run the commands yourself and read the actual output.** A subagent reporting "tests pass" is a claim, not evidence; you hold the whole-change context and must verify independently.
+
+**Gate function (for each claim below): IDENTIFY the command → RUN the full command → READ the complete output + exit code → VERIFY the output confirms the claim → only then assert it.**
+
+- **Build**: run the project's build command (if any). Read the exit code and the tail of output. A non-zero exit or any error line blocks completion — do not paper over it.
+- **Full test suite**: run the full suite for every package/module this change touched. Read the failure count from the actual output, not from any agent's summary.
+- **No regressions**: confirm no previously-passing test now fails. If you fixed a bug as part of this change, apply the regression red-green check where feasible: revert the fix → the reproducing test MUST fail → restore the fix → it MUST pass. (Skip if the fix is not independently revertible.)
+- **Multi-module**: if the change spans modules, verify each affected module independently — a passing run in one module does not cover another.
+
+**Anti-self-deception**: do not use "should", "probably", "seems to", or express satisfaction before the evidence is in front of you. If a command could not be run (no build step, no tests), say so explicitly ("no build command configured; no test suite found") rather than implying success by silence. If issues are found, fix them and re-verify from scratch — do not patch-and-assume.
 
 ### 10. On completion or pause, show status
 
