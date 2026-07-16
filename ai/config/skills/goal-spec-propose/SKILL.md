@@ -180,7 +180,7 @@ Fill in the template with architecture decisions, technical approach, and trade-
 - Each task is the smallest unit that carries its own test cycle and a fresh reviewer's gate (2-5 minutes per step). Fold setup/scaffolding/docs into the task whose deliverable needs them.
 - **Exact file paths always** (no "the appropriate file"). **Complete code in every step** that changes code. **Exact commands with expected output**.
 - **No placeholders**: never write "TBD", "TODO", "implement later", "add appropriate error handling", "similar to Task N" (repeat the code), or steps that describe what without showing how.
-- Mark `**Parallelizable:** yes` only for tasks with no shared state and no file overlap with other tasks (enables pipeline dispatch in `/ai-spec-apply` — the task's review may overlap the next implementer). Default `no` for tasks that depend on earlier tasks' Interfaces.
+- Mark `**Parallelizable:** yes` only for tasks with no shared state and no file overlap with other tasks (enables **parallel dispatch** in `/ai-spec-apply` — independent implementers run concurrently within a wave). Default `no` for tasks that depend on earlier tasks' Interfaces. The `**Consumes:**`/`**Produces:**` blocks MUST be accurate: parallel dispatch gates on satisfied Consumes, so a wrong or missing dependency can dispatch a task before its interfaces are ready.
 - Order tasks by dependency. Each task ends with an independently testable deliverable.
 - Keep spec-compliance testable: each task should map to one or more spec scenarios.
 
