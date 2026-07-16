@@ -7,8 +7,6 @@
   },
   "repository": "https://github.com/icecode-ai/ai-engineering.git",
   "license": "MIT",
-  "agents": "./agents/",
-  "commands": "./commands/",
   "skills": "./skills/",
   "interface": {
     "displayName": "AI Engineering",
