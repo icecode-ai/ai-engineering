@@ -38,13 +38,17 @@ fi
 - If no dependencies exist, inform the user and **STOP** — do not proceed.
 - Otherwise, use the **AskUserQuestion tool** to let the user select from the dependencies listed above (preset options, `multiple: false`; the user may type a custom name if needed).
 
-### 2. Remove the dependency directory
+### 2. Confirm removal
+
+Use the **AskUserQuestion tool** to confirm removal of dependency '$name'. If the user does not confirm, **STOP**.
+
+### 3. Remove the dependency directory
 
 ```bash
 bash "ai/config/skills/goal-dependency-remove/scripts/remove-and-unregister.sh" "$name"
 ```
 
-### 3. Re-generate the main project guidance file
+### 4. Re-generate the main project guidance file
 
 **Precondition**: removal succeeded. If removal failed (dependency not found / invalid name / aborted), **STOP** — do not generate the guidance file.
 

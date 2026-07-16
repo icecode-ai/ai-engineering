@@ -10,7 +10,6 @@
   "agents": "./agents/",
   "commands": "./commands/",
   "skills": "./skills/",
-  "hooks": {},
   "interface": {
     "displayName": "AI Engineering",
     "shortDescription": "An end-to-end workflow for AI Agents",

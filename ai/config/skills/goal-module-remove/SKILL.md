@@ -38,13 +38,25 @@ fi
 - If no modules exist, inform the user and **STOP** — do not proceed.
 - Otherwise, use the **AskUserQuestion tool** to let the user select from the modules listed above (preset options, `multiple: false`; the user may type a custom name if needed).
 
-### 2. Remove the module directory
+### 2. Check for uncommitted changes and confirm removal
+
+If the module directory is a git repository, check for uncommitted changes:
+
+```bash
+[ -d "modules/$name/.git" ] && git -C "modules/$name" status --porcelain
+```
+
+If the output is non-empty, inform the user: "Module '$name' has uncommitted changes that will be permanently lost."
+
+Use the **AskUserQuestion tool** to confirm removal. If the user does not confirm, **STOP**.
+
+### 3. Remove the module directory
 
 ```bash
 bash "ai/config/skills/goal-module-remove/scripts/remove-and-unregister.sh" "$name"
 ```
 
-### 3. Re-generate the main project guidance file
+### 4. Re-generate the main project guidance file
 
 **Precondition**: removal succeeded. If removal failed (module not found / invalid name / aborted), **STOP** — do not generate the guidance file.
 

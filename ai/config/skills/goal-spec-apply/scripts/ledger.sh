@@ -2,13 +2,12 @@
 # Progress ledger for subagent-driven apply. Resists context compaction.
 # Usage:
 #   ledger.sh init        <change-dir>                       # create sdd/ dir + empty progress.md
-#   ledger.sh append      <change-dir> <line>                # append a line to progress.md
 #   ledger.sh append-task <change-dir> <task-num> [note]     # append a "task complete" line; note defaults to "review clean"
 #   ledger.sh read        <change-dir>                       # print progress.md (or "(no ledger yet)")
 set -euo pipefail
 cmd="${1:-}"
 change_dir="${2:-}"
-[ -n "$cmd" ] && [ -n "$change_dir" ] || { echo "Usage: ledger.sh <init|append|append-task|read> <change-dir> [line|task-num [note]]"; exit 1; }
+[ -n "$cmd" ] && [ -n "$change_dir" ] || { echo "Usage: ledger.sh <init|append-task|read> <change-dir> [task-num [note]]"; exit 1; }
 ledger_file="${change_dir}/sdd/progress.md"
 
 case "$cmd" in
@@ -16,13 +15,6 @@ case "$cmd" in
     mkdir -p "${change_dir}/sdd"
     [ -f "$ledger_file" ] || printf '# Progress ledger (subagent-driven apply)\n' > "$ledger_file"
     echo "$ledger_file"
-    ;;
-  append)
-    line="${3:-}"
-    [ -n "$line" ] || { echo "append requires a line"; exit 1; }
-    mkdir -p "${change_dir}/sdd"
-    printf '%s\n' "$line" >> "$ledger_file"
-    echo "appended to $ledger_file"
     ;;
   append-task)
     N="${3:-}"

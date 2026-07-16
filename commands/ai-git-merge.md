@@ -1,5 +1,5 @@
 ---
-description: Merge mainline branch into current branch across MAIN, modules, and dependencies
+description: Merge remote mainline (origin/<mainline>) into current branch across MAIN, modules, and dependencies
 argument-hint: [<target>]
 ---
 

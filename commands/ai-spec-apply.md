@@ -1,5 +1,5 @@
 ---
-description: Implement tasks from a spec change via subagent-driven development with two-stage review
+description: Implement tasks from a spec change via wave-parallel subagent-driven development with two-stage review
 argument-hint: [<change-name>]
 ---
 

@@ -26,9 +26,19 @@ if [ ! -d "$specs_dir" ] || [ -z "$(ls -A "$specs_dir" 2>/dev/null)" ]; then
 fi
 tasks_file="$change_dir/tasks.md"
 if [ -f "$tasks_file" ]; then
-  total=$(grep -cE '^\s*[-*]\s+\[[ x]\]' "$tasks_file" 2>/dev/null) || total=0
-  done_count=$(grep -cE '^\s*[-*]\s+\[[x]\]' "$tasks_file" 2>/dev/null) || done_count=0
+  # Fence-aware count: skip lines inside ``` code fences so example checkboxes
+  # in the template are not mistaken for real steps.
+  read total done_count <<EOF
+$(awk '
+  BEGIN { infence=0; t=0; d=0 }
+  /^```/ { infence=!infence; next }
+  infence { next }
+  /^[[:space:]]*[-*][[:space:]]+\[ \]/ { t++ }
+  /^[[:space:]]*[-*][[:space:]]+\[xX\]/ { t++; d++ }
+  END { print t+0, d+0 }
+' "$tasks_file")
+EOF
   pending=$((total - done_count))
-  if [ "$pending" -gt 0 ]; then echo "⚠ $pending tasks still incomplete."; incomplete=true; fi
+  if [ "$pending" -gt 0 ]; then echo "⚠ $pending steps still incomplete."; incomplete=true; fi
 fi
 [ "$incomplete" = true ] && echo "INCOMPLETE" || echo "COMPLETE"

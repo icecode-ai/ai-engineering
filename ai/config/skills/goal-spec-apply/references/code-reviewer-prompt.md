@@ -8,7 +8,7 @@ You are the **final whole-branch code reviewer**. Review the entire change branc
 
 ## Inputs
 
-1. **Review package** (commits + stat + full diff for the whole branch): `{{REVIEW_PACKAGE_PATH}}`
+1. **Review package** (working-tree diff vs HEAD, per-repo, whole change): `{{REVIEW_PACKAGE_PATH}}`
 2. **Minor findings deferred from per-task reviews** (triage which must be fixed before merge):
 {{MINOR_FINDINGS}}
 3. **Spec** (what the change was supposed to deliver): `{{SPECS_PATH}}` and `{{DESIGN_PATH}}`

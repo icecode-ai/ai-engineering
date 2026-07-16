@@ -78,7 +78,7 @@ Preserve user-specific content: keep the user's special references/sections (e.g
 Module guidance files do NOT carry the `readonly-dependencies/` marking.
 Writing rules: short sections and bullets; include only what an agent would otherwise miss. Exclude generic advice, tutorials, obvious conventions, speculation. When in doubt, omit.
 
-### 4. Generate main project guidance file (all targets)
+### 4. Generate main project guidance file (only when at least one module was updated)
 
 Synchronously create and update BOTH `AGENTS.md` and `CLAUDE.md` at the project root using the **fixed workspace-index template** below — the main project is a multi-project workspace, not a buildable project, so do NOT use free-form extraction or the `/init` skill here. Keep both files identical in their template-derived portions.
 

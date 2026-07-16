@@ -77,7 +77,7 @@ Fill in the template with your analysis of the user's request. Read any existing
 
 **b. Read completed proposal and create specs/**
 
-Create one or more spec files under `specs/<capability>/spec.md` based on proposal analysis (use the **Write tool**; it creates parent directories as needed). A spec file is a **delta** — it describes only what this change adds, modifies, removes, or renames for that capability, not the full spec.
+Create one or more spec files under `$change_dir/specs/<capability>/spec.md` based on proposal analysis (use the **Write tool**; it creates parent directories as needed). A spec file is a **delta** — it describes only what this change adds, modifies, removes, or renames for that capability, not the full spec.
 
 Use only the sections below that apply (a brand-new capability uses only `## ADDED Requirements`; modifying an existing one uses `## MODIFIED` / `## REMOVED` / `## RENAMED` as needed). **Never use `## ADDED Requirements` for a requirement that already exists** — that creates duplicates on merge; use `## MODIFIED Requirements` instead.
 

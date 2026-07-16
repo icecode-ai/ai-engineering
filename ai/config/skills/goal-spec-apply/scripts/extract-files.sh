@@ -21,7 +21,7 @@ trap 'rm -f "$tmp"' EXIT
 # single-token lines that look like paths (absolute, or containing a slash).
 sed -E \
   -e 's/^[[:space:]]*[-*][[:space:]]+//' \
-  -e 's/^(Created|Modified|Create|Modify|Deleted|Delete|Changed|Updated|Update|Renamed|Renames)[[:space:]]*:[[:space:]]*//' \
+  -e 's/^(Created|Modified|Updated|Changed|Deleted|Renamed|Renames|Create|Modify|Update|Delete|Tested|Test|Added|Removed|Moved)[[:space:]]*:[[:space:]]*//' \
   -e 's/`//g' \
   -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
   "$report" \

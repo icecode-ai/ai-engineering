@@ -27,10 +27,11 @@ if [ -d "$delta_specs_dir" ] && [ "$(ls -A "$delta_specs_dir" 2>/dev/null)" ]; t
       echo "    Main spec does not exist — will create from delta (only ADDED is valid here)"
     fi
     if [ -f "$spec_file" ]; then
-      added=$(grep -cE '^### Requirement:' "$spec_file" 2>/dev/null) || added=0
       # crude section-aware count: requirements are counted under whichever ## delta header precedes them
-      awk -v f="$spec_file" '
-        BEGIN { a=0; m=0; r=0; n=0; sec="" }
+      awk '
+        BEGIN { a=0; m=0; r=0; n=0; sec=""; infence=0 }
+        /^```/ { infence=!infence; next }
+        infence { next }
         /^## ADDED Requirements/    { sec="A"; next }
         /^## MODIFIED Requirements/ { sec="M"; next }
         /^## REMOVED Requirements/  { sec="R"; next }
@@ -40,7 +41,9 @@ if [ -d "$delta_specs_dir" ] && [ "$(ls -A "$delta_specs_dir" 2>/dev/null)" ]; t
           if (sec=="A") a++
           else if (sec=="M") m++
           else if (sec=="R") r++
-          else n++
+        }
+        /^FROM:/ {
+          if (sec=="N") n++
         }
         END { printf "    Operations: +%d added, ~%d modified, -%d removed, →%d renamed\n", a, m, r, n }
       ' "$spec_file"

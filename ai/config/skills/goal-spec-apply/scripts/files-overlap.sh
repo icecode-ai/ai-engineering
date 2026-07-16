@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check whether two file-lists share any path. Used by the controller to decide whether
-# pipeline dispatch (reviewer of task N overlapping implementer of task N+1) is safe,
-# and whether a fix for task N conflicts with work task N+1 already produced.
+# independent tasks can run in the same parallel wave (their planned/actual files must be
+# disjoint), and whether a fix for a failed task conflicts with a sibling's already-produced files.
 #
 # Usage: files-overlap.sh <files-A> <files-B>
 #   Exit 0 — prints "NO OVERLAP"

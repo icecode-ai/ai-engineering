@@ -21,4 +21,4 @@ The review package's diff context lines ARE the changed files. Inspect code outs
 - Do NOT re-run `git` commands (the package was built for you).
 - Do NOT explore unrelated modules "for completeness" — stay on the diff and the spec scenarios this task maps to.
 
-This matters especially in pipeline mode: another implementer may be writing files concurrently. Reading arbitrary files can give you a half-written view. The frozen review package is your single source of truth — work from it.
+This matters especially in parallel-wave mode: sibling implementers may be writing files concurrently. Reading arbitrary files can give you a half-written view. The frozen review package is your single source of truth — work from it.

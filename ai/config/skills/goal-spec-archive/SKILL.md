@@ -50,12 +50,12 @@ bash "ai/config/skills/goal-spec-archive/scripts/assess-delta-specs.sh" "$name"
 4. **REMOVED completeness**: each `## REMOVED Requirements` entry MUST include both **Reason** and **Migration**.
 5. **MODIFIED scenario-drop guard**: if the main spec's requirement has scenarios that the MODIFIED block omits, surface this explicitly ("N scenarios will be dropped") and confirm with the user before proceeding — silent scenario loss is the most common merge mistake.
 
+**Ask the user** whether to sync before archiving. Options: "Sync now (recommended)", "Archive without syncing". If the user chose "Archive without syncing", skip 3b entirely and proceed to step 4. If the user chose "Sync now", proceed to 3b — validation (3a) is mandatory and must not be skipped.
+
 **3b. Build all merged specs before writing any** (atomicity — an interrupt must not leave main specs half-merged):
 1. For each capability, construct the FULL merged main spec in memory (or a temp string) by applying operations in order: **RENAMED → REMOVED → MODIFIED → ADDED**. (RENAMED first so later sections reference the new name; REMOVED before ADDED so a re-add is allowed.)
 2. Only after EVERY capability's merged spec is built successfully, write them all to `ai/output/specs/<capability>/spec.md` (use the **Write tool**; it creates parent dirs as needed).
 3. If any capability fails to build, write NONE of them — report the failure and leave all main specs unchanged.
-
-**Ask the user** whether to sync before archiving. Options: "Sync now (recommended)", "Archive without syncing". Proceed to archive regardless of choice, but never skip the validation in 3a even if the user chose to sync.
 
 ### 4. Perform the archive
 
