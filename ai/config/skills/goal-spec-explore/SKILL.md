@@ -111,8 +111,8 @@ Read existing artifacts for context.
 
 | Insight Type | Where to Capture |
 |---|---|
-| New requirement discovered | `ai/output/specs/<capability>/spec.md` |
-| Requirement changed | `ai/output/specs/<capability>/spec.md` |
+| New requirement discovered | `ai/output/changes/<name>/specs/<capability>/spec.md` |
+| Requirement changed | `ai/output/changes/<name>/specs/<capability>/spec.md` |
 | Design decision made | `ai/output/changes/<name>/design.md` |
 | Scope changed | `ai/output/changes/<name>/proposal.md` |
 | New work identified | `ai/output/changes/<name>/tasks.md` |
