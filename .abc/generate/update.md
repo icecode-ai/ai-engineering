@@ -43,19 +43,16 @@
 | `skills/executing-plans/` | 计划批量执行（对应 `goal-spec-apply`） |
 | `skills/test-driven-development/` | TDD 红绿重构（对应 `goal-spec-apply` 中的 TDD 分类） |
 | `skills/dispatching-parallel-agents/` | 并行 subagent 调度（对应 `goal-spec-apply` 中的 pipeline 模式） |
-| `skills/brainstorming/` | 头脑风暴（对应 `goal-spec-explore`） |
 | `skills/writing-plans/` | 计划编写（对应 `goal-spec-propose` 中的 tasks 生成） |
 | `skills/requesting-code-review/` | 代码审查请求（对应 `agents/ai-spec-reviewer.md`） |
 | `skills/receiving-code-review/` | 审查反馈响应（对应 `goal-spec-apply` 中 implementer 对 review 的响应） |
-| `skills/finishing-a-development-branch/` | 分支收尾（对应 `goal-spec-archive`） |
-
 ---
 
 ## 三、本地技能 ↔ 上游来源映射表
 
 | 本地文件 | 上游来源 | 上游关键路径 |
 |---|---|---|
-| `ai/config/skills/goal-spec-explore/SKILL.md` | OpenSpec explore + SuperPowers brainstorming | OpenSpec `src/core/templates/workflows/`、`docs/explore.md`；SuperPowers `skills/brainstorming/` |
+| `ai/config/skills/goal-spec-explore/SKILL.md` | OpenSpec explore | OpenSpec `src/core/templates/workflows/`、`docs/explore.md`； |
 | `ai/config/skills/goal-spec-propose/SKILL.md` | OpenSpec propose + SuperPowers writing-plans | OpenSpec `src/core/templates/workflows/`；SuperPowers `skills/writing-plans/` |
 | `ai/config/skills/goal-spec-propose/scripts/create-change.sh` | OpenSpec `openspec init` 逻辑 | OpenSpec `src/commands/`、`src/core/` |
 | `ai/config/skills/goal-spec-apply/SKILL.md` | SuperPowers subagent-driven-development + executing-plans + TDD + dispatching-parallel-agents | SuperPowers `skills/subagent-driven-development/`、`skills/executing-plans/`、`skills/test-driven-development/`、`skills/dispatching-parallel-agents/` |
@@ -74,11 +71,6 @@
 | `ai/config/skills/goal-spec-archive/scripts/list-changes.sh` | 本地原创 | 无上游对应 |
 | `agents/ai-spec-implementer.md` | SuperPowers subagent 模式 | SuperPowers `skills/subagent-driven-development/` |
 | `agents/ai-spec-reviewer.md` | SuperPowers requesting-code-review | SuperPowers `skills/requesting-code-review/` |
-| `commands/ai-spec-apply.md` | OpenSpec `/opsx:apply` 命令 | OpenSpec `src/commands/` |
-| `commands/ai-spec-propose.md` | OpenSpec `/opsx:propose` 命令 | OpenSpec `src/commands/` |
-| `commands/ai-spec-explore.md` | OpenSpec `/opsx:explore` 命令 | OpenSpec `src/commands/` |
-| `commands/ai-spec-archive.md` | OpenSpec `/opsx:archive` 命令 | OpenSpec `src/commands/` |
-
 ---
 
 ## 四、本地定制清单（必须保留，不可被上游覆盖）
