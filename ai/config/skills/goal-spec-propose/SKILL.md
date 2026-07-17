@@ -9,7 +9,7 @@ Propose a new change — create the change directory and generate all artifacts 
 
 When ready to implement, run `/ai-spec-apply`.
 
-**Input**: The argument after `/ai-spec-propose` is the change name (kebab-case), OR a description of what the user wants to build.
+**Input** (optional): The change name (kebab-case) OR a description of what the user wants to build — passed via the `/ai-spec-propose` command argument or specified directly in the prompt.
 
 ## Working directory
 

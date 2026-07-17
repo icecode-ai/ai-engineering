@@ -18,6 +18,10 @@ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wher
 - A comparison: "postgres vs sqlite for this"
 - Nothing (just enter explore mode)
 
+## Working directory
+
+Run from the workspace root — the directory containing both `ai/` and `modules/`. All paths below are relative to it.
+
 ---
 
 ## The Stance
@@ -84,15 +88,24 @@ Depending on what the user brings, you might:
 
 ---
 
+You have full context of the ai-engineering spec system. Use it naturally, don't force it.
+
 ## Check for Context
 
-At the start, quickly check what changes exist — use the **Glob tool** with pattern `ai/output/changes/*/` and exclude the `archive/` directory. This tells you if there are active changes and their names.
+At the start, quickly check what changes exist — use the **Glob tool** with pattern `ai/output/changes/*/`, then filter out the `archive/` directory from the results. This tells you if there are active changes and their names.
 
 If the user mentioned a specific change name, read its artifacts for context.
 
+## When No Change Exists
+
+Think freely. When insights crystallize, you might offer:
+
+- "This feels solid enough to start a change. Want me to create a proposal? You can run `/ai-spec-propose`."
+- Or keep exploring — no pressure to formalize
+
 ---
 
-## When a Change Exists
+## When a change exists
 
 If the user mentions a change or you detect one is relevant:
 
@@ -115,7 +128,13 @@ Read existing artifacts for context.
 | Requirement changed | `ai/output/changes/<name>/specs/<capability>/spec.md` |
 | Design decision made | `ai/output/changes/<name>/design.md` |
 | Scope changed | `ai/output/changes/<name>/proposal.md` |
-| New work identified | `ai/output/changes/<name>/tasks.md` |
+| New work identified        | `ai/output/changes/<name>/tasks.md` |
+| Assumption invalidated     | Relevant artifact in `ai/output/changes/<name>/` |
+
+Example offers:
+- "That's a design decision. Capture it in design.md?"
+- "This is a new requirement. Add it to specs?"
+- "This changes scope. Update the proposal?"
 
 ### 4. The user decides
 
@@ -134,14 +153,133 @@ Offer and move on. Don't pressure. Don't auto-capture.
 
 ---
 
+## Handling Different Entry Points
+
+**User brings a vague idea:**
+```
+User: I'm thinking about adding real-time collaboration
+
+You: Real-time collab is a big space. Let me think about this...
+
+      COLLABORATION SPECTRUM
+      ════════════════════════════════════════════
+
+      Awareness          Coordination         Sync
+           │                   │                 │
+           ▼                   ▼                 ▼
+      ┌────────┐         ┌────────┐        ┌────────┐
+      │Presence│         │Cursors │        │  CRDT  │
+      │  "3    │         │ Multi  │        │Conflict│
+      │online" │         │ select │        │  free  │
+      └────────┘         └────────┘        └────────┘
+           │                   │                 │
+        trivial            moderate           complex
+
+      Where's your head at?
+```
+
+**User brings a specific problem:**
+```
+User: The auth system is a mess
+
+You: [reads codebase]
+
+     ┌─────────────────────────────────────────────┐
+     │              CURRENT AUTH FLOW              │
+     └─────────────────────────────────────────────┘
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+     ┌─────────┐  ┌─────────┐  ┌─────────┐
+     │ Google  │  │  GitHub │  │  Email  │
+     │  OAuth  │  │  OAuth  │  │  Magic  │
+     └────┬────┘  └────┬────┘  └────┬────┘
+          │             │             │
+          └─────────────┼─────────────┘
+                        ▼
+                  ┌───────────┐
+                  │  Session  │
+                  └─────┬─────┘
+                        │
+                        ▼
+                  ┌───────────┐
+                  │   Perms   │
+                  └───────────┘
+
+     I see three tangles. Which one's burning?
+```
+
+**User is stuck mid-implementation:**
+```
+User: /ai-spec-explore add-auth-system
+      The OAuth integration is more complex than expected
+
+You: [reads change artifacts]
+
+     You're on task 4: "Implement OAuth flow"
+
+     Let me trace what's involved...
+
+     [draws diagram, explores options, suggests paths]
+
+     Want to update the design to reflect this?
+     Or add a spike task to investigate?
+```
+
+**User wants to compare options:**
+```
+User: Should we use Postgres or SQLite?
+
+You: Generic answer is boring. What's the context?
+
+User: A CLI tool that tracks local dev environments
+
+You: That changes everything.
+
+     ┌─────────────────────────────────────────────────┐
+     │          CLI TOOL DATA STORAGE                  │
+     └─────────────────────────────────────────────────┘
+
+     Key constraints:
+     • No daemon running
+     • Must work offline
+     • Single user
+
+                  SQLite          Postgres
+     Deployment   embedded ✓      needs server ✗
+     Offline      yes ✓           no ✗
+     Single file  yes ✓           no ✗
+
+     SQLite. Not even close.
+
+     Unless... is there a sync component?
+```
+
+---
+
 ## Ending Discovery
 
 There's no required ending. Discovery might:
+- **Flow into a proposal**: "Ready to start? Run `/ai-spec-propose` to create a change."
 - **Result in artifact updates**: "Updated design.md with these decisions"
 - **Just provide clarity**: User has what they need, moves on
 - **Continue later**: "We can pick this up anytime"
 
 When things crystallize, you might offer a summary — but it's optional. Sometimes the thinking IS the value.
+
+```
+## What We Figured Out
+
+**The problem**: [crystallized understanding]
+
+**The approach**: [if one emerged]
+
+**Open questions**: [if any remain]
+
+**Next steps** (if ready):
+- Run `/ai-spec-propose` to create a change
+- Keep exploring: just keep talking
+```
 
 ---
 

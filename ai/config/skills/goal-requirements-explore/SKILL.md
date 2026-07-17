@@ -34,8 +34,6 @@ Use the **Glob tool** with pattern `modules/*/` to list all modules, and `readon
 
 For each module (and dependency), read its guidance file (`README.md`, `AGENTS.md`, or `CLAUDE.md` — whichever exists) to understand its purpose and tech stack. Based on the requirement text, determine which modules and dependencies are **relevant**.
 
-If only one module exists and the requirement clearly relates to it, skip the scan and use it directly.
-
 ### 3. Progressive context exploration (waterfall — stop early when clear)
 
 Explore project context in **priority order**. After each step, assess whether the requirement is now clear and unambiguous. If yes, **stop** — do not proceed to deeper steps. Each step below uses the relevant modules/dependencies identified in Step 2.
