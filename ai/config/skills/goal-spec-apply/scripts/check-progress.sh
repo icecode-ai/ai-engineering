@@ -33,7 +33,7 @@ $(awk '
     intask=0; pend=0; next
   }
   intask && /^[[:space:]]*[-*][[:space:]]+\[ \]/ { ts++; pend++ }
-  intask && /^[[:space:]]*[-*][[:space:]]+\[x\]/  { ts++; ds++ }
+  intask && /^[[:space:]]*[-*][[:space:]]+\[[xX]\]/  { ts++; ds++ }
   END {
     if (intask && pend==0) ct++
     print tt+0, ct+0, ts+0, ds+0

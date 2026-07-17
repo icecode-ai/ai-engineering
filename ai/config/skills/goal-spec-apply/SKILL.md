@@ -77,19 +77,22 @@ Before dispatching Task 1, run two pre-flight scans and present ALL findings (co
 
 ```bash
 # Extract module-level edit roots from proposal.md. Exit 2 = no roots declared.
-bash "ai/config/skills/goal-spec-apply/scripts/edit-roots.sh" "$change_dir/proposal.md" "$change_dir/sdd/edit-roots.txt"
-
-# Scope-check each task's planned files against the roots.
-for N in $(grep -oE '^### Task [0-9]+' "$change_dir/tasks.md" | grep -oE '[0-9]+' | sort -n -u); do
-  bash "ai/config/skills/goal-spec-apply/scripts/planned-files.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-planned.txt" >/dev/null
-  bash "ai/config/skills/goal-spec-apply/scripts/check-scope.sh" "$change_dir/sdd/task-$N-planned.txt" "$change_dir/sdd/edit-roots.txt" || true
-done
+if bash "ai/config/skills/goal-spec-apply/scripts/edit-roots.sh" "$change_dir/proposal.md" "$change_dir/sdd/edit-roots.txt"; then
+  # Roots declared — scope-check each task's planned files against them.
+  for N in $(grep -oE '^### Task [0-9]+' "$change_dir/tasks.md" | grep -oE '[0-9]+' | sort -n -u); do
+    bash "ai/config/skills/goal-spec-apply/scripts/planned-files.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-planned.txt" >/dev/null
+    bash "ai/config/skills/goal-spec-apply/scripts/check-scope.sh" "$change_dir/sdd/task-$N-planned.txt" "$change_dir/sdd/edit-roots.txt" || true
+  done
+else
+  # No roots declared — unscoped change; record one finding. Do not run check-scope
+  # per task here (edit-roots.txt is empty, so it would just print NO ROOTS N times).
+  :
+fi
 ```
 
 Handle the scope results (fold them into the same batched question as 6a):
-- `edit-roots.sh` exits `2` (no `modules/<x>` / `ai` tokens in proposal) → the change is **unscoped**: add "change declares no Affected Modules — confirm scope or update `proposal.md`" as a finding.
+- `edit-roots.sh` exits `2` (no `modules/<x>` / `ai` tokens in proposal) → the change is **unscoped**: add "change declares no Affected Modules — confirm scope or update `proposal.md`" as a finding. The `else` branch above records this once; `check-scope.sh` is not run in that case.
 - `check-scope.sh` prints `OUT OF SCOPE:` + files for a task → add as a finding: "Task N plans to edit `<files>` outside declared Affected Modules `<roots>`." The user decides whether the task is wrong, the proposal is incomplete, or the scope is intentionally wider.
-- `check-scope.sh` prints `NO ROOTS` → same as unscoped above.
 
 Root-level files (`package.json`, `tsconfig.json`, …) are intentionally not roots — a task editing one legitimately surfaces as a finding for the user to approve. Scope is validated here, once, so step 7 does not re-check it inside any wave.
 
@@ -99,7 +102,7 @@ Dispatch independent implementers **concurrently within each wave**, review them
 
 #### 7a. Build the ready set + form a parallel batch
 
-Read the ledger (step 4) to know which tasks are complete. Compute the **ready set**: pending tasks (marked `- [ ]` in `tasks.md`, not in the ledger) whose `**Consumes:**` dependencies are ALL satisfied (every task they consume is complete in the ledger).
+Read the ledger (step 4) to know which tasks are complete. Compute the **ready set**: pending tasks (marked `- [ ]` in `tasks.md`, not in the ledger) whose `Consumes:` dependencies are ALL satisfied (every task they consume is complete in the ledger).
 
 Form a **parallel batch** from the ready set:
 - Candidates are tasks marked `**Parallelizable:** yes`.
@@ -128,7 +131,7 @@ bash "ai/config/skills/goal-spec-apply/scripts/task-brief.sh" "$change_dir/tasks
 For each task, read `ai/config/skills/goal-spec-apply/references/implementer-prompt.md`, fill the `{{...}}` placeholders:
 - `{{TASK_FIT}}` — one line on where this task fits in the project.
 - `{{TASK_BRIEF_PATH}}` — `$change_dir/sdd/task-$N-brief.md` (introduce it as "read this first — it is your requirements, with exact values verbatim").
-- `{{CROSS_TASK_INTERFACES}}` — exact signatures/decisions from earlier tasks this task consumes (from their Produces blocks).
+- `{{CROSS_TASK_INTERFACES}}` — exact signatures/decisions from earlier tasks this task consumes (from their `Produces:` items under `**Interfaces:**`).
 - `{{AMBIGUITY_RESOLUTIONS}}` — your resolution of any ambiguity you noticed in the brief.
 - `{{GLOBAL_CONSTRAINTS}}` — the Global Constraints block from `tasks.md` (extracted in step 3; every task implicitly includes it).
 - `{{REPORT_PATH}}` — `$change_dir/sdd/task-$N-report.md`.

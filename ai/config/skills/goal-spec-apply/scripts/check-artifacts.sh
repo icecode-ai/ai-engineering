@@ -49,7 +49,7 @@ $(awk '
   /^### Task [0-9]+/ { if (intask) { if (pend==0) ct++ }; intask=1; pend=0; tt++; next }
   /^(## )/            { if (intask) { if (pend==0) ct++ }; intask=0; pend=0; next }
   intask && /^[[:space:]]*[-*][[:space:]]+\[ \]/ { ts++; pend++ }
-  intask && /^[[:space:]]*[-*][[:space:]]+\[x\]/ { ts++; ds++ }
+  intask && /^[[:space:]]*[-*][[:space:]]+\[[xX]\]/ { ts++; ds++ }
   END { if (intask && pend==0) ct++; print tt+0, ct+0, ts+0, ds+0 }
 ' "$tasks_file")
 EOF

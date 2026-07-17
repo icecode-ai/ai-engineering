@@ -34,7 +34,7 @@ $(awk '
   /^```/ { infence=!infence; next }
   infence { next }
   /^[[:space:]]*[-*][[:space:]]+\[ \]/ { t++ }
-  /^[[:space:]]*[-*][[:space:]]+\[xX\]/ { t++; d++ }
+  /^[[:space:]]*[-*][[:space:]]+\[[xX]\]/ { t++; d++ }
   END { print t+0, d+0 }
 ' "$tasks_file")
 EOF

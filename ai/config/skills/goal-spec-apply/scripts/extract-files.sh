@@ -17,12 +17,15 @@ out="${2:-}"
 tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 
-# Strip bullets, common labels, backticks, and surrounding whitespace. Keep only
-# single-token lines that look like paths (absolute, or containing a slash).
+# Strip bullets, common labels, backticks, trailing :line-range suffixes (e.g.
+# path:123-145, so a "Modified: path:10-20" report line does not become a phantom
+# path that review-package.sh silently drops), and surrounding whitespace. Keep
+# only single-token lines that look like paths (absolute, or containing a slash).
 sed -E \
   -e 's/^[[:space:]]*[-*][[:space:]]+//' \
   -e 's/^(Created|Modified|Updated|Changed|Deleted|Renamed|Renames|Create|Modify|Update|Delete|Tested|Test|Added|Removed|Moved)[[:space:]]*:[[:space:]]*//' \
   -e 's/`//g' \
+  -e 's/:[0-9]+(-[0-9]+)?$//' \
   -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
   "$report" \
   | grep -E '(^/|/)' \

@@ -35,5 +35,16 @@ else
   end=$((end - 1))
 fi
 
-sed -i.bak "${start},${end}s/\[ \]/[x]/" "$tasks_file" && rm -f "$tasks_file.bak"
+# Mark `[ ]` -> `[x]` only within [start,end] AND outside ``` fences. sed would
+# blindly touch fenced example checkboxes / code; awk stays fence-aware like the
+# block-boundary detection above. Write to a temp then move (safer than in-place).
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+awk -v s="$start" -v e="$end" '
+  BEGIN { infence=0 }
+  /^```/ { infence=!infence; print; next }
+  infence { print; next }
+  (NR>=s && NR<=e) { sub(/\[ \]/, "[x]"); print; next }
+  { print }
+' "$tasks_file" > "$tmp" && mv "$tmp" "$tasks_file"
 echo "Task ${n}: all steps marked complete in $tasks_file"
