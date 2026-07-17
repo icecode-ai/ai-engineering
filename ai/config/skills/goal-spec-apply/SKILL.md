@@ -79,7 +79,10 @@ Before dispatching Task 1, run two pre-flight scans and present ALL findings (co
 # Extract module-level edit roots from proposal.md. Exit 2 = no roots declared.
 if bash "ai/config/skills/goal-spec-apply/scripts/edit-roots.sh" "$change_dir/proposal.md" "$change_dir/sdd/edit-roots.txt"; then
   # Roots declared — scope-check each task's planned files against them.
-  for N in $(grep -oE '^### Task [0-9]+' "$change_dir/tasks.md" | grep -oE '[0-9]+' | sort -n -u); do
+  # Fence-aware task-number extraction (skip ```-fenced regions, consistent with
+  # mark-task-done.sh / planned-files.sh) — avoids matching example "### Task N:"
+  # headers inside code blocks.
+  for N in $(awk 'BEGIN{f=0} /^```/{f=!f;next} f{next} /^### Task [0-9]+:/{line=$0; sub(/^### Task /,"",line); sub(/:.*/,"",line); print line}' "$change_dir/tasks.md" | sort -n -u); do
     bash "ai/config/skills/goal-spec-apply/scripts/planned-files.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-planned.txt" >/dev/null
     bash "ai/config/skills/goal-spec-apply/scripts/check-scope.sh" "$change_dir/sdd/task-$N-planned.txt" "$change_dir/sdd/edit-roots.txt" || true
   done
@@ -221,8 +224,9 @@ Then return to 7a for the next wave.
 After ALL tasks are complete, dispatch ONE final code-reviewer subagent for the whole change:
 
 ```bash
-# Gather every task's reported files into one list
-cat "$change_dir"/sdd/task-*-files.txt | sort -u > "$change_dir/sdd/final-files.txt"
+# Gather every task's reported files into one list (2>/dev/null guards against
+# the glob not matching, which shouldn't happen at step 8 but is defensive)
+cat "$change_dir"/sdd/task-*-files.txt 2>/dev/null | sort -u > "$change_dir/sdd/final-files.txt"
 bash "ai/config/skills/goal-spec-apply/scripts/review-package.sh" "$change_dir/sdd/final-files.txt" "$change_dir/sdd/final-review.md"
 ```
 
