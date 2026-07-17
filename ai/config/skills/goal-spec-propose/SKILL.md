@@ -48,9 +48,19 @@ Read `ai/config/spec-config.yaml` if it exists. If present:
 
 If the file is absent, proceed normally (default schema is `spec-driven`).
 
+**Constraint-vs-content rule (mandatory):** `context` and `rules` are constraints for YOU — they guide what you write, but MUST NEVER appear in an artifact file. Do NOT copy `<context>`, `<rules>`, or `<project_context>` blocks into proposal.md, specs, design.md, or tasks.md. They shape the content; they are not the content.
+
 ### 5. Create artifacts in dependency order
 
 Use the **TodoWrite tool** to track progress through the artifacts. Use the **Write tool** to create each filled artifact file (write real content, not just the skeleton).
+
+**Dependency chain** (respect this order — each artifact feeds the next):
+1. `proposal.md` — no deps; establishes what & why.
+2. `specs/` — depends on proposal (capabilities → spec deltas).
+3. `design.md` — depends on proposal + specs (how to realize them).
+4. `tasks.md` — depends on proposal + specs + design (decompose into executable tasks).
+
+Before writing each artifact, read its dependencies for context. **After writing each artifact, verify the file exists** (Read it back or check via the tool) before proceeding to the next — a silent Write failure leaves a missing artifact that breaks `/ai-spec-apply`.
 
 **a. Create proposal.md** (what & why) at `$change_dir/proposal.md`:
 
@@ -184,7 +194,28 @@ Fill in the template with architecture decisions, technical approach, and trade-
 - Order tasks by dependency. Each task ends with an independently testable deliverable.
 - Keep spec-compliance testable: each task should map to one or more spec scenarios.
 
-### 6. Show final status
+### 6. Self-Review (inline quality gate)
+
+After all four artifacts are written and verified, run this checklist **yourself** (not a subagent dispatch — this is a fresh-eyes pass over your own output, like superpowers' writing-plans Self-Review). Fix any issue **inline** before showing final status; no need to re-review after fixing.
+
+**1. Spec coverage:** Skim every requirement and `#### Scenario:` under `specs/`. Can you point to at least one task in `tasks.md` that implements it? List any gap, then add the missing task or note the deferral explicitly in `design.md` Open Questions.
+
+**2. Placeholder scan:** Search all artifacts for red flags — these are **plan failures** that will stall `/ai-spec-apply`'s fresh implementers (who see only their own task brief): `TBD`, `TODO`, "implement later", "add appropriate error handling", "add validation", "handle edge cases", "fill in details", "similar to Task N" (repeat the code — implementers may read tasks out of order), "the appropriate file" (use the exact path), or any step that describes *what* without showing *how* (missing code block for a code step). Fix every one.
+
+**3. Interface consistency:** For every `**Produces:**` in one task and the matching `**Consumes:**` in a later task, do the names, parameter types, and return types match? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug that breaks parallel dispatch. Also confirm every type/function referenced in a later task is **defined** in an earlier task's Produces (or already exists in the codebase). Fix mismatches.
+
+**4. Delta spec legality:** Re-read each `specs/<capability>/spec.md`:
+   - `## ADDED Requirements` never names a requirement that already exists in the main spec (`ai/output/specs/<capability>/spec.md` if present) — use `## MODIFIED` instead, or the archive merge creates duplicates.
+   - `## MODIFIED Requirements` contains the **full replacement** (every scenario you want to keep, restated) — not a diff. Any omitted main-spec scenario is silently dropped on merge.
+   - `## REMOVED Requirements` has both **Reason:** and **Migration:** (write "None" only if truly N/A).
+   - `## RENAMED Requirements` has `FROM:` / `TO:`; if the body also changes, a `## MODIFIED` entry under the new name follows it.
+   - Every requirement has ≥1 `#### Scenario:` with WHEN/THEN, using SHALL/MUST.
+
+**5. Global Constraints presence:** `tasks.md` contains a `## Global Constraints` block with project-wide requirements (version floors, dependency limits, naming/copy rules) as one line each, exact values verbatim from the spec. `/ai-spec-apply` extracts this block verbatim and feeds it to every per-task reviewer — a missing or vague block means reviewers review without the project's mandatory constraints.
+
+If the scan is clean, proceed. If you fix issues, the artifacts on disk are already updated (you edited inline) — proceed.
+
+### 7. Show final status
 
 ```bash
 bash "ai/config/skills/goal-spec-propose/scripts/check-artifacts.sh" "$name"
@@ -201,9 +232,8 @@ After completing all artifacts, summarize:
 ## Artifact Creation Guidelines
 
 - Fill in templates with real content based on the user's request and codebase analysis
-- Read dependency artifacts for context before creating new ones
 - If context is critically unclear, ask the user — but prefer making reasonable decisions to keep momentum
-- Verify each artifact file exists after writing before proceeding to next
+- (Dependency reading and write-then-verify are mandated in step 5 above — do not skip them)
 
 ## Guardrails
 - Create ALL artifacts needed for implementation (proposal, specs, design, tasks)
