@@ -5,7 +5,7 @@ argument-hint: [<change-name>]
 disable-model-invocation: true
 ---
 
-Implement tasks from a spec change using **subagent-driven development with wave-based parallelism**: a fresh implementer subagent per task (independent tasks run concurrently within a wave), a two-stage review (spec compliance + code quality) after each, a broad final review, and a durable progress ledger. The controller never touches git — implementers write files to disk, the user stages and commits; TDD, code review, and verification are built in — no external skills required.
+Implement tasks from a spec change using **subagent-driven development with wave-based parallelism**: a fresh implementer subagent per task (independent tasks run concurrently within a wave), a two-stage review (spec compliance + code quality) after each, a broad final review, and a durable progress ledger. The controller never touches git — implementers write files to disk, the user stages and commits; TDD, code review, and verification are built in — no external skills required. A **workspace scope guard** and **explicit state machine** frame the run: the change's declared affected modules (from `proposal.md`) gate each task's planned files as a pre-flight finding, and the artifact/task state (blocked / in progress / all done) routes the flow.
 
 **Input**: Optionally specify a change name (e.g., `/ai-spec-apply add-auth`). If the change name is omitted, infer from context or prompt.
 
@@ -34,6 +34,11 @@ Let `change_dir` = `ai/output/changes/$name` (use this path in all subsequent st
 ```bash
 bash "ai/config/skills/goal-spec-apply/scripts/check-artifacts.sh" "$name"
 ```
+
+The script prints a `STATE:` line — branch on it:
+- **`STATE: BLOCKED`** — artifacts missing. Suggest `/ai-spec-propose $name` and stop; do not proceed to implementation.
+- **`STATE: ALL_DONE`** — every task already complete. Suggest `/ai-spec-archive $name` and stop; do not re-run waves or the final review on an already-finished change.
+- **`STATE: IN_PROGRESS`** — artifacts present, tasks remain. Continue to step 3.
 
 ### 3. Read context files
 
@@ -64,7 +69,29 @@ bash "ai/config/skills/goal-spec-apply/scripts/check-progress.sh" "$name"
 
 ### 6. Pre-flight plan review
 
-Before dispatching Task 1, scan `tasks.md` once for conflicts: tasks that contradict each other or the Global Constraints, or anything the plan mandates that the review rubric treats as a defect. Present all findings to the user as one batched question (each finding beside the plan text that mandates it) before execution begins. If the scan is clean, proceed without comment.
+Before dispatching Task 1, run two pre-flight scans and present ALL findings (conflicts + scope) as **one batched question** before execution begins. If both are clean, proceed without comment. Both scans run before any dispatch, so wave parallelism is unaffected.
+
+**6a. Conflict scan.** Scan `tasks.md` once for conflicts: tasks that contradict each other or the Global Constraints, or anything the plan mandates that the review rubric treats as a defect.
+
+**6b. Workspace scope scan.** Extract the change's allowed edit roots from `proposal.md`, then check every task's planned files against them. This catches scope creep — a task editing a module the proposal did not declare as affected (e.g. proposal says `modules/auth` but a task's `**Files:**` lists `modules/billing/…`).
+
+```bash
+# Extract module-level edit roots from proposal.md. Exit 2 = no roots declared.
+bash "ai/config/skills/goal-spec-apply/scripts/edit-roots.sh" "$change_dir/proposal.md" "$change_dir/sdd/edit-roots.txt"
+
+# Scope-check each task's planned files against the roots.
+for N in $(grep -oE '^### Task [0-9]+' "$change_dir/tasks.md" | grep -oE '[0-9]+' | sort -n -u); do
+  bash "ai/config/skills/goal-spec-apply/scripts/planned-files.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-planned.txt" >/dev/null
+  bash "ai/config/skills/goal-spec-apply/scripts/check-scope.sh" "$change_dir/sdd/task-$N-planned.txt" "$change_dir/sdd/edit-roots.txt" || true
+done
+```
+
+Handle the scope results (fold them into the same batched question as 6a):
+- `edit-roots.sh` exits `2` (no `modules/<x>` / `ai` tokens in proposal) → the change is **unscoped**: add "change declares no Affected Modules — confirm scope or update `proposal.md`" as a finding.
+- `check-scope.sh` prints `OUT OF SCOPE:` + files for a task → add as a finding: "Task N plans to edit `<files>` outside declared Affected Modules `<roots>`." The user decides whether the task is wrong, the proposal is incomplete, or the scope is intentionally wider.
+- `check-scope.sh` prints `NO ROOTS` → same as unscoped above.
+
+Root-level files (`package.json`, `tsconfig.json`, …) are intentionally not roots — a task editing one legitimately surfaces as a finding for the user to approve. Scope is validated here, once, so step 7 does not re-check it inside any wave.
 
 ### 7. Implement tasks (wave-based parallel subagent-driven loop)
 
@@ -282,4 +309,6 @@ What would you like to do?
 - Keep going through waves until done or blocked; pause on errors/blockers/unclear requirements — don't guess.
 - If implementation reveals a design issue, pause and suggest updating artifacts (`/ai-spec-propose` or edit `design.md`/`tasks.md`).
 - Update the task checkbox AND the ledger immediately after each task's review passes.
+- **Workspace scope guard**: before dispatch, step 6b extracts the change's allowed edit roots from `proposal.md` (`edit-roots.sh`) and checks every task's planned files against them (`check-scope.sh`). Out-of-scope files — and an undeclared-scope change — are pre-flight findings the user decides on, batched with the conflict scan. They are never auto-blocked and never checked inside a wave, so wave parallelism is unaffected. Root-level files are intentionally not roots: a task editing one surfaces as a finding.
+- **Explicit state**: step 2 branches on `check-artifacts.sh`'s `STATE:` line — `BLOCKED` (missing artifacts → `/ai-spec-propose`), `ALL_DONE` (all tasks complete → `/ai-spec-archive`; do not re-run waves or the final review on an already-finished change), `IN_PROGRESS` (resume). Never re-dispatch a change whose state is `ALL_DONE`.
 - No per-task model selection is performed (intentionally not implemented).

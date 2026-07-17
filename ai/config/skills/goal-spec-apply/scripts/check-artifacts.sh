@@ -30,6 +30,35 @@ if [ -d "$specs_dir" ] && [ "$(ls -A "$specs_dir" 2>/dev/null)" ]; then
 else
   echo "○ specs/ (empty — may need creation)"
 fi
+# Emit an explicit state the controller branches on (step 2 of the skill).
 if [ "$all_done" = false ]; then
   echo "Some artifacts are missing. Suggest running /ai-spec-propose $name first."
+  echo "STATE: BLOCKED"
+  exit 0
+fi
+
+# Artifacts present — check task completion to tell "all done" from "in progress".
+# Fence-aware walk (same logic as check-progress.sh): a task is complete when it
+# has no pending `- [ ]` step. completed==total (and total>0) means ALL_DONE.
+tasks_file="$change_dir/tasks.md"
+read total_tasks completed_tasks total_steps done_steps <<EOF
+$(awk '
+  BEGIN { infence=0; intask=0; tt=0; ct=0; ts=0; ds=0; pend=0 }
+  /^```/ { infence=!infence; next }
+  infence { next }
+  /^### Task [0-9]+/ { if (intask) { if (pend==0) ct++ }; intask=1; pend=0; tt++; next }
+  /^(## )/            { if (intask) { if (pend==0) ct++ }; intask=0; pend=0; next }
+  intask && /^[[:space:]]*[-*][[:space:]]+\[ \]/ { ts++; pend++ }
+  intask && /^[[:space:]]*[-*][[:space:]]+\[x\]/ { ts++; ds++ }
+  END { if (intask && pend==0) ct++; print tt+0, ct+0, ts+0, ds+0 }
+' "$tasks_file")
+EOF
+
+if [ "$total_tasks" -gt 0 ] && [ "$completed_tasks" -eq "$total_tasks" ]; then
+  echo "Progress: $completed_tasks/$total_tasks tasks complete."
+  echo "STATE: ALL_DONE"
+  echo "All tasks complete. Suggest running /ai-spec-archive $name."
+else
+  echo "Progress: $completed_tasks/$total_tasks tasks complete; $((total_tasks - completed_tasks)) remaining."
+  echo "STATE: IN_PROGRESS"
 fi
