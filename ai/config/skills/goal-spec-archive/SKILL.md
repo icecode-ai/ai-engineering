@@ -27,6 +27,8 @@ Use the **AskUserQuestion tool** to let the user select.
 
 ### 2. Check artifact + task completion status
 
+Let `change_dir` = `ai/output/changes/$name` (use this path in all subsequent steps).
+
 ```bash
 bash "ai/config/skills/goal-spec-archive/scripts/check-completion.sh" "$name"
 ```

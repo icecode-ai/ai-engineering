@@ -298,20 +298,13 @@ What would you like to do?
 ```
 
 ## Guardrails
-- **Subagent-driven, wave-parallel**: dispatch a fresh implementer per task via the Task tool (`subagent_type: "ai-spec-implementer"`) and review via `ai-spec-reviewer`; never implement tasks in the controller session. `Parallelizable: yes` tasks with disjoint files and satisfied dependencies run as **concurrent implementers within a wave** (multiple Task calls in one message); `Parallelizable: no` tasks run alone. Waves are sequential — no cross-wave overlap. Reviewers are read-only and run concurrently within a wave.
-- **No git operations**: implementers, fixers, and the controller never touch git — no `add`, no `commit`, no `stash`. Implementers write files to disk and report changed paths. Review packages use read-only `git diff` (tracked files vs HEAD) and `git diff --no-index` (untracked files, shown in full), grouped per repo so nested module repos work. The user stages and commits to whatever branch is checked out in each repo. **Exception**: in the 7f discard path, the controller may use `git checkout HEAD -- <files>` to revert a sibling task's stale tracked-file output (working-tree only — does not touch index/HEAD/branch).
-- **No-commit review diffs**: review packages diff reported files vs HEAD (no commits). Parallel-wave packages are clean (disjoint files); for `Parallelizable: no` tasks sharing a file with an earlier uncommitted task, commit between them for a clean single-task diff. The controller never auto-commits. This is an accepted limitation of the no-commit model; see 7f for the overlap-based discard mechanism that handles the parallel-wave equivalent.
-- **Context isolation**: hand the implementer its task brief file + cross-task interfaces + ambiguity resolutions + report contract only. Never paste session history or prior-task summaries.
-- **File handoff**: briefs, reports, and review packages move as files under `$change_dir/sdd/`, not pasted text.
-- **Two-stage review**: every task gets a task-reviewer subagent (spec compliance + code quality) before marking complete. Critical/Important findings must be fixed and re-reviewed. Never skip the re-review.
-- **Durable ledger**: append to `sdd/progress.md` (a plain file on disk) the moment a task's review passes; on resume, trust the ledger over your own recollection. It survives context compaction but NOT `git clean -fdx` (avoid that mid-change). Never re-dispatch a task the ledger marks complete.
-- **TDD inline**: implementer subagents follow RED-GREEN-REFACTOR (per the implementer-prompt); classify each task Strict TDD / Exploratory / Visual. No external TDD skill.
-- **No pre-judging reviewers**: never write "don't flag X" or "at most Minor" in a review dispatch.
-- **Final review is broad**: one whole-branch reviewer, one consolidated fix subagent for its findings.
-- **Verification inline**: final build + full suite + regression check happens here, no external verification skill.
+- Never implement tasks in the controller session — dispatch via the Task tool (`ai-spec-implementer` / `ai-spec-reviewer`).
+- Never touch git (no `add`/`commit`/`stash`) — **except** the 7f discard path's `git checkout HEAD -- <files>` (working-tree only).
+- Never paste session history or prior-task summaries into an implementer dispatch (context isolation).
+- Never skip the re-review after a fix.
+- Never re-dispatch a task the ledger marks complete; trust the ledger over recollection on resume.
+- Never write "don't flag X" or pre-rate severity in a review dispatch.
+- Never re-dispatch a change whose state is `ALL_DONE`.
 - Keep going through waves until done or blocked; pause on errors/blockers/unclear requirements — don't guess.
 - If implementation reveals a design issue, pause and suggest updating artifacts (`/ai-spec-propose` or edit `design.md`/`tasks.md`).
-- Update the task checkbox AND the ledger immediately after each task's review passes.
-- **Workspace scope guard**: before dispatch, step 6b extracts the change's allowed edit roots from `proposal.md` (`edit-roots.sh`) and checks every task's planned files against them (`check-scope.sh`). Out-of-scope files — and an undeclared-scope change — are pre-flight findings the user decides on, batched with the conflict scan. They are never auto-blocked and never checked inside a wave, so wave parallelism is unaffected. Root-level files are intentionally not roots: a task editing one surfaces as a finding.
-- **Explicit state**: step 2 branches on `check-artifacts.sh`'s `STATE:` line — `BLOCKED` (missing artifacts → `/ai-spec-propose`), `ALL_DONE` (all tasks complete → `/ai-spec-archive`; do not re-run waves or the final review on an already-finished change), `IN_PROGRESS` (resume). Never re-dispatch a change whose state is `ALL_DONE`.
 - No per-task model selection is performed (intentionally not implemented).

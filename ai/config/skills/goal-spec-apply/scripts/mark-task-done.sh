@@ -44,7 +44,7 @@ awk -v s="$start" -v e="$end" '
   BEGIN { infence=0 }
   /^```/ { infence=!infence; print; next }
   infence { print; next }
-  (NR>=s && NR<=e) { sub(/\[ \]/, "[x]"); print; next }
+  (NR>=s && NR<=e) { gsub(/\[ \]/, "[x]"); print; next }
   { print }
 ' "$tasks_file" > "$tmp" && mv "$tmp" "$tasks_file"
 echo "Task ${n}: all steps marked complete in $tasks_file"

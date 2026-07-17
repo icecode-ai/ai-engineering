@@ -80,7 +80,16 @@ Before writing each artifact, read its dependencies for context. **After writing
 - `<existing-name>`: <what requirement is changing>
 
 ## Impact
-<!-- Affected code, APIs, dependencies, systems -->
+
+### Affected Modules
+- `modules/<module>`: <how it's affected>
+<!-- List every module this change touches as `modules/<x>` so the apply scope
+     guard (edit-roots.sh) can validate task file paths. Root-level files
+     (package.json, tsconfig.json, …) are intentionally NOT roots — a task
+     editing one surfaces as a scope finding for the user to approve. -->
+
+### Other Impact
+<!-- Affected APIs, dependencies, systems -->
 ```
 
 Fill in the template with your analysis of the user's request. Read any existing context files for reference.

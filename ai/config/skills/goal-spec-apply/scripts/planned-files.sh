@@ -30,7 +30,7 @@ paths="$(awk -v n="$n" '
     if (infiles) {
       line = $0
       sub(/^[[:space:]]*[-*][[:space:]]+/, "", line)
-      sub(/^(Created|Modified|Updated|Changed|Deleted|Renamed|Renames|Create|Modify|Update|Delete|Tested|Test|Added|Removed|Moved)[[:space:]]*:[[:space:]]*/, "", line)
+      sub(/^(Created|Modified|Updated|Changed|Deleted|Renamed|Rename|Create|Modify|Update|Delete|Tested|Test|Added|Removed|Moved)[[:space:]]*:[[:space:]]*/, "", line)
       gsub(/`/, "", line)
       sub(/:[0-9]+(-[0-9]+)?$/, "", line)
       gsub(/^[[:space:]]+|[[:space:]]+$/, "", line)
