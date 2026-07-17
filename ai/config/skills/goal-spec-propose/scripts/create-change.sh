@@ -21,8 +21,6 @@ if [ -d "$change_dir" ] && [ "$(ls -A "$change_dir" 2>/dev/null)" ]; then
 fi
 mkdir -p "$change_dir"
 {
-  # schema is metadata only — no script reads it; the active schema is set in ai/config/spec-config.yaml.
-  echo 'schema: spec-driven'
   echo "created: $(date +%Y-%m-%d)"
 } > "$change_dir/.spec.yaml"
 echo "Created change directory: $change_dir"

@@ -30,8 +30,8 @@ roots="$(awk '
       tok = substr(line, RSTART+1, RLENGTH-2)
       line = substr(line, RSTART+RLENGTH)
       if (tok ~ /^modules\/[^\/]+/) {
-        n = split(tok, parts, "/")
-        if (parts[2] != "") print "modules/" parts[2]
+        split(tok, parts, "/")
+        print "modules/" parts[2]
       } else if (tok == "ai" || tok ~ /^ai\//) {
         print "ai"
       }

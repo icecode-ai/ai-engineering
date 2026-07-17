@@ -48,7 +48,7 @@ Read `ai/config/spec-config.yaml` if it exists. If present:
 
 If the file is absent, proceed normally (default schema is `spec-driven`).
 
-**Constraint-vs-content rule (mandatory):** `context` and `rules` are constraints for YOU — they guide what you write, but MUST NEVER appear in an artifact file. Do NOT copy `<context>`, `<rules>`, or `<project_context>` blocks into proposal.md, specs, design.md, or tasks.md. They shape the content; they are not the content.
+**Constraint-vs-content rule (mandatory):** `context` and `rules` are constraints for YOU — they guide what you write, but MUST NEVER appear in an artifact file. Do NOT copy `<context>` or `<rules>` blocks into proposal.md, specs, design.md, or tasks.md. They shape the content; they are not the content.
 
 ### 5. Create artifacts in dependency order
 
