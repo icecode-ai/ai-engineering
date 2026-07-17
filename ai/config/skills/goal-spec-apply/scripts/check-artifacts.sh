@@ -41,16 +41,15 @@ fi
 # Fence-aware walk (same logic as check-progress.sh): a task is complete when it
 # has no pending `- [ ]` step. completed==total (and total>0) means ALL_DONE.
 tasks_file="$change_dir/tasks.md"
-read total_tasks completed_tasks total_steps done_steps <<EOF
+read total_tasks completed_tasks <<EOF
 $(awk '
-  BEGIN { infence=0; intask=0; tt=0; ct=0; ts=0; ds=0; pend=0 }
+  BEGIN { infence=0; intask=0; tt=0; ct=0; pend=0 }
   /^```/ { infence=!infence; next }
   infence { next }
   /^### Task [0-9]+/ { if (intask) { if (pend==0) ct++ }; intask=1; pend=0; tt++; next }
   /^(## )/            { if (intask) { if (pend==0) ct++ }; intask=0; pend=0; next }
-  intask && /^[[:space:]]*[-*][[:space:]]+\[ \]/ { ts++; pend++ }
-  intask && /^[[:space:]]*[-*][[:space:]]+\[[xX]\]/ { ts++; ds++ }
-  END { if (intask && pend==0) ct++; print tt+0, ct+0, ts+0, ds+0 }
+  intask && /^[[:space:]]*[-*][[:space:]]+\[ \]/ { pend++ }
+  END { if (intask && pend==0) ct++; print tt+0, ct+0 }
 ' "$tasks_file")
 EOF
 

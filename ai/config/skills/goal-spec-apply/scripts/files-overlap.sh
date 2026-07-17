@@ -13,8 +13,8 @@ a="${1:-}"; b="${2:-}"
 [ -f "$a" ] || { echo "file-list A not found: $a"; exit 2; }
 [ -f "$b" ] || { echo "file-list B not found: $b"; exit 2; }
 
-# Normalize each list: strip whitespace, drop blanks, dedup.
-norm() { sed 's/[[:space:]]//g' "$1" | grep -v '^$' | sort -u; }
+# Normalize each list: trim leading/trailing whitespace, drop blanks, dedup.
+norm() { sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "$1" | grep -v '^$' | sort -u; }
 
 overlap=$(comm -12 <(norm "$a") <(norm "$b") || true)
 if [ -n "$overlap" ]; then

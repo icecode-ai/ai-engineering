@@ -31,7 +31,7 @@ Use the **AskUserQuestion tool** to let the user select.
 bash "ai/config/skills/goal-spec-archive/scripts/check-completion.sh" "$name"
 ```
 
-If the last line is `INCOMPLETE` (some artifacts missing or tasks pending), display the warnings and prompt the user: "Archive anyway?" Proceed if the user confirms.
+If the last line is `INCOMPLETE` (some artifacts missing or steps pending), display the warnings and prompt the user: "Archive anyway?" Proceed if the user confirms.
 
 ### 3. Sync delta specs to main specs (if delta specs exist)
 
@@ -118,7 +118,7 @@ If there were warnings:
 
 **Warnings:**
 - Archived with incomplete artifacts
-- Archived with N incomplete tasks
+- Archived with N incomplete steps
 - Delta spec sync was skipped (user chose to skip)
 
 Review the archive if this was not intentional.

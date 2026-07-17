@@ -11,7 +11,6 @@ while [ "$PROJECT_ROOT" != "/" ] && { [ ! -d "$PROJECT_ROOT/ai" ] || [ ! -d "$PR
   PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
 done
 [ "$PROJECT_ROOT" = "/" ] && PROJECT_ROOT="."
-cd "$PROJECT_ROOT"
 
 change_dir="${PROJECT_ROOT}/ai/output/changes/$name"
 if [ -d "$change_dir" ] && [ "$(ls -A "$change_dir" 2>/dev/null)" ]; then
