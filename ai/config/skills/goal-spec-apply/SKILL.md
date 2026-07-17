@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 Implement tasks from a spec change using **subagent-driven development with wave-based parallelism**: a fresh implementer subagent per task (independent tasks run concurrently within a wave), a two-stage review (spec compliance + code quality) after each, a broad final review, and a durable progress ledger. The controller never touches git — implementers write files to disk, the user stages and commits; TDD, code review, and verification are built in — no external skills required. A **workspace scope guard** and **explicit state machine** frame the run: the change's declared affected modules (from `proposal.md`) gate each task's planned files as a pre-flight finding, and the artifact/task state (blocked / in progress / all done) routes the flow.
 
-**Input**: Optionally specify a change name (e.g., `/ai-spec-apply add-auth`). If the change name is omitted, infer from context or prompt.
+**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 ## Working directory
 

@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 Archive a completed change. Moves the change directory into the archive to keep the active changes list clean.
 
-**Input**: Optionally specify a change name after `/ai-spec-archive` (e.g., `/ai-spec-archive add-auth`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 ## Working directory
 
