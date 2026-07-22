@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.sample.clean</groupId>
+    <artifactId>sample-clean</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <!-- compile start -->
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- compile end -->
+
+        <!-- framework start -->
+        <version.spring-boot-dependencies>4.0.6</version.spring-boot-dependencies>
+        <version.clean-dependencies>0.0.1</version.clean-dependencies>
+        <version.mapper-spring-boot-starter>6.0.0</version.mapper-spring-boot-starter>
+        <version.pagehelper-spring-boot-starter>4.1.0</version.pagehelper-spring-boot-starter>
+        <version.druid-spring-boot-starter>1.2.28</version.druid-spring-boot-starter>
+        <version.mysql-connector-java>8.0.33</version.mysql-connector-java>
+        <!-- framework end -->
+
+        <!-- modules start -->
+        <version.sample-clean-client>1.0.0-SNAPSHOT</version.sample-clean-client>
+        <!-- modules end -->
+
+        <!-- third party start -->
+        <version.jcl-over-slf4j>2.0.18</version.jcl-over-slf4j>
+        <version.lombok>1.18.46</version.lombok>
+        <version.lombok-mapstruct-binding>0.2.0</version.lombok-mapstruct-binding>
+        <version.mapstruct>1.6.3</version.mapstruct>
+        <version.auto-service>1.1.1</version.auto-service>
+        <!-- third party end -->
+
+        <!-- plugin start -->
+        <version.maven-antrun-plugin>3.2.0</version.maven-antrun-plugin>
+        <version.maven-source-plugin>3.4.0</version.maven-source-plugin>
+        <version.maven-compiler-plugin>3.15.0</version.maven-compiler-plugin>
+        <version.spring-boot-maven-plugin>4.0.6</version.spring-boot-maven-plugin>
+        <!-- plugin end -->
+    </properties>
+
+    <modules>
+        <module>sample-clean-application</module>
+        <module>sample-clean-client</module>
+        <module>sample-clean-domain</module>
+        <module>sample-clean-facade</module>
+        <module>sample-clean-infrastructure</module>
+        <module>sample-clean-interface</module>
+        <module>sample-clean-starter</module>
+    </modules>
+
+    <dependencyManagement>
+        <!-- 跟基础应用架构无关的依赖，比如 二、三方服务，放到防腐层处理，不要污染架构 -->
+
+        <dependencies>
+            <!-- framework start -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${version.spring-boot-dependencies}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.icecode.clean</groupId>
+                <artifactId>clean-dependencies</artifactId>
+                <version>${version.clean-dependencies}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>tk.mybatis</groupId>
+                <artifactId>mapper-spring-boot-starter</artifactId>
+                <version>${version.mapper-spring-boot-starter}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>tk.mybatis</groupId>
+                        <artifactId>mapper-spring-boot-autoconfigure</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${version.pagehelper-spring-boot-starter}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.github.pagehelper</groupId>
+                        <artifactId>pagehelper-spring-boot-autoconfigure</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mybatis.spring.boot</groupId>
+                        <artifactId>mybatis-spring-boot-autoconfigure</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis-spring</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${version.druid-spring-boot-starter}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${version.mysql-connector-java}</version>
+            </dependency>
+            <!-- framework end -->
+
+            <!-- modules start -->
+            <dependency>
+                <groupId>com.sample.clean</groupId>
+                <artifactId>sample-clean-application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sample.clean</groupId>
+                <artifactId>sample-clean-client</artifactId>
+                <version>${version.sample-clean-client}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sample.clean</groupId>
+                <artifactId>sample-clean-domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sample.clean</groupId>
+                <artifactId>sample-clean-facade</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sample.clean</groupId>
+                <artifactId>sample-clean-infrastructure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sample.clean</groupId>
+                <artifactId>sample-clean-interface</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sample.clean</groupId>
+                <artifactId>sample-clean-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- modules end -->
+
+            <!-- third party start -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${version.jcl-over-slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${version.lombok}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${version.mapstruct}</version>
+            </dependency>
+            <!-- third party end -->
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>${version.maven-antrun-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${version.maven-source-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${version.maven-compiler-plugin}</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <parameters>true</parameters>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${version.lombok}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>${version.lombok-mapstruct-binding}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${version.mapstruct}</version>
+                            </path>
+                            <path>
+                                <groupId>com.google.auto.service</groupId>
+                                <artifactId>auto-service</artifactId>
+                                <version>${version.auto-service}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${version.spring-boot-maven-plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
