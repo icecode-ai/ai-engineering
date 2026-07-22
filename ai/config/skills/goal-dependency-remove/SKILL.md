@@ -83,7 +83,7 @@ Each project under `modules/` is an independent git repository with its own git 
 
 ## readonly-dependencies
 
-Stores **read-only references** to private dependencies for local reading. Not part of the build; depended on by modules.
+Stores **read-only references** to private dependencies for local reading. Not part of the build; depended on by modules. When you need to understand the technical frameworks, references, or other knowledge that `modules/<module>` depends on, prioritize reading the relevant content under this directory first; if not found, then traverse other directories or search the web.
 
 | Dependency Name | Path | Description |
 |-----------------|------|-------------|
