@@ -42,7 +42,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/
 Fetch and follow instructions from https://raw.githubusercontent.com/icecode-ai/ai-engineering/refs/heads/main/INSTALL_4_QODER.md
 ```
 
-> 安装完成后，请**重启 Agent**，并执行 `/ai-env-init` 命令完成环境初始化。
+> 安装完成后，请**重启 Agent**，并执行 `/ai-env-init` 指令完成环境初始化。
 
 ---
 
@@ -91,7 +91,7 @@ AI>  全自动端到端流程启动，无需干预，正在执行...
 AI>  流程完成，报告已生成：ai/output/changes/user-login/report.md
 ```
 
-| 步骤 | 命令 | 模式 |
+| 步骤 | 指令 | 模式 |
 |------|------|------|
 | 1 | explore — 探索需求，明确范围 | 自动 |
 | 2 | propose — 创建变更，生成产物 | 自动 |
@@ -112,7 +112,7 @@ USER> 确认
 AI>  已提交并发布，继续归档...
 ```
 
-| 步骤 | 命令 | 模式 |
+| 步骤 | 指令 | 模式 |
 |------|------|------|
 | 1 | explore — 探索需求，明确范围 | 确认 |
 | 2 | propose — 创建变更，生成产物 | 自动 |
@@ -132,7 +132,7 @@ AI>  自动化流程启动，不含 Git 提交与发布，正在执行...
 AI>  实现完成，产物已留在本地，报告已生成
 ```
 
-| 步骤 | 命令 | 模式 |
+| 步骤 | 指令 | 模式 |
 |------|------|------|
 | 1 | explore — 探索需求，明确范围 | 自动 |
 | 2 | propose — 创建变更，生成产物 | 自动 |
@@ -141,7 +141,7 @@ AI>  实现完成，产物已留在本地，报告已生成
 
 ### 手动流程
 
-手动流程 · 逐步执行 `/ai-spec-*` 命令，完全由你掌控。
+手动流程 · 逐步执行 `/ai-spec-*` 指令，完全由你掌控。
 
 ```
 USER> /ai-spec-explore @ai/input/jim/0/prd.md
@@ -151,7 +151,7 @@ AI>  创建变更中..
 USER> /ai-spec-apply
 ```
 
-| 步骤 | 命令 | 模式 |
+| 步骤 | 指令 | 模式 |
 |------|------|------|
 | 1 | explore — 探索需求，明确范围 | 手动 |
 | 2 | propose — 创建变更，生成产物 | 手动 |
@@ -160,19 +160,19 @@ USER> /ai-spec-apply
 
 ---
 
-## 命令
+## 指令
 
-五大类命令，覆盖环境、模块、工作流、Spec 与 Git 操作。
+五大类指令，覆盖环境、模块、工作流、Spec 与 Git 操作。
 
 ### 环境指令
 
-| 命令 | 说明 |
+| 指令 | 说明 |
 |------|------|
 | `/ai-env-init` | 初始化或更新项目环境，创建标准目录结构并生成指导文件 |
 
 ### 模块和依赖指令
 
-| 命令 | 说明 |
+| 指令 | 说明 |
 |------|------|
 | `/ai-module-add` | 新增模块（git 仓库）到 `modules/` 目录 |
 | `/ai-module-remove` | 从 `modules/` 目录中删除模块 |
@@ -181,7 +181,7 @@ USER> /ai-spec-apply
 
 ### 工作流指令
 
-| 命令 | 说明 |
+| 指令 | 说明 |
 |------|------|
 | `/ai-goal-e2e-auto` | 自动化端到端流程：探索、创建变更、执行、提交、发布、测试、归档，过程不询问用户 |
 | `/ai-goal-e2e-explore` | 探索式端到端流程：在基础设施、git 提交、发布、归档步骤询问用户确认 |
@@ -189,7 +189,7 @@ USER> /ai-spec-apply
 
 ### Spec 指令
 
-| 命令 | 说明 |
+| 指令 | 说明 |
 |------|------|
 | `/ai-spec-explore` | 进入探索模式，梳理想法、调研问题、明确需求 |
 | `/ai-spec-propose` | 提出新变更，一步创建并生成全部产物 |
@@ -199,7 +199,7 @@ USER> /ai-spec-apply
 
 ### Git 指令
 
-| 命令 | 说明 |
+| 指令 | 说明 |
 |------|------|
 | `/ai-git-checkout` | 拉取主项目、模块或依赖的指定分支 |
 | `/ai-git-pull` | 拉取全部、主项目、模块或依赖的最新内容 |
