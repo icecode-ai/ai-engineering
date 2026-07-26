@@ -12,8 +12,6 @@
 | `{package}.{biz}.task` | {Name}Job |
 | `{package}.common.web.filter` | Web 过滤器 |
 
-RPC服务接口/RPC服务实现
-
 ## 命名约定
 | 概念 | 命名 | 示例 |
 |---|---|---|

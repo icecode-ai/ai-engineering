@@ -47,7 +47,7 @@ public class Order implements Aggregate<OrderId> {
     private OrderStatus status;
 
     public void create(OrderRepository repository, OrderMessageProducer producer) {
-        this.status = OrderStatus.paid;
+        this.status = OrderStatus.PAID;
         repository.save(this);
         producer.send(new OrderMessage(orderId, status));
         EventBus.dispatchAsync(new OrderEvent(orderId, itemId));

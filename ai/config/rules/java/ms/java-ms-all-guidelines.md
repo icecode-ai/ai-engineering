@@ -19,7 +19,7 @@
 
 - `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、测试
 - `interface 接口层` > `application 应用编排层` > `infrastructure 基础设施层`、`facade 防腐层`
-- 【可选】`infrastructure 基础设施层` > `facade 防腐层`
+- `infrastructure 基础设施层` 根据场景选择是否调用 `facade 防腐层`
 
 ## 其他规范
 
