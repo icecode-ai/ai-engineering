@@ -4,12 +4,12 @@
 业务变体插件：按 bizCode 实现各扩展点 `{Name}ExtPt`。每个业务线（如淘宝/京东）一个独立 app 子模块，声明 `App`（bizCode 解析器）与 `{Name}Ext`（扩展实现）。是「对扩展开放」的落地层。
 
 ## 包结构
-```
-{package}.app.{bizline}.
-  {Name}Ext        @Extension(bizCode=...) implements {Name}ExtPt
-  App              @AutoService(App.class)  bizCode 解析器
-  common.Constants BIZ_CODE 常量
-```
+| 包路径 | 说明 |
+|---|---|
+| `{package}.app.{bizline}.{Name}Ext` | @Extension(bizCode=...) implements {Name}ExtPt |
+| `{package}.app.{bizline}.App` | @AutoService(App.class) bizCode 解析器 |
+| `{package}.app.{bizline}.common.Constants` | BIZ_CODE 常量 |
+
 每个业务线一个 Maven 子模块（如 `{artifactId}-taobao-app`、`{artifactId}-jingdong-app`）。
 
 ## 命名约定
@@ -25,10 +25,6 @@
 - 【强制】`{Name}Ext` 须 `@Extension(bizCode=...)` 并实现对应 `{Name}ExtPt`，bizCode 与 `App` 解析结果一致。
 - 【强制】本层只依赖 `extension`（契约），禁止依赖 domain/application/infrastructure。
 - 【推荐】新增业务线只新增 app 子模块，不改核心领域（开闭原则）。
-
-## 依赖
-- 可依赖：`extension`、`clean-spring-extension-starter`、Google AutoService
-- 禁止：`domain`、`application`、`infrastructure`、`interface`、`facade`
 
 ## 示例
 ```java

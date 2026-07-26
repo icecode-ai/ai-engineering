@@ -4,15 +4,14 @@
 持久层/出站适配器：DB 访问（Repository 具体类/DAO/DO）、消息生产者、多数据源配置。可调用 facade 封装二/三方服务调用。与 DDD/BMP 的区别：**`*Repository` 为具体 `@Component` 类（非端口接口实现）**，查询条件/消息类型也放在本层 `types` 包。
 
 ## 包结构
-```
-{package}.{biz}.
-  repository     {Name}Repository @Component（具体类，非端口实现）
-  dao            {Name}Dao extends Mapper<{Name}DO> @RouterMapper
-  data           {Name}DO @Table @Data
-  messaging      {Name}MessageProducer @Component
-  types          {Name}SearchQuery extends PageQuery / {Name}Message record
-datasource.{config,builder,scanner}   多数据源配置与扫描
-```
+| 包路径 | 说明 |
+|---|---|
+| `{package}.{biz}.repository` | {Name}Repository @Component（具体类，非端口实现） |
+| `{package}.{biz}.dao` | {Name}Dao extends Mapper<{Name}DO> @RouterMapper |
+| `{package}.{biz}.data` | {Name}DO @Table @Data |
+| `{package}.{biz}.messaging` | {Name}MessageProducer @Component |
+| `{package}.{biz}.types` | {Name}SearchQuery extends PageQuery / {Name}Message record |
+| `{package}.datasource.{config,builder,scanner}` | 多数据源配置与扫描 |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
@@ -35,10 +34,7 @@ datasource.{config,builder,scanner}   多数据源配置与扫描
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`。
 - 【推荐】弱依赖调用 try-catch 转 `SysException`。
 - 【参考】`DO` 兼具数据对象与轻量实体角色，业务校验可放 Repository。
-
-## 依赖
-- 可依赖：`facade`、`clean-spring-utils-starter`、tk.mybatis、PageHelper、Druid、MySQL、Lombok、FastJSON2
-- 禁止：`application`、`interface`、`client`
+- 【强制】{Name}Repository 内不使用私有静态方法组装参数，统一用 Converter，保证流程清晰
 
 ## 示例
 ```java

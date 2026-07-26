@@ -4,14 +4,13 @@
 入站适配器：REST Controller、RPC/Dubbo 服务实现、MQ 监听、定时任务、Web 过滤器。仅做传输协议与应用 `Module` 之间的翻译，无业务逻辑。`Result` 包装（`SingleResponse`/`PageResponse`）仅在本层产生。
 
 ## 包结构
-```
-{package}.{biz}.
-  web          {Name}Controller @RestController
-  service      {Name}OpenServiceImpl（implements client {Name}OpenService）
-  messaging    {Name}MessageListener
-  task         {Name}Job
-common.web.filter   Web 过滤器
-```
+| 包路径 | 说明 |
+|---|---|
+| `{package}.{biz}.web` | {Name}Controller @RestController |
+| `{package}.{biz}.service` | {Name}OpenServiceImpl（implements client {Name}OpenService） |
+| `{package}.{biz}.messaging` | {Name}MessageListener |
+| `{package}.{biz}.task` | {Name}Job |
+| `{package}.common.web.filter` | Web 过滤器 |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
@@ -28,10 +27,6 @@ common.web.filter   Web 过滤器
 - 【强制】入参用 `@Valid` 触发校验，Command/Query 校验注解（`@Min`/`@Max`/`@Pattern`）。
 - 【强制】RPC 暴露实现 client 的 `{Name}OpenService` 接口，签名与 client 一致。
 - 【推荐】Controller `@RequestMapping("/{biz}")` 统一路径前缀。
-
-## 依赖
-- 可依赖：`application`、`facade`、`client`、`spring-boot-starter-web`、validation
-- 禁止：`infrastructure`（须通过 application 间接调用）
 
 ## 示例
 ```java

@@ -4,15 +4,14 @@
 领域核心：聚合根、值对象、领域服务、领域事件、Repository/消息端口接口。业务逻辑内聚在聚合根方法内，并通过 `ExtensionExecutor` 调用扩展点路由业务变体。不感知 DB/MQ/三方服务。
 
 ## 包结构
-```
-{package}.{biz}.
-  domain.entity     聚合根 implements Aggregate<{Name}Id>
-  domain.service    领域服务 @Component（仅跨/多领域编排）
-  domain.event      领域事件 record implements Event
-  repository        端口接口 {Name}Repository extends Repository<E,ID>
-  messaging         消息端口接口 {Name}MessageProducer
-  types             值对象（{Name}Id record / 枚举 / *Condition / *Message）
-```
+| 包路径 | 说明 |
+|---|---|
+| `{package}.{biz}.domain.entity` | 聚合根 implements Aggregate<{Name}Id> |
+| `{package}.{biz}.domain.service` | 领域服务 @Component（仅跨/多领域编排） |
+| `{package}.{biz}.domain.event` | 领域事件 record implements Event |
+| `{package}.{biz}.repository` | 端口接口 {Name}Repository extends Repository<E,ID> |
+| `{package}.{biz}.messaging` | 消息端口接口 {Name}MessageProducer |
+| `{package}.{biz}.types` | 值对象（{Name}Id record / 枚举 / *Condition / *Message） |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
@@ -37,10 +36,6 @@
 - 【强制】聚合根 `@Data`（Lombok）允许；业务属性可有默认值。
 - 【推荐】值对象 ID 用 `record` 代替裸 `long`/`int`，防传错、增语义。
 - 【推荐】领域事件用 `record`，经 `EventBus.dispatchAsync` 进程内异步消费。
-
-## 依赖
-- 可依赖：`extension`、`clean-spring-ddd-starter`、`clean-spring-cqrs-starter`、`clean-spring-extension-starter`、`spring-context`/`spring-tx`
-- 禁止：`facade`、`infrastructure`、`interface`、`application`、`client`
 
 ## 示例
 ```java

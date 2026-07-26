@@ -4,16 +4,15 @@
 持久层/出站适配器：实现 domain 的 Repository 与消息端口；DB 访问（DAO/DO/Converter）；多数据源配置。可调用 facade 封装二/三方服务调用并转换为自己的领域。
 
 ## 包结构
-```
-{package}.{biz}.
-  repository     {Name}RepositoryImpl @Component implements {Name}Repository
-  dao            {Name}Dao extends Mapper<{Name}DO> @RouterMapper
-  data           {Name}DO @Table @Data
-  converter      {Name}Converter @Mapper（Domain ↔ DO）
-  messaging      {Name}MessageProducerImpl @Component
-common.converter   PageConverter（分页 DO ↔ Domain）
-datasource.{config,builder,scanner}   多数据源配置与扫描
-```
+| 包路径 | 说明 |
+|---|---|
+| `{package}.{biz}.repository` | {Name}RepositoryImpl @Component implements {Name}Repository |
+| `{package}.{biz}.dao` | {Name}Dao extends Mapper<{Name}DO> @RouterMapper |
+| `{package}.{biz}.data` | {Name}DO @Table @Data |
+| `{package}.{biz}.converter` | {Name}Converter @Mapper（Domain ↔ DO） |
+| `{package}.{biz}.messaging` | {Name}MessageProducerImpl @Component |
+| `{package}.common.converter` | PageConverter（分页 DO ↔ Domain） |
+| `{package}.datasource.{config,builder,scanner}` | 多数据源配置与扫描 |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
@@ -34,10 +33,7 @@ datasource.{config,builder,scanner}   多数据源配置与扫描
 - 【强制】数据源配置全部置于 `datasource.*`，不得渗透到领域分层包结构。
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`。
 - 【推荐】弱依赖调用 try-catch 转 `SysException`。
-
-## 依赖
-- 可依赖：`domain`、`facade`、`clean-spring-utils-starter`、tk.mybatis、PageHelper、Druid、MySQL、MapStruct、Lombok、FastJSON2
-- 禁止：`application`、`interface`、`client`、`extension-apps`
+- 【强制】{Name}RepositoryImpl 内不使用私有静态方法组装参数，统一用 Converter，保证流程清晰
 
 ## 示例
 ```java
