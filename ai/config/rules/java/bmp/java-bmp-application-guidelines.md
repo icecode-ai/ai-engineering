@@ -28,7 +28,7 @@
 - 【强制】Command/Query 字段用基本类型（避免 null 判断）；DTO 字段用包装类型
 - 【强制】跨域异步处理用 `@EventHandler(name=...)` 订阅领域事件，禁止跨域直接调用
 - 【推荐】转换用 MapStruct `@Mapper`，`INSTANCE = Mappers.getMapper(...)`
-- 【强制】{Name}Module 内不使用私有静态方法组装参数，统一用 Assembler，保证流程清晰
+- 【强制】{Name}Module 内不使用私有静态方法组装参数，方法内流程编排禁止一堆setter属性值的逻辑，统一用 Assembler，保证流程清晰
 
 ## 示例
 ```java
