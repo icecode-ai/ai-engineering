@@ -34,7 +34,9 @@
 @RestController
 @RequestMapping("/order")
 public class OrderController {
-    @Resource private OrderModule orderModule;
+    
+    @Resource 
+    private OrderModule orderModule;
 
     @PostMapping("/create")
     public SingleResponse<OrderDTO> create(@Valid @RequestBody OrderCreateCommand command) {

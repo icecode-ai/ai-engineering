@@ -11,7 +11,7 @@
 | `{package}.{biz}.assembler` | {Name}Assembler @Mapper（Command ↔ DO，直接转换） |
 | `{package}.{biz}.dto` | {Name}Command / {Name}Query / {Name}DTO |
 | `{package}.{biz}.event` | {Name}Event record implements Event |
-| `{package}.{biz}.types` | 值对象 |
+| `{package}.{biz}.types` | 值对象（application 层专用的枚举/相关值对象） |
 | `{package}.common.assembler` | PageAssembler（分页转换） |
 
 ## 命名约定
@@ -37,8 +37,12 @@
 ```java
 @Component
 public class OrderModule {
-    @Resource private OrderRepository orderRepository;
-    @Resource private OrderMessageProducer orderMessageProducer;
+    
+    @Resource 
+    private OrderRepository orderRepository;
+    
+    @Resource 
+    private OrderMessageProducer orderMessageProducer;
 
     public OrderDTO create(OrderCreateCommand command) {
         // 直接转 DO

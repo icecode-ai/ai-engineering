@@ -35,7 +35,7 @@
 - 【推荐】接口类中，方法不加修饰符（`public` 也省），加 Javadoc，尽量不定义变量
 - 【强制】数组定义 `String[] args`，禁用 `String args[]`
 - 【强制】POJO 布尔属性不加 `is`，否则部分框架序列化/反序列化时报错
-- 【参考】Module/Service/Repository/Dao/Facade 方法名前缀：`get`(单个) / `list`(多个) / `page`(分页) / `count`(统计) / `save`(插入) / `remove`(删除) / `update`(修改)
+- 【参考】Module/Service/Repository/Dao/Facade 方法名前缀：`get`(单个) / `list`(多个) / `page`(分页) / `count`(统计) / `save`(保存，新增或修改) / `remove`(删除) / `update`(修改)
 
 ### 注释风格
 
