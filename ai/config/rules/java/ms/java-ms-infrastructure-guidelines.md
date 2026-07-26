@@ -10,7 +10,7 @@
 | `{package}.{biz}.dao` | {Name}Dao extends Mapper<{Name}DO> @RouterMapper |
 | `{package}.{biz}.data` | {Name}DO @Table @Data |
 | `{package}.{biz}.messaging` | {Name}MessageProducer @Component |
-| `{package}.{biz}.types` | {Name}SearchQuery extends PageQuery / {Name}Message record |
+| `{package}.{biz}.types` | 值对象（{Name}Id / 枚举 / *Condition / *Message） |
 | `{package}.datasource.{config,builder,scanner}` | 多数据源配置与扫描 |
 
 ## 命名约定
@@ -44,9 +44,12 @@ public class InventoryRepository {
     private InventoryDao inventoryDao;
 
     public void save(InventoryDO inventoryDO) {
+        Long itemId = inventoryDO.getItemId();
+        Assert.notNull(itemId, "INVENTORY_SAVE_ITEM_NULL", "商品ID为空");
+        
         int count;
 
-        Optional<InventoryDO> optional = find(inventoryDO.getItemId());
+        Optional<InventoryDO> optional = find();
         if (optional.isPresent()) {
             count = inventoryDao.updateByPrimaryKeySelective(inventoryDO);
         } else {
@@ -60,13 +63,13 @@ public class InventoryRepository {
         Weekend<InventoryDO> weekend = Weekend.of(InventoryDO.class);
 
         WeekendCriteria<InventoryDO, Object> where = weekend.weekendCriteria();
-        where.andEqualTo(InventoryDO::getItemId, inventoryDO.getItemId().value());
+        where.andEqualTo(InventoryDO::getItemId, inventoryDO.getItemId());
 
         inventoryDao.deleteByExample(weekend);
     }
 
     public Optional<InventoryDO> find(long itemId) {
-        return Optional.of(inventoryDao.selectByPrimaryKey(itemId));
+        return Optional.ofNullable(inventoryDao.selectByPrimaryKey(itemId));
     }
 }
 ```

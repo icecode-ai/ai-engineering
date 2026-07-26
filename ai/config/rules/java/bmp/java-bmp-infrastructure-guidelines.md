@@ -76,7 +76,7 @@ public class InventoryRepositoryImpl implements InventoryRepository {
             return Optional.empty();
         }
 
-        return Optional.of(InventoryConverter.INSTANCE.from(inventoryDO));
+        return Optional.ofNullable(InventoryConverter.INSTANCE.from(inventoryDO));
     }
 }
 ```

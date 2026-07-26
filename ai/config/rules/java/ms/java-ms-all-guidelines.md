@@ -7,7 +7,7 @@
 | 层 | 描述 | 规范文件 |
 |---|---|---|
 | facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/ms/java-ms-facade-guidelines.md` |
-| infrastructure 基础设施层 | Repository 具体类/Dao/DO/MessageProducer/多数据源 | `ai/config/rules/java/ms/java-ms-infrastructure-guidelines.md` |
+| infrastructure 基础设施层 | Repository 具体类/Dao/DO/MessageProducer/多数据源/缓存/动态配置(KV、开关等) | `ai/config/rules/java/ms/java-ms-infrastructure-guidelines.md` |
 | application 应用编排层 | 业务逻辑处理 | `ai/config/rules/java/ms/java-ms-application-guidelines.md` |
 | interface 接口层 | Web接口/RPC服务/MQ监听/定时任务等 | `ai/config/rules/java/ms/java-ms-interface-guidelines.md` |
 | client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供其他微服务消费 | `ai/config/rules/java/ms/java-ms-client-guidelines.md` |
@@ -26,3 +26,18 @@
 - 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，在 `facade 防腐层` 中定义依赖和版本号
 - 【强制】如果用户需求中，没有明确说明需要开放接口，不要在 `client 开放层` 定义接口，接口放在 `interface 接口层`，`interface 接口层` 需要的出入参 `Query`、`Command`、`DTO` 放在 `application 应用编排层`
 - 【强制】所有测试放在 `starter 启动层`
+
+## Assert 使用规范
+
+- 【推荐】使用 `Assert` 时，必须构造有含义的错误码，全部大写，下划线分割，模版 `{BIZ}_{METHOD}_{PARAM}_{ERROR}`
+
+示例：
+```java
+public static List<UserDTO> query() {
+    // ...
+    Assert.notNull(userId, "USER_SERVICE_QUERY_USER_ID_NULL", "用户服务查询用户时用户ID为空");
+    // ...
+    Assert.notNull(data, "USER_SERVICE_QUERY_DATA_NULL", json.toString());
+    // ...
+}
+```
