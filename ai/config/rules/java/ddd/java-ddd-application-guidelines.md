@@ -9,7 +9,6 @@
 | `{package}.{biz}.module` | {Name}Module @Component |
 | `{package}.{biz}.assembler` | {Name}Assembler @Mapper（DTO ↔ Domain） |
 | `{package}.{biz}.dto` | {Name}Command / {Name}Query / {Name}DTO |
-| `{package}.{biz}.event` | {Name}Event record implements Event |
 | `{package}.common.assembler` | PageAssembler（分页转换） |
 
 ## 命名约定
@@ -19,7 +18,6 @@
 | 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand` |
 | 查询 | `{Name}SearchQuery extends PageQuery` | `OrderSearchQuery` |
 | 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO` |
-| 领域事件 | `{Name}Event record implements Event` | `OrderEvent` |
 | 转换器 | `{Name}Assembler @Mapper` | `OrderAssembler` |
 
 ## 规则

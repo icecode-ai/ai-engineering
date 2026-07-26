@@ -49,14 +49,19 @@ public class Order implements Aggregate<OrderId> {
     private Map<String, Object> attributes;
 
     public void create(OrderRepository repository, OrderMessageProducer producer) {
-        this.status = OrderStatus.paid;
+        this.status = OrderStatus.PAID;
+        
         OrderCreateInput input = new OrderCreateInput();
         input.setItemId(itemId.value());
+        
         // 路由业务变体，写入业务属性
         this.attributes = ExtensionExecutor.executeFirstNotNull(
             OrderExtPt.class, ext -> ext.createAttributes(input));
+        
         repository.save(this);
+        
         producer.send(new OrderMessage(orderId, status));
+        
         EventBus.dispatchAsync(new OrderEvent(orderId, itemId));
     }
 }

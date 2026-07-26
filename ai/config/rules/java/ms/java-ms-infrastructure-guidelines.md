@@ -56,7 +56,7 @@ public class InventoryRepository {
             count = inventoryDao.insertSelective(inventoryDO);
         }
 
-        Assert.isTrue(count > 0, "保存库存失败");
+        Assert.isTrue(count > 0, "INVENTORY_REPOSITORY_SAVE_ERROR", "保存库存失败");
     }
 
     public void remove(InventoryDO inventoryDO) {

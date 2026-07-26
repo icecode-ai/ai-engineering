@@ -16,6 +16,8 @@
 
 ## Maven 多模块核心逻辑关系
 
+> 仅展示主调用链，端口实现/启动装配见各层规范
+
 - `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、测试
 - `interface 接口层` > `application 应用编排层` > `domain 领域层`
 - `infrastructure 基础设施层` > `facade 防腐层`
@@ -32,7 +34,7 @@
 
 ## Assert 使用规范
 
-- 【推荐】使用 `Assert` 时，必须构造有含义的错误码，全部大写，下划线分割，模版 `{BIZ}_{METHOD}_{PARAM}_{ERROR}`
+- 【推荐】使用 `Assert` 时，建议构造有含义的错误码，全部大写，下划线分割，模版 `{BIZ}_{METHOD}_{PARAM}_{ERROR}`
 
 示例：
 ```java
