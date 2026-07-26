@@ -74,10 +74,13 @@ public class Inventory implements Aggregate<ItemId> {
      * @param quantity   扣减数量
      */
     public void decrease(InventoryRepository repository, int quantity) {
+        // 1. 检查可用库存
         Assert.isTrue(availableStock > quantity, "库存不足，无法扣减");
 
+        // 2. 库存扣减
         this.availableStock -= quantity;
 
+        // 3. 保存
         save(repository);
     }
 }
