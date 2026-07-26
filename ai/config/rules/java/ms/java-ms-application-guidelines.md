@@ -18,9 +18,9 @@
 | 概念 | 命名 | 示例 |
 |---|---|---|
 | 编排服务 | `{Name}Module @Component`（不用 Service/ApplicationService） | `OrderModule` |
-| 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand` |
-| 查询 | `{Name}Query extends PageQuery` | `ItemQuery` |
-| 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO` |
+| 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand`（如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义） |
+| 查询 | `{Name}SearchQuery extends PageQuery` | `OrderSearchQuery`（如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义） |
+| 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO`（如果来自 facade 层直接可用，不用在此层定义） |
 | 领域事件 | `{Name}Event record implements Event` | `OrderEvent` |
 | 转换器 | `{Name}Assembler @Mapper`（Command↔DO） | `OrderAssembler` |
 
