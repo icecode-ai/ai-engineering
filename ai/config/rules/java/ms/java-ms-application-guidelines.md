@@ -10,7 +10,7 @@
 | `{package}.{biz}.assembler` | {Name}Assembler @Mapper（Command ↔ DO，直接转换） |
 | `{package}.{biz}.dto` | {Name}Command / {Name}Query / {Name}DTO |
 | `{package}.{biz}.event` | {Name}Event record implements Event |
-| `{package}.{biz}.types` | 存放值对象、枚举等 |
+| `{package}.{biz}.types` | 值对象（{Name}Id record / 枚举 / *Condition / *Message） |
 | `{package}.common.assembler` | PageAssembler（分页转换） |
 
 ## 命名约定
