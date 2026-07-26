@@ -16,7 +16,7 @@
 
 ## Maven 多模块核心逻辑关系
 
-- `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、单测
+- `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、测试
 - `interface 接口层` > `application 应用编排层` > `domain 领域层`
 - `infrastructure 基础设施层` > `facade 防腐层`
 
@@ -28,4 +28,4 @@
 
 - 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，在 `facade 防腐层` 中定义依赖和版本号
 - 【强制】如果用户需求中，没有明确说明需要开放接口，不要在 `client 开放层` 定义接口，接口放在 `interface 接口层`，`interface 接口层` 需要的出入参 `Query`、`Command`、`DTO` 放在 `application 应用编排层`
-- 【强制】所有单测放在 `starter 启动层`
+- 【强制】所有测试放在 `starter 启动层`

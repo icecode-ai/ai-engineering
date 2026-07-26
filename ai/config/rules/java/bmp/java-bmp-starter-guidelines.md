@@ -19,9 +19,10 @@
 | 测试类 | `{Name}Test` | `OrderModuleTest` |
 
 ## 规则
+- 【强制】所有测试放在本层，其他模块不含测试代码
 - 【参考】本地无法启动时，使用 Mock 测试，不继承 BaseTest
 
-## 单测示例
+## 测试示例
 ```java
 class OrderModuleTest extends BaseTest {
 

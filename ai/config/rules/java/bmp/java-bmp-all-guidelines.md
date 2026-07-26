@@ -14,11 +14,11 @@
 | client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供外部消费 | `ai/config/rules/java/bmp/java-bmp-client-guidelines.md` |
 | infrastructure 基础设施层 | Repository 实现/Dao/DO/Converter/多数据源 | `ai/config/rules/java/bmp/java-bmp-infrastructure-guidelines.md` |
 | facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/bmp/java-bmp-facade-guidelines.md` |
-| starter 启动层 | Application 主类、多环境配置、单测 | `ai/config/rules/java/bmp/java-bmp-starter-guidelines.md` |
+| starter 启动层 | Application 主类、多环境配置、测试 | `ai/config/rules/java/bmp/java-bmp-starter-guidelines.md` |
 
 ## Maven 多模块核心逻辑关系
 
-- `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、单测
+- `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、测试
 - `interface 接口层` > `application 应用编排层` > `domain 领域层` > `extension 扩展点定义层`
 - `infrastructure 基础设施层` > `facade 防腐层`
 
@@ -32,4 +32,4 @@
 
 - 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，在 `facade 防腐层` 中定义依赖和版本号
 - 【强制】如果用户需求中，没有明确说明需要开放接口，不要在 `client 开放层` 定义接口，接口放在 `interface 接口层`，`interface 接口层` 需要的出入参 `Query`、`Command`、`DTO` 放在 `application 应用编排层`
-- 【强制】所有单测放在 `starter 启动层`
+- 【强制】所有测试放在 `starter 启动层`
