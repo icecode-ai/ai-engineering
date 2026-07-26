@@ -46,15 +46,15 @@ public class OrderModule {
 
     public OrderDTO create(OrderCreateCommand command) {
         // 直接转 DO
-        OrderDO order = OrderAssembler.INSTANCE.from(command);   
-        orderRepository.save(order);
+        OrderDO orderDO = OrderAssembler.INSTANCE.from(command);   
+        orderRepository.save(orderDO);
         
-        orderMessageProducer.send(new OrderMessage(order.getOrderId()));
+        orderMessageProducer.send(new OrderMessage(orderDO.getOrderId()));
         
         EventBus.dispatchAsync(new OrderEvent(command.getItemId()));
 
         // DO → DTO
-        return OrderAssembler.INSTANCE.to(order);                
+        return OrderAssembler.INSTANCE.to(orderDO);                
     }
 
     public PageResponse<OrderDTO> search(OrderSearchQuery query) {
