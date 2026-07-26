@@ -51,12 +51,12 @@ public class OrderModule {
     public void update(OrderUpdateCommand command) {
         Order order = OrderAssembler.INSTANCE.from(command);
 
-        // 更新单个
+        // 更新单个领域，传递依赖
         order.update(orderRepository, new OrderUpdateCondition("1234"));
 
-        // 批量更新 - 领域服务
-
-        // 跨领域更新 - 领域服务
+        // 批量更新，调用领域服务
+        
+        // 跨领域更新，调用领域服务
     }
 
     /**

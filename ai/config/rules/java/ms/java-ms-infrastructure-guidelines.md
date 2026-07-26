@@ -28,7 +28,7 @@
 - 【强制】`*Repository` 是具体 `@Component` 类（无 domain 端口接口），直接被 application `Module` 注入调用
 - 【强制】Repository 可封装 DB 调用，也可封装二/三方服务调用（经 facade）
 - 【强制】DO 字段用包装类型；时间字段 `gmtCreate`/`gmtModified` 为 `Date`；表必备 `id`/`gmt_create`/`gmt_modified`
-- 【强制】DAO 继承 tk.mybatis `Mapper<{Name}DO>`，用 `@RouterMapper(dataSource=...)` 绑定数据源；非特殊场景禁手写 SQL，用 `Weekend` 条件；当 `Weekend` 形式不满足时，用 MyBatis 注解方式实现
+- 【强制】Dao 继承 tk.mybatis `Mapper<{Name}DO>`，用 `@RouterMapper(dataSource=...)` 绑定数据源；非特殊场景禁手写 SQL，用 `Weekend` 条件；当 `Weekend` 形式不满足时，用 MyBatis 注解方式实现
 - 【强制】数据源配置全部置于 `datasource.*`，不得渗透到分层包结构
 - 【强制】查询条件 `{Name}SearchQuery`、消息 `{Name}Message` 放本层 `types` 包（无 domain 层可放）
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
@@ -39,7 +39,7 @@
 ## 示例
 ```java
 @Component
-public class InventoryRepositoryImpl implements InventoryRepository {
+public class InventoryRepository {
 
     @Resource
     private InventoryDao inventoryDao;
