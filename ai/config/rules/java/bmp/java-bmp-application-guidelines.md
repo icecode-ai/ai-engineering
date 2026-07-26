@@ -22,7 +22,7 @@
 
 ## 规则
 - 【强制】不含业务逻辑，基本不含 `if` 判断、计算逻辑
-- 【强制】尽量返回 DTO，不要包装 `Result`（`SingleResponse`/`PageResponse` 仅在 interface 层）
+- 【强制】尽量返回 DTO，不要包装 `Result`（`SingleResponse` 仅在 interface 层），`PageResponse` 除外
 - 【强制】禁止依赖 facade；外部交互须经 infrastructure 的 Repository（其内部调 facade）或领域端口
 - 【强制】异常走拦截器统一拦截，不 try-catch（弱依赖除外）
 - 【强制】Command/Query 字段用基本类型（避免 null 判断）；DTO 字段用包装类型

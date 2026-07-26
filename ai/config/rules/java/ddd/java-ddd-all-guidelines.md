@@ -14,7 +14,7 @@
 | facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/ddd/java-ddd-facade-guidelines.md` |
 | starter 启动层 | Application 主类、多环境配置、测试 | `ai/config/rules/java/ddd/java-ddd-starter-guidelines.md` |
 
-## Maven 多模块逻辑关系
+## Maven 多模块核心逻辑关系
 
 - `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、单测
 - `interface 接口层` > `application 应用编排层` > `domain 领域层`

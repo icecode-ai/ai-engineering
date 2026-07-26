@@ -46,7 +46,7 @@ public class InventoryRepository {
     public void save(InventoryDO inventoryDO) {
         int count;
 
-        Optional<Inventory> optional = find(inventory.getItemId());
+        Optional<InventoryDO> optional = find(inventoryDO.getItemId());
         if (optional.isPresent()) {
             count = inventoryDao.updateByPrimaryKeySelective(inventoryDO);
         } else {
@@ -68,6 +68,31 @@ public class InventoryRepository {
     public Optional<InventoryDO> find(long itemId) {
         return Optional.of(inventoryDao.selectByPrimaryKey(itemId));
     }
+}
+```
+
+## 分页查询示例
+```java
+public PageInfo<UserStockDO> page(UserStockStatus status, String categoryCode, int page, int pageSize) {
+    Weekend<UserStockDO> weekend = Weekend.of(UserStockDO.class);
+    weekend.excludeProperties(UserStockDO::getAttributes);
+
+    if (UserStockStatus.HOLDING == status) {
+        weekend.orderBy(UserStockDO::getHoldingQuantity).desc();
+    } else {
+        weekend.orderBy(UserStockDO::getStrategyScore).desc();
+    }
+
+    WeekendCriteria<UserStockDO, Object> where = weekend.weekendCriteria();
+    where.andEqualTo(UserStockDO::getStatus, status.name());
+
+    if (StringUtils.isNotBlank(categoryCode)) {
+        where.andEqualTo(UserStockDO::getCategoryCode, categoryCode);
+    }
+
+    PageHelper.startPage(page, pageSize);
+
+    return new PageInfo<>(userStockDao.selectByExample(weekend));
 }
 ```
 

@@ -13,7 +13,7 @@
 | client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供其他微服务消费 | `ai/config/rules/java/ms/java-ms-client-guidelines.md` |
 | starter 启动层 | Application 主类、多环境配置、测试 | `ai/config/rules/java/ms/java-ms-starter-guidelines.md` |
 
-## Maven 多模块逻辑关系
+## Maven 多模块核心逻辑关系
 
 - `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、单测
 - `interface 接口层` > `application 应用编排层` > `infrastructure 基础设施层`、`facade 防腐层`

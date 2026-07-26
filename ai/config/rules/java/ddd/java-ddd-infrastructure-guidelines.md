@@ -81,6 +81,31 @@ public class InventoryRepositoryImpl implements InventoryRepository {
 }
 ```
 
+## 分页查询示例
+```java
+public PageInfo<UserStockDO> page(UserStockStatus status, String categoryCode, int page, int pageSize) {
+    Weekend<UserStockDO> weekend = Weekend.of(UserStockDO.class);
+    weekend.excludeProperties(UserStockDO::getAttributes);
+
+    if (UserStockStatus.HOLDING == status) {
+        weekend.orderBy(UserStockDO::getHoldingQuantity).desc();
+    } else {
+        weekend.orderBy(UserStockDO::getStrategyScore).desc();
+    }
+
+    WeekendCriteria<UserStockDO, Object> where = weekend.weekendCriteria();
+    where.andEqualTo(UserStockDO::getStatus, status.name());
+
+    if (StringUtils.isNotBlank(categoryCode)) {
+        where.andEqualTo(UserStockDO::getCategoryCode, categoryCode);
+    }
+
+    PageHelper.startPage(page, pageSize);
+
+    return new PageInfo<>(userStockDao.selectByExample(weekend));
+}
+```
+
 ## 手写SQL示例
 ```java
 @RouterMapper(dataSource = PrimaryDataSourceConfiguration.DATA_SOURCE)

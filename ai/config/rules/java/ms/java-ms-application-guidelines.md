@@ -26,7 +26,7 @@
 
 ## 规则
 - 【强制】`Assembler` 直接做 Command↔DO 转换（无领域聚合根中间层），与 DDD/BMP 的 Command↔领域实体不同
-- 【强制】尽量返回 DTO，不要包装 `Result`（`SingleResponse`/`PageResponse` 仅在 interface 层）
+- 【强制】尽量返回 DTO，不要包装 `Result`（`SingleResponse` 仅在 interface 层），`PageResponse` 除外
 - 【强制】异常走拦截器统一拦截，不 try-catch（弱依赖除外）
 - 【强制】Command/Query 字段用基本类型（避免 null 判断）；DTO 字段用包装类型
 - 【强制】跨域异步处理用 `@EventHandler(name=...)` 订阅领域事件，禁止跨域直接调用
