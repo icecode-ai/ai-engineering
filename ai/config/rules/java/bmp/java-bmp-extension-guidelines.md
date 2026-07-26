@@ -1,4 +1,4 @@
-# 业务中台 - extension 扩展点定义层规范
+# 中台架构 - extension 扩展点定义层规范
 
 ## 职责
 定义扩展点 SPI（`ExtensionPoint`）及扩展入参对象（`Input`/`BO`），并提供默认空白实现（`Blank*Ext`）。是 domain 与 extension-apps 之间的契约层，使核心领域可被业务变体插件扩展而无需修改。

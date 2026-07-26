@@ -1,4 +1,4 @@
-# 业务中台 - application 应用编排层规范
+# 中台架构 - application 应用编排层规范
 
 ## 职责
 流程编排层：将 DTO 与领域聚合根互转，调用聚合根行为，返回 DTO。不包含业务逻辑。承载领域事件的 `@EventHandler` 消费者
@@ -34,22 +34,43 @@
 ```java
 @Component
 public class OrderModule {
-    
-    @Resource 
+
+    @Resource
     private OrderRepository orderRepository;
-    
-    @Resource 
+
+    @Resource
     private OrderMessageProducer orderMessageProducer;
 
     public OrderDTO create(OrderCreateCommand command) {
         Order order = OrderAssembler.INSTANCE.from(command);
         order.create(orderRepository, orderMessageProducer);
+
         return OrderAssembler.INSTANCE.to(order);
     }
+    
+    public void update(OrderUpdateCommand command) {
+        Order order = OrderAssembler.INSTANCE.from(command);
 
-    @EventHandler(name = "库存扣减 - 订单消息监听")
-    public void inventoryHandler(OrderEvent event) {
-        // 跨域异步编排：查询库存并扣减
+        // 更新单个
+        order.update(orderRepository, new OrderUpdateCondition("1234"));
+
+        // 批量更新 - 领域服务
+
+        // 跨领域更新 - 领域服务
+    }
+
+    /**
+     * 搜索订单
+     *
+     * @param query 订单搜索条件
+     *
+     * @return 订单分页结果
+     */
+    public PageResponse<OrderDTO> search(OrderSearchQuery query) {
+        OrderSearchCondition condition = OrderAssembler.INSTANCE.from(query);
+        PageInfo<Order> pageInfo = orderRepository.search(condition);
+
+        return PageAssembler.to(pageInfo, OrderAssembler.INSTANCE::to);
     }
 }
 ```

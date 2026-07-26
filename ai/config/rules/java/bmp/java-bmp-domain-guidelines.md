@@ -1,4 +1,4 @@
-# 业务中台 - domain 领域层规范
+# 中台架构 - domain 领域层规范
 
 ## 职责
 领域核心：聚合根、值对象、领域服务、领域事件、Repository/消息端口接口。业务逻辑内聚在聚合根方法内，并通过 `ExtensionExecutor` 调用扩展点路由业务变体。不感知 DB/MQ/三方服务
@@ -42,6 +42,7 @@
 ```java
 @Data
 public class Order implements Aggregate<OrderId> {
+    
     private OrderId orderId;
     private ItemId itemId;
     private OrderStatus status;

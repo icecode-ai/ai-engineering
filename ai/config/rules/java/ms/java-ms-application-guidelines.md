@@ -7,6 +7,7 @@
 | 包路径 | 说明 |
 |---|---|
 | `{package}.{biz}.module` | {Name}Module @Component |
+| `{package}.{biz}.policy` | 存放设计模式，比如 策略工厂 等 |
 | `{package}.{biz}.assembler` | {Name}Assembler @Mapper（Command ↔ DO，直接转换） |
 | `{package}.{biz}.dto` | {Name}Command / {Name}Query / {Name}DTO |
 | `{package}.{biz}.event` | {Name}Event record implements Event |
@@ -40,15 +41,21 @@ public class OrderModule {
     @Resource private OrderMessageProducer orderMessageProducer;
 
     public OrderDTO create(OrderCreateCommand command) {
-        OrderDO order = OrderAssembler.INSTANCE.from(command);   // 直接转 DO
+        // 直接转 DO
+        OrderDO order = OrderAssembler.INSTANCE.from(command);   
         orderRepository.save(order);
+        
         orderMessageProducer.send(new OrderMessage(order.getOrderId()));
+        
         EventBus.dispatchAsync(new OrderEvent(command.getItemId()));
-        return OrderAssembler.INSTANCE.to(order);                // DO → DTO
+
+        // DO → DTO
+        return OrderAssembler.INSTANCE.to(order);                
     }
 
     public PageResponse<OrderDTO> search(OrderSearchQuery query) {
         PageInfo<OrderDO> pageInfo = orderRepository.search(query);
+        
         return PageAssembler.to(pageInfo, OrderAssembler.INSTANCE::to);
     }
 }

@@ -1,7 +1,7 @@
 # 微服务 - infrastructure 基础设施层规范
 
 ## 职责
-持久层/出站适配器：DB 访问（Repository 具体类/DAO/DO）、消息生产者、多数据源配置。可调用 facade 封装二/三方服务调用。与 DDD/BMP 的区别：**`*Repository` 为具体 `@Component` 类（非端口接口实现）**，查询条件/消息类型也放在本层 `types` 包。
+持久层/出站适配器：DB 访问（Repository 具体类/DAO/DO）、消息生产者、多数据源配置。可调用 facade 封装二/三方服务调用。与 DDD/BMP 的区别：**`*Repository` 为具体 `@Component` 类（非端口接口实现）**，查询条件/消息类型也放在本层 `types` 包
 
 ## 包结构
 | 包路径 | 说明 |
@@ -25,41 +25,114 @@
 | 数据源配置 | `PrimaryDataSourceConfiguration`/`MybatisConfigBuilder` | — |
 
 ## 规则
-- 【强制】`*Repository` 是具体 `@Component` 类（无 domain 端口接口），直接被 application `Module` 注入调用。
-- 【强制】Repository 可封装 DB 调用，也可封装二/三方服务调用（经 facade）。
-- 【强制】DO 字段用包装类型；时间字段 `gmtCreate`/`gmtModified` 为 `Date`；表必备 `id`/`gmt_create`/`gmt_modified`。
-- 【强制】DAO 继承 tk.mybatis `Mapper<{Name}DO>`，用 `@RouterMapper(dataSource=...)` 绑定数据源，禁手写 SQL（用 `Weekend` 条件）。
-- 【强制】数据源配置全部置于 `datasource.*`，不得渗透到分层包结构。
-- 【强制】查询条件 `{Name}SearchQuery`、消息 `{Name}Message` 放本层 `types` 包（无 domain 层可放）。
-- 【推荐】分页用 `PageHelper.startPage` + `PageInfo`。
-- 【推荐】弱依赖调用 try-catch 转 `SysException`。
-- 【参考】`DO` 兼具数据对象与轻量实体角色，业务校验可放 Repository。
+- 【强制】`*Repository` 是具体 `@Component` 类（无 domain 端口接口），直接被 application `Module` 注入调用
+- 【强制】Repository 可封装 DB 调用，也可封装二/三方服务调用（经 facade）
+- 【强制】DO 字段用包装类型；时间字段 `gmtCreate`/`gmtModified` 为 `Date`；表必备 `id`/`gmt_create`/`gmt_modified`
+- 【强制】DAO 继承 tk.mybatis `Mapper<{Name}DO>`，用 `@RouterMapper(dataSource=...)` 绑定数据源；非特殊场景禁手写 SQL，用 `Weekend` 条件；当 `Weekend` 形式不满足时，用 MyBatis 注解方式实现
+- 【强制】数据源配置全部置于 `datasource.*`，不得渗透到分层包结构
+- 【强制】查询条件 `{Name}SearchQuery`、消息 `{Name}Message` 放本层 `types` 包（无 domain 层可放）
+- 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
+- 【推荐】弱依赖调用 try-catch 转 `SysException`
+- 【参考】`DO` 兼具数据对象与轻量实体角色，业务校验可放 Repository
 - 【强制】{Name}Repository 内不使用私有静态方法组装参数，统一用 Converter，保证流程清晰
 
 ## 示例
 ```java
 @Component
-public class OrderRepository {
-    @Resource private OrderDao orderDao;
-    @Resource private PartnerFacade partnerFacade;
+public class InventoryRepositoryImpl implements InventoryRepository {
 
-    public void save(OrderDO order) {
-        if (Objects.isNull(order.getOrderId())) {
-            int id = orderDao.insertSelective(order);
-            partnerFacade.syncOrder(id);
+    @Resource
+    private InventoryDao inventoryDao;
+
+    @Override
+    public void save(Inventory inventory) {
+        InventoryDO inventoryDO = InventoryConverter.INSTANCE.to(inventory);
+
+        int count;
+
+        Optional<Inventory> optional = find(inventory.getItemId());
+        if (optional.isPresent()) {
+            count = inventoryDao.updateByPrimaryKeySelective(inventoryDO);
         } else {
-            orderDao.updateByPrimaryKeySelective(order);
+            count = inventoryDao.insertSelective(inventoryDO);
         }
+
+        Assert.isTrue(count > 0, "保存库存失败");
     }
 
-    public PageInfo<OrderDO> search(OrderSearchQuery query) {
-        Weekend<OrderDO> weekend = Weekend.of(OrderDO.class);
-        WeekendCriteria<OrderDO, Object> where = weekend.weekendCriteria();
-        if (StringUtils.isNotBlank(query.getUserId())) {
-            where.andEqualTo(OrderDO::getUserId, query.getUserId());
+    @Override
+    public void remove(Inventory aggregate) {
+        Weekend<InventoryDO> weekend = Weekend.of(InventoryDO.class);
+
+        WeekendCriteria<InventoryDO, Object> where = weekend.weekendCriteria();
+        where.andEqualTo(InventoryDO::getItemId, aggregate.getItemId().value());
+
+        inventoryDao.deleteByExample(weekend);
+    }
+
+    @Override
+    public Optional<Inventory> find(ItemId itemId) {
+        InventoryDO inventoryDO = inventoryDao.selectByPrimaryKey(itemId.value());
+        if (Objects.isNull(inventoryDO)) {
+            return Optional.empty();
         }
-        PageHelper.startPage(query.getPageIndex(), query.getPageSize(), query.isNeedTotalCount());
-        return new PageInfo<>(orderDao.selectByExample(weekend));
+
+        return Optional.of(InventoryConverter.INSTANCE.from(inventoryDO));
+    }
+}
+```
+
+## 手写SQL示例
+```java
+@RouterMapper(dataSource = PrimaryDataSourceConfiguration.DATA_SOURCE)
+public interface UserStockDao extends Mapper<UserStockDO> {
+
+    @Insert(
+        {
+            "INSERT INTO user_stock(id, role_name, enabled, create_by, create_time) ",
+            "VALUES (#{id},#{roleName},#{enabled},#{createBy},#{createTime,jdbcType=TIMESTAMP})"
+        }
+    )
+    // 需要返回自增主键时，加以下配置
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    int insert(UserStockDO userStockDO);
+
+    @Update(
+        {
+            "UPDATE user_stock ",
+            "SET role_name = #{roleName},enabled = #{enabled},create_by=#{createBy} ",
+            "WHERE id=#{id}"
+        }
+    )
+    int updateById(UserStockDO userStockDO);
+
+    @Select(
+        {
+            "SELECT id,role_name roleName,enabled,create_by createBy,create_time createTime ",
+            "FROM user_stock ",
+            "WHERE id = #{id}"
+        }
+    )
+    UserStockDO selectById(long id);
+    
+    // 动态 SQL，使用 Provider
+    @SelectProvider(type = UserStockSqlProvider.class, method = "selectById")
+    UserStockDO selectById(Long id);
+
+    class UserStockSqlProvider {
+
+        public String selectById(final Long id) {
+            return new SQL() {
+                {
+                    SELECT("id,privilege_name,privilege_url");
+                    FROM("user_stock");
+
+                    if (id != null) {
+                        WHERE("id = #{id}");
+                    }
+                }
+            }.toString();
+        }
     }
 }
 ```

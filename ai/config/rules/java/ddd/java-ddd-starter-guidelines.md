@@ -1,7 +1,7 @@
-# 领域模型 - starter 启动层规范
+# 领域模型架构 - starter 启动层规范
 
 ## 职责
-启动与装配：`Application` 主类、多环境配置（`application*.properties`/`logback-spring.xml`）、集成测试基类、代码生成器（将模板脚手架化为新项目）。
+启动与装配：`Application` 主类、多环境配置（`application*.properties`/`logback-spring.xml`）、集成测试基类
 
 ## 包结构
 | 路径 | 说明 |
@@ -9,21 +9,45 @@
 | `{package}.Application` | @SpringBootApplication 主类 |
 | `{package}.(test).BaseTest` | @SpringBootTest 基类 |
 | `{package}.(test).TestApplication` | @ActiveProfiles("testing") 测试启动 |
-| `{package}.(test).{biz}.module.{Name}ModuleTest` | 模块测试 |
-| `{package}.(test).generator` | CodeGenerator / CodeTemplateGenerator 脚手架生成器 |
+| `{package}.(test).{biz}.{*}.{Name}Test` | 测试 |
 | `src/main/resources/application*.properties` | 应用配置（application.properties / application-{env}.properties） |
 | `src/main/resources/logback-spring.xml` | 日志配置 |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
 |---|---|---|
-| 主类 | `Application @SpringBootApplication` | `Application` |
-| 测试基类 | `BaseTest @SpringBootTest` | `BaseTest` |
-| 测试启动类 | `TestApplication @ActiveProfiles("testing")` | `TestApplication` |
-| 代码生成器 | `CodeGenerator`/`CodeTemplateGenerator` | — |
+| 测试类 | `{Name}Test` | `OrderModuleTest` |
 
 ## 规则
-- 【强制】主类包路径为 `{package}.Application`，`@SpringBootApplication` 扫描基础包 `{package}`。
-- 【强制】依赖 `interface` + `infrastructure` 完成装配，是唯一可打包部署模块（`spring-boot-maven-plugin repackage`）。
-- 【强制】多环境配置用 Spring profiles（`testing`/`production`），测试用 `TestApplication` + `test.properties`。
-- 【推荐】模块测试直接注入 `{Name}Module` Bean 验证编排逻辑，不经过 Controller。
+- 【参考】本地无法启动时，使用 Mock 测试，不继承 BaseTest
+
+## 单测示例
+```java
+class OrderModuleTest extends BaseTest {
+
+    @Resource
+    private InventoryModule inventoryModule;
+
+    @Resource
+    private OrderModule orderModule;
+
+    @Test
+    void create() {
+        long itemId = 123L;
+
+        InventorySaveCommand inventorySaveCommand = new InventorySaveCommand();
+        inventorySaveCommand.setItemId(itemId);
+        inventorySaveCommand.setAvailableStock(999);
+
+        inventoryModule.save(inventorySaveCommand);
+
+        OrderCreateCommand orderCreateCommand = new OrderCreateCommand();
+        orderCreateCommand.setUserId("张三");
+        orderCreateCommand.setItemId(itemId);
+
+        OrderDTO orderDTO = orderModule.create(orderCreateCommand);
+
+        assert orderDTO != null;
+    }
+}
+```

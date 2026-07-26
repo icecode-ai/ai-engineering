@@ -1,4 +1,4 @@
-# 业务中台 - extension-apps 扩展实现层规范
+# 中台架构 - extension-apps 扩展实现层规范
 
 ## 职责
 业务变体插件：按 bizCode 实现各扩展点 `{Name}ExtPt`。每个业务线（如淘宝/京东）一个独立 app 子模块，声明 `App`（bizCode 解析器）与 `{Name}Ext`（扩展实现）。是「对扩展开放」的落地层。
