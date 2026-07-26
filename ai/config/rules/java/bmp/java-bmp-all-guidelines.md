@@ -21,7 +21,7 @@
 > 仅展示主调用链，端口实现/启动装配见各层规范
 
 - `starter 启动层` 控制整个应用的启动，仅包含 启动类、应用配置、测试
-- `interface 接口层` > `application 应用编排层` > `domain 领域层` > `extension 扩展点定义层`
+- `interface 接口层` > `application 应用编排层` > `domain 领域层` > `extension 扩展点定义层` (SPI 定义) > `extension-apps 扩展实现层` (bizCode 路由实现)
 - `infrastructure 基础设施层` > `facade 防腐层`
 
 ## 其他规范

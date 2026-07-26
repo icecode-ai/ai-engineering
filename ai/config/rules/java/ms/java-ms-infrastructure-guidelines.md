@@ -106,8 +106,8 @@ public interface UserStockDao extends Mapper<UserStockDO> {
 
     @Insert(
         {
-            "INSERT INTO user_stock(id, role_name, enabled, create_by, create_time) ",
-            "VALUES (#{id},#{roleName},#{enabled},#{createBy},#{createTime,jdbcType=TIMESTAMP})"
+            "INSERT INTO user_stock(item_id, status, gmt_create, gmt_modified) ",
+            "VALUES (#{itemId}, #{status}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP})"
         }
     )
     // 需要返回自增主键时，加以下配置
@@ -117,36 +117,42 @@ public interface UserStockDao extends Mapper<UserStockDO> {
     @Update(
         {
             "UPDATE user_stock ",
-            "SET role_name = #{roleName},enabled = #{enabled},create_by=#{createBy} ",
-            "WHERE id=#{id}"
+            "SET status = #{status}, gmt_modified = #{gmtModified,jdbcType=TIMESTAMP} ",
+            "WHERE id = #{id}"
         }
     )
     int updateById(UserStockDO userStockDO);
 
     @Select(
         {
-            "SELECT id,role_name roleName,enabled,create_by createBy,create_time createTime ",
+            "SELECT id, item_id, status, gmt_create, gmt_modified ",
             "FROM user_stock ",
             "WHERE id = #{id}"
         }
     )
     UserStockDO selectById(long id);
-    
-    // 动态 SQL，使用 Provider
-    @SelectProvider(type = UserStockSqlProvider.class, method = "selectById")
-    UserStockDO selectById(Long id);
+
+    // 动态 SQL，使用 Provider（多条件可选查询，Weekend 无法满足时使用）
+    @SelectProvider(type = UserStockSqlProvider.class, method = "selectByCondition")
+    List<UserStockDO> selectByCondition(@Param("itemId") Long itemId, @Param("status") String status);
 
     class UserStockSqlProvider {
 
-        public String selectById(final Long id) {
+        public String selectByCondition(@Param("itemId") Long itemId, @Param("status") String status) {
             return new SQL() {
                 {
-                    SELECT("id,privilege_name,privilege_url");
+                    SELECT("id, item_id, status, gmt_create, gmt_modified");
                     FROM("user_stock");
 
-                    if (id != null) {
-                        WHERE("id = #{id}");
+                    if (itemId != null) {
+                        WHERE("item_id = #{itemId}");
                     }
+
+                    if (status != null) {
+                        WHERE("status = #{status}");
+                    }
+
+                    ORDER_BY("gmt_create DESC");
                 }
             }.toString();
         }

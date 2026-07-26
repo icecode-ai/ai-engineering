@@ -240,7 +240,7 @@ public class DoubleColorBallFacade {
 - 【强制】事务代码 catch 异常后如需回滚须手动回滚
 - 【强制】`finally` 块必须关闭资源/流（可 try-catch）；JDK7+ 用 try-with-resources
 - 【强制】`finally` 块禁用 `return`
-- 【推荐】防 NPE：确定性返回基本类型时用基本类型；可能为 null 的单个对象或包装类型用 `Optional` 包装
+- 【推荐】防 NPE：确定性返回基本类型时用基本类型；可能为 null 的单个对象或包装类型用 `Optional` 包装；方法入参，能用基本类型时，不要用包装类型
 - 【推荐】不要返回 null 集合，返回空集合
 
 ### 日志规约
