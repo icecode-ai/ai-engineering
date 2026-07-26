@@ -11,7 +11,7 @@
 | `{package}.{biz}.domain.event` | 领域事件 record implements Event |
 | `{package}.{biz}.repository` | 端口接口 {Name}Repository extends Repository<E,ID> |
 | `{package}.{biz}.messaging` | 消息端口接口 {Name}MessageProducer |
-| `{package}.{biz}.types` | 值对象（entity子属性 / {Name}Id record / 枚举 / *Condition / *Message） |
+| `{package}.{biz}.types` | 值对象（entity子属性 / {Name}Id record / 枚举 / *Condition / *Message 等） |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |

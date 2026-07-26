@@ -7,7 +7,7 @@
 | 层 | 描述 | 规范文件 |
 |---|---|---|
 | facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/ms/java-ms-facade-guidelines.md` |
-| infrastructure 基础设施层 | Repository 具体类/Dao/DO/MessageProducer/多数据源/缓存/动态配置(KV、开关等) | `ai/config/rules/java/ms/java-ms-infrastructure-guidelines.md` |
+| infrastructure 基础设施层 | Repository 具体类/Dao/DO/MessageProducer/多数据源/缓存/动态配置(KV、开关) 等 | `ai/config/rules/java/ms/java-ms-infrastructure-guidelines.md` |
 | application 应用编排层 | 业务逻辑处理 | `ai/config/rules/java/ms/java-ms-application-guidelines.md` |
 | interface 接口层 | Web接口/RPC服务/MQ监听/定时任务等 | `ai/config/rules/java/ms/java-ms-interface-guidelines.md` |
 | client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供其他微服务消费 | `ai/config/rules/java/ms/java-ms-client-guidelines.md` |

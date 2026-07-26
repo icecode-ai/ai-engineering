@@ -28,7 +28,7 @@ RPC服务接口/RPC服务实现
 - 【强制】`Result` 包装（`SingleResponse`）只在本层返回，application 返回裸 DTO
 - 【强制】异常走拦截器统一拦截，不 try-catch（弱依赖除外）
 - 【强制】入参用 `@Valid` 触发校验，Command/Query 校验注解（`@Min`/`@Max`/`@Pattern`）
-- 【强制】RPC 暴露实现 client 的 `{Name}OpenService` 接口，签名与 client 一致
+- 【强制】当存在 client OpenService时，RPC 暴露实现 client 的 `{Name}OpenService` 接口，签名与 client 一致
 - 【推荐】Controller `@RequestMapping("/{biz}")` 统一路径前缀
 
 ## 示例

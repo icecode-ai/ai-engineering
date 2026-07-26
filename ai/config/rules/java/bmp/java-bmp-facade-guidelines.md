@@ -9,7 +9,7 @@
 | `{package}.{partner}.facade` | {Name}Facade @Component |
 | `{package}.{partner}.assembler` | {Name}Assembler（MapStruct，外部 DTO ↔ 内部 DTO） |
 | `{package}.{partner}.dto` | 外部 DTO（{Name}DTO / {Name}Query / {Name}Command / ResultDTO / PageResponseDTO 等） |
-| `{package}.{partner}.types` | 值对象（外部DTO子属性 / 枚举） |
+| `{package}.{partner}.types` | 值对象（外部DTO子属性 / 枚举 等） |
 | `{package}.{partner}.config` | {Name}Configuration @Configuration |
 
 ## 命名约定

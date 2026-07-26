@@ -10,7 +10,7 @@
 | `{package}.{biz}.dao` | {Name}Dao extends Mapper<{Name}DO> @RouterMapper |
 | `{package}.{biz}.data` | {Name}DO @Table @Data |
 | `{package}.{biz}.messaging` | {Name}MessageProducer @Component |
-| `{package}.{biz}.types` | 值对象（{Name}Id / 枚举 / *Condition / *Message） |
+| `{package}.{biz}.types` | 值对象（{Name}Id / 枚举 / *Condition / *Message 等） |
 | `{package}.datasource.{config,builder,scanner}` | 多数据源配置与扫描 |
 
 ## 命名约定
@@ -49,7 +49,7 @@ public class InventoryRepository {
         
         int count;
 
-        Optional<InventoryDO> optional = find();
+        Optional<InventoryDO> optional = find(itemId);
         if (optional.isPresent()) {
             count = inventoryDao.updateByPrimaryKeySelective(inventoryDO);
         } else {

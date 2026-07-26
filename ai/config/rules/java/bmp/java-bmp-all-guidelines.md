@@ -12,7 +12,7 @@
 | application 应用编排层 | 领域编排，无业务逻辑 | `ai/config/rules/java/bmp/java-bmp-application-guidelines.md` |
 | interface 接口层 | Web接口/RPC服务/MQ监听/定时任务等 | `ai/config/rules/java/bmp/java-bmp-interface-guidelines.md` |
 | client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供外部消费 | `ai/config/rules/java/bmp/java-bmp-client-guidelines.md` |
-| infrastructure 基础设施层 | Repository 实现/Dao/DO/Converter/多数据源/缓存 | `ai/config/rules/java/bmp/java-bmp-infrastructure-guidelines.md` |
+| infrastructure 基础设施层 | Repository 实现/Dao/DO/Converter/多数据源/缓存 等 | `ai/config/rules/java/bmp/java-bmp-infrastructure-guidelines.md` |
 | facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/bmp/java-bmp-facade-guidelines.md` |
 | starter 启动层 | Application 主类、多环境配置、测试 | `ai/config/rules/java/bmp/java-bmp-starter-guidelines.md` |
 
