@@ -20,7 +20,6 @@
 ## 规则
 - 【强制】禁止引入 Lombok（不污染消费方 classpath），getter/setter 手写
 - 【强制】依赖最小化，仅依赖 `*-component-common`，禁止新增二/三方依赖
-- 【强制】发布 sources jar（`maven-source-plugin`），便于消费方查看
 - 【强制】接口方法返回 `SingleResponse`/`PageResponse`
 - 【强制】独立版本号管理，向后兼容；接口签名变更须 `@Deprecated` 渐进
 - 【推荐】DTO 字段用包装类型

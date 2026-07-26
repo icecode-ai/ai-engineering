@@ -8,14 +8,13 @@
 |---|---|---|
 | domain 领域层 | 聚合根/值对象/领域服务/领域事件/Repository 接口，业务逻辑内聚，调用扩展点路由业务变体 | `ai/config/rules/java/bmp/java-bmp-domain-guidelines.md` |
 | extension 扩展点定义层 | 扩展点 SPI 定义 + 默认空白实现 | `ai/config/rules/java/bmp/java-bmp-extension-guidelines.md` |
-| extension-apps 扩展实现层 | 按 bizCode 实现扩展点的业务变体插件 |
+| extension-apps 扩展实现层 | 按 bizCode 实现扩展点的业务变体插件 | `ai/config/rules/java/bmp/java-bmp-extension-apps-guidelines.md` |
 | application 应用编排层 | 领域编排，无业务逻辑 | `ai/config/rules/java/bmp/java-bmp-application-guidelines.md` |
 | interface 接口层 | Web接口/RPC服务/MQ监听/定时任务等 | `ai/config/rules/java/bmp/java-bmp-interface-guidelines.md` |
 | client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供外部消费 | `ai/config/rules/java/bmp/java-bmp-client-guidelines.md` |
 | infrastructure 基础设施层 | Repository 实现/Dao/DO/Converter/多数据源 | `ai/config/rules/java/bmp/java-bmp-infrastructure-guidelines.md` |
 | facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/bmp/java-bmp-facade-guidelines.md` |
 | starter 启动层 | Application 主类、多环境配置、单测 | `ai/config/rules/java/bmp/java-bmp-starter-guidelines.md` |
-`ai/config/rules/java/bmp/java-bmp-extension-apps-guidelines.md` |
 
 ## Maven 多模块逻辑关系
 

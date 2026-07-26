@@ -16,7 +16,7 @@
 | 概念 | 命名 | 示例 |
 |---|---|---|
 | REST 控制器 | `{Name}Controller @RestController @RequestMapping("/{biz}")` | `OrderController` |
-| RPC服务接口 | `{Name}Service | `InventoryService` |
+| RPC服务接口 | `{Name}Service` | `InventoryService` |
 | RPC服务实现 | `{Name}ServiceImpl`（@DubboService 可选） | `InventoryOpenServiceImpl` |
 | MQ 监听 | `{Name}MessageListener` | `OrderMessageListener` |
 | 定时任务 | `{Name}Job` | `OrderJob` |
@@ -39,7 +39,7 @@ public class OrderController {
     private OrderModule orderModule;
 
     @PostMapping("/create")
-    public SingleResponse<OrderDTO> create(@Valid OrderCreateCommand command) {
+    public SingleResponse<OrderDTO> create(@Valid @RequestBody OrderCreateCommand command) {
         return SingleResponse.of(orderModule.create(command));
     }
 }

@@ -34,7 +34,6 @@
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
 - 【推荐】弱依赖调用 try-catch 转 `SysException`
 - 【参考】`DO` 兼具数据对象与轻量实体角色，业务校验可放 Repository
-- 【强制】{Name}Repository 内不使用私有静态方法组装参数，统一用 Converter，保证流程清晰
 
 ## 示例
 ```java
@@ -44,10 +43,7 @@ public class InventoryRepository {
     @Resource
     private InventoryDao inventoryDao;
 
-    @Override
-    public void save(Inventory inventory) {
-        InventoryDO inventoryDO = InventoryConverter.INSTANCE.to(inventory);
-
+    public void save(InventoryDO inventoryDO) {
         int count;
 
         Optional<Inventory> optional = find(inventory.getItemId());
@@ -60,24 +56,17 @@ public class InventoryRepository {
         Assert.isTrue(count > 0, "保存库存失败");
     }
 
-    @Override
-    public void remove(Inventory aggregate) {
+    public void remove(InventoryDO inventoryDO) {
         Weekend<InventoryDO> weekend = Weekend.of(InventoryDO.class);
 
         WeekendCriteria<InventoryDO, Object> where = weekend.weekendCriteria();
-        where.andEqualTo(InventoryDO::getItemId, aggregate.getItemId().value());
+        where.andEqualTo(InventoryDO::getItemId, inventoryDO.getItemId().value());
 
         inventoryDao.deleteByExample(weekend);
     }
 
-    @Override
-    public Optional<Inventory> find(ItemId itemId) {
-        InventoryDO inventoryDO = inventoryDao.selectByPrimaryKey(itemId.value());
-        if (Objects.isNull(inventoryDO)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(InventoryConverter.INSTANCE.from(inventoryDO));
+    public Optional<InventoryDO> find(long itemId) {
+        return Optional.of(inventoryDao.selectByPrimaryKey(itemId));
     }
 }
 ```
