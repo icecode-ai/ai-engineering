@@ -19,7 +19,7 @@
 |---|---|---|
 | 编排服务 | `{Name}Module @Component`（不用 Service/ApplicationService） | `OrderModule` |
 | 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand` |
-| 查询 | `{Name}Query extends PageQuery` | `OrderQuery` |
+| 查询 | `{Name}Query extends PageQuery` | `ItemQuery` |
 | 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO` |
 | 领域事件 | `{Name}Event record implements Event` | `OrderEvent` |
 | 转换器 | `{Name}Assembler @Mapper`（Command↔DO） | `OrderAssembler` |
