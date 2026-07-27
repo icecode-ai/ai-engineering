@@ -4,7 +4,7 @@
 启动与装配：`Application` 主类、多环境配置（`application*.properties`/`logback-spring.xml`）、集成测试基类
 
 ## 包结构
-| 路径 | 说明 |
+| 包路径 | 说明 |
 |---|---|
 | `{package}.Application` | @SpringBootApplication 主类 |
 | `{package}.(test).BaseTest` | @SpringBootTest 基类 |
