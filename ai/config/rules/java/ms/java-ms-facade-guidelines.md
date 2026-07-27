@@ -27,7 +27,7 @@
 - 【强制】本层可被其他项目拷贝直接使用，禁止依赖业务模块
 - 【推荐】转换逻辑用 MapStruct `@Mapper`，`INSTANCE = Mappers.getMapper(...)`
 - 【强制】{Name}Facade 内不使用私有静态方法组装参数，方法内流程编排禁止一堆setter属性值的逻辑，统一用 Assembler，保证流程清晰
-- 【建议】出入参，不建议直接使用二、三方依赖中的参数，建议用 `Query`、`Command`、`DTO` 包装一遍
+- 【建议】出入参，不建议直接使用二、三方依赖中的参数，复杂入参建议用 `Query`、`Command` 包装，出参统一用 `DTO` 包装
 
 ## 示例
 ```java
