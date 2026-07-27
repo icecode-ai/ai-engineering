@@ -33,6 +33,7 @@
 - 【强制】查询条件 `{Name}SearchQuery`、消息 `{Name}Message` 放本层 `types` 包（无 domain 层可放）
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
 - 【参考】`DO` 兼具数据对象与轻量实体角色，业务校验可放 Repository
+- 【强制】向缓存中持久化 object 对象时，不要直接使用 object 序列化，转成 json 字符串后，再存入缓存，读取时注意反向操作
 
 ## 示例
 ```java

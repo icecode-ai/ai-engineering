@@ -25,6 +25,7 @@
 ## 其他规范
 
 - 【推荐】校验逻辑，尽量使用 `Assert` 校验，比如：`Assert.isTrue`，减少 if 判断
+- 【推荐】只有 `client 开放层` 不允许使用 `Lombok`，其他层，建议使用 `Lombok`，减少手写 `getter/setter`
 
 - 【强制】业务逻辑内聚在`domain 领域层`；优先思考 `domain 领域层` 的设计，因为是 DDD 领域模型驱动开发，向外延伸到需要哪些依赖，以及 `application 应用编排层` 如何编排领域流程；`domain 领域层` 不感知 DB/MQ/三方服务，仅声明接口；基础设施层提供实现
 

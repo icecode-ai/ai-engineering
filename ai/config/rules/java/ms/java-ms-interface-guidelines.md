@@ -22,6 +22,7 @@
 | 定时任务 | `{Name}Job` | `OrderJob` |
 
 ## 规则
+- 【强制】RPC、HTTP 接口方法入参，必须用 `Command` 或 `Query` 包装，不需要参数时，也要构造一个空的类，也就是这些方法有且只有 `1个` 入参。原因：避免接口升级时兼容性问题
 - 【强制】无业务逻辑，仅调用 application `Module` 并包装结果
 - 【强制】`Result` 包装（`SingleResponse`）只在本层返回，application 返回裸 DTO
 - 【强制】异常走拦截器统一拦截，不 try-catch（弱依赖除外）

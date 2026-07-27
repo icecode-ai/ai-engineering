@@ -33,6 +33,7 @@
 - 【强制】数据源配置全部置于 `datasource.*`，不得渗透到领域分层包结构
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
 - 【强制】{Name}RepositoryImpl 内不使用私有静态方法组装参数，方法内流程编排禁止一堆setter属性值的逻辑，统一用 Converter，保证流程清晰
+- 【强制】向缓存中持久化 object 对象时，不要直接使用 object 序列化，转成 json 字符串后，再存入缓存，读取时注意反向操作
 
 ## 示例
 ```java
