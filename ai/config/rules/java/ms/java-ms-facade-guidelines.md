@@ -22,7 +22,7 @@
 
 ## 规则
 - 【强制】不包含业务逻辑，仅做协议转换与数据装配
-- 【强制】方法直接返回 DTO，不包装 `Result`/`SingleResponse`
+- 【强制】方法直接返回 DTO/基本类型/Optional，不包装 `Result`/`SingleResponse`
 - 【强制】二/三方库依赖只能在本模块 POM 引入，根 POM 不得出现
 - 【强制】本层可被其他项目拷贝直接使用，禁止依赖业务模块
 - 【推荐】转换逻辑用 MapStruct `@Mapper`，`INSTANCE = Mappers.getMapper(...)`
@@ -40,17 +40,28 @@ public class AiFacade {
     @Resource
     private ChatClient qwenChatClient;
 
-    public String deepseek(String systemPrompt, String userPrompt, Object... tools) {
-        return chat(deepseekChatClient, systemPrompt, userPrompt, tools);
+    public AiChatDTO deepseek(AiChatQuery query) {
+        String content = deepseekChatClient.prompt()
+            .system(query.getSystemPrompt())
+            .user(query.getUserPrompt())
+            .tools(query.getTools())
+            .stream().content().collectList()
+            .map(list -> String.join("", list))
+            .block();
+        
+        return AiAssembler.INSTANCE.to(content);
     }
 
-    public String qwen(String systemPrompt, String userPrompt, Object... tools) {
-        return chat(qwenChatClient, systemPrompt, userPrompt, tools);
-    }
-
-    private static String chat(ChatClient client, String systemPrompt, String userPrompt, Object... tools) {
-        return client.prompt().system(systemPrompt).user(userPrompt).tools(tools).stream().content().collectList().map(
-            list -> String.join("", list)).block();
+    public AiChatDTO qwen(AiChatQuery query) {
+        String content = qwenChatClient.prompt()
+            .system(query.getSystemPrompt())
+            .user(query.getUserPrompt())
+            .tools(query.getTools())
+            .stream().content().collectList()
+            .map(list -> String.join("", list))
+            .block();
+        
+        return AiAssembler.INSTANCE.to(content);
     }
 }
 ```

@@ -75,7 +75,7 @@ public class Inventory implements Aggregate<ItemId> {
      */
     public void decrease(InventoryRepository repository, int quantity) {
         // 1. 检查可用库存
-        Assert.isTrue(availableStock > quantity, "库存不足，无法扣减");
+        Assert.isTrue(availableStock >= quantity, "库存不足，无法扣减");
 
         // 2. 库存扣减
         this.availableStock -= quantity;
@@ -121,7 +121,7 @@ public class Inventory implements Aggregate<ItemId> {
 - 【强制】解构列表超长时每项独占一行
 - 【强制】多异常 `catch (A | B | C)` 超长时每个类型独占一行
 
-- 【强制】Javadoc 中 `@param` 描述之后空一行，`@return` 之后空一行
+- 【强制】Javadoc 中 `@param` 描述 与 `@return` 之间空一行
 - 【强制】单行 Javadoc 注释保持单行，不做换行包装
 
 - 【强制】方法内的代码，不要挤压在一起，按`相关逻辑块`进行划分，`逻辑块` 之间，保留 `1个空行`
@@ -165,7 +165,7 @@ public class DoubleColorBallFacade {
 
 ### OOP 规约
 
-- 【强制】单个方法不要超过 `50` 行。为了保障性能、稳定性、节约内存，实现快速垃圾回收，尽量将方法拆细。比如：从数据库查出来一个List，只需要计算1个最终结果时，单独抽成一个方法，这样可以减少 List 常驻内存，方法调用完可以立即释放
+- 【强制】单个方法不要超过 `50` 行。为了保障性能、稳定性、节约内存，实现快速垃圾回收，尽量将方法拆细。比如：从数据库查出来一个List，只需要计算 `1个` 最终结果时，单独抽成 `1个` 方法，这样可以减少 List 常驻内存，方法调用完可以立即释放
 
 - 【强制】对外提供的接口，包括 `http`、`RPC` 接口等，不要修改方法签名，避免兼容性问题；过时接口加 `@Deprecated` 并说明新接口
 

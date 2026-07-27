@@ -99,7 +99,7 @@ public PageInfo<UserStockDO> page(UserStockStatus status, String categoryCode, i
 }
 ```
 
-## 手写SQL示例
+## MyBatis 注解 SQL 示例（Weekend 不满足时使用）
 ```java
 @RouterMapper(dataSource = PrimaryDataSourceConfiguration.DATA_SOURCE)
 public interface UserStockDao extends Mapper<UserStockDO> {
