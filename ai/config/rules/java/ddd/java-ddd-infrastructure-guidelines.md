@@ -32,7 +32,6 @@
 - 【强制】Domain↔DO 转换用 MapStruct `{Name}Converter`，JSON 列用 `default` 方法 + FastJSON2 处理
 - 【强制】数据源配置全部置于 `datasource.*`，不得渗透到领域分层包结构
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
-- 【推荐】弱依赖调用 try-catch 转 `SysException`
 - 【强制】{Name}RepositoryImpl 内不使用私有静态方法组装参数，方法内流程编排禁止一堆setter属性值的逻辑，统一用 Converter，保证流程清晰
 
 ## 示例

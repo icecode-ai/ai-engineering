@@ -235,7 +235,7 @@ public class DoubleColorBallFacade {
 
 - 【强制】可通过预检查规避的 `RuntimeException`（如 NPE/`IndexOutOfBoundsException`）不应 catch。正例：`if (obj != null) {...}`
 - 【强制】异常不做流程/条件控制
-- 【强制】仅弱依赖场景加 try-catch（最外层已有统一异常拦截，避免抛出用户无法理解的内容）；catch 统一用 Throwable 捕获
+- 【强制】仅弱依赖场景加 try-catch，catch 统一用 Throwable 捕获，不向上抛。（强依赖场景，最外层已有统一异常拦截，不会抛出用户无法理解的内容）
 - 【强制】禁止大段 try-catch；稳定与非稳定代码分段处理，各自独立 try-catch
 - 【强制】事务代码 catch 异常后如需回滚须手动回滚
 - 【强制】`finally` 块必须关闭资源/流（可 try-catch）；JDK7+ 用 try-with-resources

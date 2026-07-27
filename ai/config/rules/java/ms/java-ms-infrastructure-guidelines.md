@@ -32,7 +32,6 @@
 - 【强制】数据源配置全部置于 `datasource.*`，不得渗透到分层包结构
 - 【强制】查询条件 `{Name}SearchQuery`、消息 `{Name}Message` 放本层 `types` 包（无 domain 层可放）
 - 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
-- 【推荐】弱依赖调用 try-catch 转 `SysException`
 - 【参考】`DO` 兼具数据对象与轻量实体角色，业务校验可放 Repository
 
 ## 示例

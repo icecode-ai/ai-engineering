@@ -24,7 +24,6 @@
 - 【强制】不包含业务逻辑，仅做协议转换与数据装配
 - 【强制】方法直接返回 DTO，不包装 `Result`/`SingleResponse`
 - 【强制】二/三方库依赖只能在本模块 POM 引入，根 POM 不得出现
-- 【强制】弱依赖（外部不可靠调用）须 try-catch 并转 `SysException`，不向上抛原始异常
 - 【强制】本层可被其他项目拷贝直接使用，禁止依赖业务模块（domain/application 等）
 - 【推荐】转换逻辑用 MapStruct `@Mapper`，`INSTANCE = Mappers.getMapper(...)`
 - 【强制】{Name}Facade 内不使用私有静态方法组装参数，方法内流程编排禁止一堆setter属性值的逻辑，统一用 Assembler，保证流程清晰
@@ -33,15 +32,25 @@
 ## 示例
 ```java
 @Component
-public class DoubleColorBallFacade {
-    public PageResponse<DoubleColorBallDTO> request(int page) {
-        try {
-            String resp = Requests.get(URL).body(...).send().readToText();
-            ResultDTO<PageResponseDTO<DoubleColorBallDTO>> r = JSON.parseObject(resp, type);
-            return DoubleColorBallAssembler.INSTANCE.to(r.getData());
-        } catch (Throwable t) {
-            throw new SysException("双色球服务调用失败", t);
-        }
+public class AiFacade {
+
+    @Resource
+    private ChatClient deepseekChatClient;
+
+    @Resource
+    private ChatClient qwenChatClient;
+
+    public String deepseek(String systemPrompt, String userPrompt, Object... tools) {
+        return chat(deepseekChatClient, systemPrompt, userPrompt, tools);
+    }
+
+    public String qwen(String systemPrompt, String userPrompt, Object... tools) {
+        return chat(qwenChatClient, systemPrompt, userPrompt, tools);
+    }
+
+    private static String chat(ChatClient client, String systemPrompt, String userPrompt, Object... tools) {
+        return client.prompt().system(systemPrompt).user(userPrompt).tools(tools).stream().content().collectList().map(
+            list -> String.join("", list)).block();
     }
 }
 ```
