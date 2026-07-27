@@ -27,11 +27,11 @@
 ## 规则
 - 【强制】`*Repository` 是具体 `@Component` 类（无 domain 端口接口），直接被 application `Module` 注入调用
 - 【强制】Repository 可封装 DB 调用，也可封装二/三方服务调用（经 facade）
-- 【强制】DO 字段用包装类型；时间字段 `gmtCreate`/`gmtModified` 为 `Date`；表必备 `id`/`gmt_create`/`gmt_modified`
+- 【强制】DO 字段用包装类型；时间字段 `gmtCreate`/`gmtModified` 为 `Date`
 - 【强制】Dao 继承 tk.mybatis `Mapper<{Name}DO>`，用 `@RouterMapper(dataSource=...)` 绑定数据源；非特殊场景禁手写 SQL，用 `Weekend` 条件；当 `Weekend` 形式不满足时，用 MyBatis 注解方式实现
 - 【强制】数据源配置全部置于 `datasource.*`，不得渗透到分层包结构
 - 【强制】查询条件 `{Name}SearchQuery`、消息 `{Name}Message` 放本层 `types` 包（无 domain 层可放）
-- 【推荐】分页用 `PageHelper.startPage` + `PageInfo`
+- 【推荐】分页用 `PageHelper.startPage` + `PageInfo`；不需要查询 count 时，用 `PageHelper.startPage(page, pageSize, false);`，第3个入参传 `false`；当数据量大、性能、稳定性要求高时，可以采用 `游标分页` / `标签记录法`，记住上一页最后一条数据的唯一标识（通常是主键或具有唯一索引的排序字段），下一页直接从该位置之后开始检索，常用于移动端 App 的“无限下拉刷新”或没有直接页码跳转的场景；延迟关联是纯 MySQL 层面最后的妥协方案，先利用覆盖索引（Covering Index）查询出目标页的数据 ID，因为只查 ID 不回表，速度很快，然后再拿这些 ID 去关联主表获取完整数据
 - 【参考】`DO` 兼具数据对象与轻量实体角色，业务校验可放 Repository
 - 【强制】向缓存中持久化 object 对象时，不要直接使用 object 序列化，转成 json 字符串后，再存入缓存，读取时注意反向操作
 

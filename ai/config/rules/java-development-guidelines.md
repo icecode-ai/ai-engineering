@@ -265,7 +265,7 @@ public class DoubleColorBallFacade {
 - 【强制】小数用 `decimal`，禁 `float`/`double`
 - 【强制】等长字符串用 `char`
 - 【强制】`varchar` 长度不超 5000；超长用 `text` 独立表关联
-- 【强制】表必备三字段：`id`(主键 unsigned bigint 自增)、`gmt_create`、`gmt_modified`(datetime)
+- 【强制】表必备三字段：`id`(主键 unsigned bigint 自增)、`gmt_create`(datetime DEFAULT CURRENT_TIMESTAMP)、`gmt_modified`(datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
 - 【推荐】表名加「业务名称_表作用」。正例：`tiger_task`
 - 【推荐】修改字段含义/追加状态时同步更新字段注释
 - 【推荐】字段适当冗余提升查询性能（非频繁修改、非超长 varchar/text）
