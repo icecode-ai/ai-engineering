@@ -25,7 +25,7 @@
 | 数据源配置 | `PrimaryDataSourceConfiguration`/`MybatisConfigBuilder` | — |
 
 ## 规则
-- 【强制】`{Name}RepositoryImpl` 与 domain 接口 `{Name}Repository` 同包名（不同模块），实现接口
+- 【强制】`{Name}RepositoryImpl` 与 domain 端口 `{Name}Repository` 同包名（不同模块），实现端口接口
 - 【强制】Repository 封装 DB 调用，也可封装二/三方服务调用（经 facade），转换为自己的领域
 - 【强制】DO 字段用包装类型；时间字段 `gmtCreate`/`gmtModified` 为 `Date`
 - 【强制】Dao 继承 tk.mybatis `Mapper<{Name}DO>`，用 `@RouterMapper(dataSource=...)` 绑定数据源；非特殊场景禁手写 SQL，用 `Weekend` 条件；当 `Weekend` 形式不满足时，用 MyBatis 注解方式实现
