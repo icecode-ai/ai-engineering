@@ -78,16 +78,20 @@ for dir in "${DIRS[@]}"; do
 done
 
 gitignore_file="${PROJECT_ROOT}/.gitignore"
-entry="readonly-dependencies/*/*"
-if [ ! -f "$gitignore_file" ]; then
-  printf '%s\n' "$entry" > "$gitignore_file"
-  echo "Created .gitignore with readonly-dependencies entry"
-elif ! grep -qF "$entry" "$gitignore_file"; then
-  printf '%s\n' "$entry" >> "$gitignore_file"
-  echo "Added '${entry}' to .gitignore"
-else
-  echo "'${entry}' already in .gitignore"
-fi
+ENTRIES=(
+  "readonly-dependencies/*/*"
+  "ai/output/changes/*/sdd"
+  "ai/output/changes/archive/*/sdd"
+)
+[ -f "$gitignore_file" ] || : > "$gitignore_file"
+for entry in "${ENTRIES[@]}"; do
+  if ! grep -qxF "$entry" "$gitignore_file" 2>/dev/null; then
+    printf '%s\n' "$entry" >> "$gitignore_file"
+    echo "Added '${entry}' to .gitignore"
+  else
+    echo "'${entry}' already in .gitignore"
+  fi
+done
 
 echo "Environment initialized at: ${PROJECT_ROOT}"
 ```
