@@ -75,7 +75,7 @@ If checkout failed for a reason other than local-change conflicts (e.g., the bra
 - **Failed** — checkout could not complete (e.g., branch does not exist). **STOP**.
 - **Updated** — output contains `Switched to ...`. Run the registry sync below, then proceed to step 4 (module targets only) and step 5.
 
-**Registry sync** (on `Updated`, module/dependency targets only — MAIN has no registry entry): update the `branch` field in `ai/config/git.tsv` for the target path so the registry reflects the newly checked-out branch:
+**Registry sync** (on `Updated`, module/dependency targets only — MAIN has no registry entry): update the `repo_branch` field in `ai/config/git.tsv` for the target path so the registry reflects the newly checked-out branch:
 
 ```bash
 bash "ai/config/skills/goal-git-checkout/scripts/sync-registry.sh" "$target" "$branch"

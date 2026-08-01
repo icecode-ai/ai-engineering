@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Update the branch field in ai/config/git.tsv for a module/dependency target.
+# Update the repo_branch field in ai/config/git.tsv for a module/dependency target.
 # Usage: sync-registry.sh <target> <branch>   (MAIN has no registry entry; no-op for MAIN)
 set -euo pipefail
 target="${1:-}"

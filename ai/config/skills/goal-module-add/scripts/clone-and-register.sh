@@ -31,10 +31,10 @@ else
   git clone "$url" "$module_dir" || { echo "CLONE_FAILED: $url"; exit 1; }
 fi
 
-# register in ai/config/git.tsv (path<TAB>url<TAB>branch)
+# register in ai/config/git.tsv (repo_path<TAB>repo_url<TAB>repo_branch)
 branch="$(git -C "$module_dir" rev-parse --abbrev-ref HEAD)"
 git_tsv="${PROJECT_ROOT}/ai/config/git.tsv"
-[ -f "$git_tsv" ] || printf '# path\turl\tbranch\n' > "$git_tsv"
+[ -f "$git_tsv" ] || printf '# repo_path\trepo_url\trepo_branch\n' > "$git_tsv"
 if awk -F'\t' -v p="modules/$module_name" '$1==p {found=1} END{exit !found}' "$git_tsv"; then
   echo "Already registered in ai/config/git.tsv"
 else

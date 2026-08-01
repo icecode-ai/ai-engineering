@@ -162,7 +162,7 @@ fi
 
 ### 3. Materialize registered repos from `ai/config/git.tsv`
 
-After creating directories, clone each module/dependency registered in `ai/config/git.tsv` so later steps can read their code. The registry is a tab-separated file (`# path<TAB>url<TAB>branch`); each row records a gitlink path, its remote URL, and branch. The gitlink SHA (mode 160000) in MAIN's tree pins the exact commit; the registry supplies URL + branch.
+After creating directories, clone each module/dependency registered in `ai/config/git.tsv` so later steps can read their code. The registry is a tab-separated file (`# repo_path<TAB>repo_url<TAB>repo_branch`); each row records a gitlink path, its remote URL, and branch. The gitlink SHA (mode 160000) in MAIN's tree pins the exact commit; the registry supplies URL + branch.
 
 For each row: if the path directory is already populated, skip (re-init safe); otherwise clone and land on the recorded branch at the recorded gitlink SHA, so downstream reproduces the exact branch + commit upstream recorded. Skip gracefully when MAIN is not yet a git repo (first init before any commit), or the registry is absent or empty (no non-comment rows).
 
@@ -181,25 +181,25 @@ if [ ! -s "$registry" ] || ! awk -F'\t' '{if($1!="" && $1 !~ /^#/){f=1; exit}} E
 elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "MAIN not a git repo yet — skip materialization."
 else
-  while IFS=$'\t' read -r path url branch; do
-    case "$path" in ''|\#*) continue;; esac
-    if [ -e "$path" ] && [ -n "$(ls -A "$path" 2>/dev/null)" ]; then
-      echo "skip (populated): $path"
+  while IFS=$'\t' read -r repo_path repo_url repo_branch; do
+    case "$repo_path" in ''|\#*) continue;; esac
+    if [ -e "$repo_path" ] && [ -n "$(ls -A "$repo_path" 2>/dev/null)" ]; then
+      echo "skip (populated): $repo_path"
       continue
     fi
-    mkdir -p "$path"
-    sha="$(git ls-tree HEAD -- "$path" 2>/dev/null | awk '$2=="commit"{print $3}' || true)"
+    mkdir -p "$repo_path"
+    sha="$(git ls-tree HEAD -- "$repo_path" 2>/dev/null | awk '$2=="commit"{print $3}' || true)"
     if [ -n "$sha" ]; then
-      if git clone "$url" "$path" && git -C "$path" checkout -B "$branch" "$sha"; then
-        echo "materialized (branch $branch @ $sha): $path"
+      if git clone "$repo_url" "$repo_path" && git -C "$repo_path" checkout -B "$repo_branch" "$sha"; then
+        echo "materialized (branch $repo_branch @ $sha): $repo_path"
       else
-        echo "FAILED: $path — check url/branch/sha"
+        echo "FAILED: $repo_path — check url/branch/sha"
       fi
     else
-      if git clone --branch "$branch" "$url" "$path"; then
-        echo "materialized (branch $branch @ tip): $path"
+      if git clone --branch "$repo_branch" "$repo_url" "$repo_path"; then
+        echo "materialized (branch $repo_branch @ tip): $repo_path"
       else
-        echo "FAILED: $path — check url/branch"
+        echo "FAILED: $repo_path — check url/branch"
       fi
     fi
   done < "$registry"
@@ -331,5 +331,5 @@ done
 
 - `readonly-dependencies/` is a read-only knowledge base — never write, modify, or delete files inside it
 - Do NOT add `modules/` or `readonly-dependencies/` (top-level) to `.gitignore`; only `readonly-dependencies/*/*` (depth-2 contents) is ignored so dependency gitlinks stay trackable
-- `ai/config/git.tsv` is the tracked registry of module/dependency repos (path → url + branch); keep it committed — `ai-env-init` uses it to materialize gitlink repos, and `ai-module-add`/`ai-dependency-add`/`ai-module-remove`/`ai-dependency-remove`/`ai-git-checkout` keep it in sync
+- `ai/config/git.tsv` is the tracked registry of module/dependency repos (repo_path → repo_url + repo_branch); keep it committed — `ai-env-init` uses it to materialize gitlink repos, and `ai-module-add`/`ai-dependency-add`/`ai-module-remove`/`ai-dependency-remove`/`ai-git-checkout` keep it in sync
 - Synchronously maintain BOTH `AGENTS.md` and `CLAUDE.md` for the main project and each module
