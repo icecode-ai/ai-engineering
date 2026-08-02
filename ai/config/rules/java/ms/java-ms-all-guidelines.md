@@ -26,7 +26,8 @@
 - 【推荐】校验逻辑，尽量使用 `Assert` 校验，比如：`Assert.isTrue`，减少 if 判断
 - 【推荐】只有 `client 开放层` 不允许使用 `Lombok`，其他层，建议使用 `Lombok`，减少手写 `getter/setter`
 
-- 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，在 `facade 防腐层` 中定义依赖和版本号
+- 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，注意在 `facade 防腐层 pom.xml` properties 中定义版本号
+- 【强制】如果要引入 `非二/三方服务依赖`，必须先在 `主pom.xml` dependencyManagement 中定义依赖和 properties 中定义版本号，然后再在 `子模块 pom.xml` 中引用
 - 【强制】如果用户需求中，没有明确说明需要开放接口，不要在 `client 开放层` 定义接口，接口放在 `interface 接口层`，`interface 接口层` 需要的出入参 `Query`、`Command`、`DTO` 放在 `application 应用编排层`
 - 【强制】所有测试放在 `starter 启动层`
 

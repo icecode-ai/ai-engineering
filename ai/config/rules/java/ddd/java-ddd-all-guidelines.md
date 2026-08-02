@@ -29,7 +29,8 @@
 
 - 【强制】业务逻辑内聚在`domain 领域层`；优先思考 `domain 领域层` 的设计，因为是 DDD 领域模型驱动开发，向外延伸到需要哪些依赖，以及 `application 应用编排层` 如何编排领域流程；`domain 领域层` 不感知 DB/MQ/三方服务，仅声明接口；基础设施层提供实现
 
-- 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，在 `facade 防腐层` 中定义依赖和版本号
+- 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，注意在 `facade 防腐层 pom.xml` properties 中定义版本号
+- 【强制】如果要引入 `非二/三方服务依赖`，必须先在 `主pom.xml` dependencyManagement 中定义依赖和 properties 中定义版本号，然后再在 `子模块 pom.xml` 中引用
 - 【强制】如果用户需求中，没有明确说明需要开放接口，不要在 `client 开放层` 定义接口，接口放在 `interface 接口层`，`interface 接口层` 需要的出入参 `Query`、`Command`、`DTO` 放在 `application 应用编排层`
 - 【强制】所有测试放在 `starter 启动层`
 

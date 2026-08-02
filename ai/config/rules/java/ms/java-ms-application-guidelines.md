@@ -14,10 +14,12 @@
 | `{package}.{biz}.types` | 值对象(application 层专用的枚举/相关值对象) |
 | `{package}.common.assembler` | PageAssembler(分页转换) |
 
+
+
 ## 命名约定
 | 概念 | 命名 | 示例 |
 |---|---|---|
-| 编排服务 | `{Name}Module @Component`(不用 Service/ApplicationService/OrderAppModule) | `OrderModule` |
+| 编排服务 | `{Name}Module @Component`(不用 `{Name}Service`/`{Name}AppModule`) | `OrderModule` |
 | 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand`(如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义) |
 | 查询 | `{Name}SearchQuery extends PageQuery` | `OrderSearchQuery`(如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义) |
 | 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO`(如果来自 facade 层直接可用，不用在此层定义) |

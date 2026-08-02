@@ -14,7 +14,7 @@
 ## 命名约定
 | 概念 | 命名 | 示例 |
 |---|---|---|
-| 编排服务 | `{Name}Module @Component`(不用 Service/ApplicationService/OrderAppModule) | `OrderModule` |
+| 编排服务 | `{Name}Module @Component`(不用 `{Name}Service`/`{Name}AppModule`) | `OrderModule` |
 | 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand` |
 | 查询 | `{Name}SearchQuery extends PageQuery` | `OrderSearchQuery` |
 | 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO` |
