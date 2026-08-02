@@ -193,9 +193,17 @@ Fill in the template with architecture decisions, technical approach, and trade-
 > No commit step — in `/ai-spec-apply` neither the controller nor the implementer touches git; the user stages and commits when ready.
 
 ### Task 2: ...
+
+## 2. <Another Task Group Name>
+
+### Task 3: <Component Name>
+<!-- Task numbering CONTINUES across groups (1, 2, 3, ...) — never restarts at a new
+group, never uses letter prefixes (A1/B1) or sub-ids (1.1). /ai-spec-apply's
+scripts parse task IDs as pure integers. -->
 ```
 
 **Task-granularity rules (mandatory):**
+- **Task IDs are pure integers, globally continuous across ALL `## N. <Group>` sections**: `### Task 1:`, `### Task 2:`, `### Task 3:`, … Never `A1`, `B1`, `1.1`, or any non-numeric prefix. The `## N. <Group>` heading is purely visual grouping — it does NOT affect task numbering, and numbering never restarts at a new group. `/ai-spec-apply`'s scripts parse these IDs as numbers; a non-numeric ID breaks apply.
 - Each task is the smallest unit that carries its own test cycle and a fresh reviewer's gate (2-5 minutes per step). Fold setup/scaffolding/docs into the task whose deliverable needs them.
 - **Exact file paths always** (no "the appropriate file"). **Complete code in every step** that changes code. **Exact commands with expected output**.
 - **No placeholders**: never write "TBD", "TODO", "implement later", "add appropriate error handling", "similar to Task N" (repeat the code), or steps that describe what without showing how.
@@ -221,6 +229,14 @@ After all four artifacts are written and verified, run this checklist **yourself
    - Every requirement has ≥1 `#### Scenario:` with WHEN/THEN, using SHALL/MUST.
 
 **5. Global Constraints presence:** `tasks.md` contains a `## Global Constraints` block with project-wide requirements (version floors, dependency limits, naming/copy rules) as one line each, exact values verbatim from the spec. `/ai-spec-apply` extracts this block verbatim and feeds it to every per-task reviewer — a missing or vague block means reviewers review without the project's mandatory constraints.
+
+**6. Task ID format:** Run the deterministic validator — it catches the #1 apply-breaker (non-numeric or non-contiguous task IDs) that a visual skim misses:
+
+```bash
+bash "ai/config/skills/goal-spec-propose/scripts/validate-tasks.sh" "$change_dir/tasks.md"
+```
+
+It must exit 0. If it reports non-numeric IDs (e.g. `A1`, `1.1`) or gaps in `1..N`, renumber the `### Task N:` headers to be pure integers continuous from 1 across all `## N. <Group>` sections.
 
 If the scan is clean, proceed. If you fix issues, the artifacts on disk are already updated (you edited inline) — proceed.
 

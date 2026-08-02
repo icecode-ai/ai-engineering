@@ -46,7 +46,7 @@ $(awk '
   BEGIN { infence=0; intask=0; tt=0; ct=0; pend=0 }
   /^```/ { infence=!infence; next }
   infence { next }
-  /^### Task [0-9]+/ { if (intask) { if (pend==0) ct++ }; intask=1; pend=0; tt++; next }
+  /^### Task [A-Za-z0-9][A-Za-z0-9.-]*/ { if (intask) { if (pend==0) ct++ }; intask=1; pend=0; tt++; next }
   /^(## )/            { if (intask) { if (pend==0) ct++ }; intask=0; pend=0; next }
   intask && /^[[:space:]]*[-*][[:space:]]+\[ \]/ { pend++ }
   END { if (intask && pend==0) ct++; print tt+0, ct+0 }

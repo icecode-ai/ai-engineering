@@ -82,7 +82,7 @@ if bash "ai/config/skills/goal-spec-apply/scripts/edit-roots.sh" "$change_dir/pr
   # Fence-aware task-number extraction (skip ```-fenced regions, consistent with
   # mark-task-done.sh / planned-files.sh) — avoids matching example "### Task N:"
   # headers inside code blocks.
-  for N in $(awk 'BEGIN{f=0} /^```/{f=!f;next} f{next} /^### Task [0-9]+:/{line=$0; sub(/^### Task /,"",line); sub(/:.*/,"",line); print line}' "$change_dir/tasks.md" | sort -n -u); do
+  for N in $(awk 'BEGIN{f=0} /^```/{f=!f;next} f{next} /^### Task [A-Za-z0-9][A-Za-z0-9.-]*:/{line=$0; sub(/^### Task /,"",line); sub(/:.*/,"",line); print line}' "$change_dir/tasks.md" | sort -u); do
     bash "ai/config/skills/goal-spec-apply/scripts/planned-files.sh" "$change_dir/tasks.md" "$N" "$change_dir/sdd/task-$N-planned.txt" >/dev/null
     bash "ai/config/skills/goal-spec-apply/scripts/check-scope.sh" "$change_dir/sdd/task-$N-planned.txt" "$change_dir/sdd/edit-roots.txt" || true
   done
