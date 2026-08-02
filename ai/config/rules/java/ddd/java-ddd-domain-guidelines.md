@@ -7,11 +7,11 @@
 | 包路径 | 说明 |
 |---|---|
 | `{package}.{biz}.domain.entity` | 领域模型、聚合根 implements Aggregate<{Name}Id> |
-| `{package}.{biz}.domain.service` | 领域服务 @Component（仅跨/多领域编排） |
+| `{package}.{biz}.domain.service` | 领域服务 @Component(仅跨/多领域编排) |
 | `{package}.{biz}.domain.event` | 领域事件 record implements Event |
 | `{package}.{biz}.repository` | 端口接口 {Name}Repository extends Repository<E,ID> |
 | `{package}.{biz}.messaging` | 消息端口接口 {Name}MessageProducer |
-| `{package}.{biz}.types` | 值对象（entity子属性 / {Name}Id record / 枚举 / *Condition / *Message 等） |
+| `{package}.{biz}.types` | 值对象(entity子属性 / {Name}Id record / 枚举 / *Condition / *Message 等) |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
@@ -29,12 +29,12 @@
 
 ## 规则
 - 【强制】domain 禁止依赖 facade / infrastructure / interface / application
-- 【强制】异常走拦截器统一拦截，不 try-catch（弱依赖除外）
+- 【强制】异常走拦截器统一拦截，不 try-catch(弱依赖除外)
 
-- 【强制】领域模型/聚合根 `@Data`（Lombok）允许；业务属性可有默认值
+- 【强制】领域模型/聚合根 `@Data`(Lombok)允许；业务属性可有默认值
 - 【强制】业务逻辑内聚在领域模型/聚合根方法内，禁止抽到工具类或散落在其他地方
 
-- 【强制】单领域变更（Save/Update/Delete）：外部依赖（repository/producer）以方法参数传入，保持框架无关、可单测
+- 【强制】单领域变更(Save/Update/Delete)：外部依赖(repository/producer)以方法参数传入，保持框架无关、可单测
 
 - 【强制】只有多/跨领域变更(Save/Update/Delete)，才需要建领域服务，领域服务编排多个领域调用，各领域变更内聚各自聚合根
 - 【强制】领域服务，能用具体类实现时，不要定义接口，除非场景需要有多个实现类或需要保留扩展能力
@@ -50,7 +50,7 @@
 ## 示例
 
 ### 单领域变更
-单领域变更（Save/Update/Delete）：外部依赖（repository/producer）以方法参数传入，业务逻辑内聚在聚合根方法内，业务变体通过策略模式或参数显式处理
+单领域变更(Save/Update/Delete)：外部依赖(repository/producer)以方法参数传入，业务逻辑内聚在聚合根方法内，业务变体通过策略模式或参数显式处理
 
 ```java
 // domain 层：业务逻辑内聚在聚合根方法内，依赖以参数传入，业务变体通过策略模式或参数显式处理
@@ -74,7 +74,7 @@ public class Order implements Aggregate<OrderId> {
     }
 }
 
-// application 层：Module 编排入口，直接调用聚合根方法（传递依赖）
+// application 层：Module 编排入口，直接调用聚合根方法(传递依赖)
 @Component
 public class OrderModule {
 
@@ -94,7 +94,7 @@ public class OrderModule {
 ```
 
 ### 多/跨领域变更
-多/跨领域变更（Save/Update/Delete）：建领域服务编排多个领域调用，各领域变更内聚在各自聚合根方法内
+多/跨领域变更(Save/Update/Delete)：建领域服务编排多个领域调用，各领域变更内聚在各自聚合根方法内
 
 ```java
 // domain 层：各领域变更内聚在各自聚合根

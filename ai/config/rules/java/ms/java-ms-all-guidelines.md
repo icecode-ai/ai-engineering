@@ -1,6 +1,6 @@
 # 微服务架构开发规范
 
-微服务架构 = 轻量分层架构，单一可部署单元。业务逻辑较薄，`*Repository` 为具体类（非端口接口），`*Assembler` 直接 Command↔DO 转换（无领域实体中间层）。适合业务较简单、追求快速迭代的微服务。微服务间通过 `client` 模块的 `*OpenService` 接口（Dubbo/RPC）或 REST 通信
+微服务架构 = 轻量分层架构，单一可部署单元。业务逻辑较薄，`*Repository` 为具体类(非端口接口)，`*Assembler` 直接 Command↔DO 转换(无领域实体中间层)。适合业务较简单、追求快速迭代的微服务。微服务间通过 `client` 模块的 `*OpenService` 接口(Dubbo/RPC)或 REST 通信
 
 ## Maven 多模块分层规范
 
@@ -10,7 +10,7 @@
 | infrastructure 基础设施层 | Repository 具体类/Dao/DO/MessageProducer/多数据源/缓存/动态配置(KV、开关) 等 | `ai/config/rules/java/ms/java-ms-infrastructure-guidelines.md` |
 | application 应用编排层 | 业务逻辑处理 | `ai/config/rules/java/ms/java-ms-application-guidelines.md` |
 | interface 接口层 | Web接口/RPC服务/MQ监听/定时任务等 | `ai/config/rules/java/ms/java-ms-interface-guidelines.md` |
-| client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供其他微服务消费 | `ai/config/rules/java/ms/java-ms-client-guidelines.md` |
+| client 开放层 | 对外发布 API jar(接口 + DTO)，无 Lombok，供其他微服务消费 | `ai/config/rules/java/ms/java-ms-client-guidelines.md` |
 | starter 启动层 | Application 主类、多环境配置、测试 | `ai/config/rules/java/ms/java-ms-starter-guidelines.md` |
 
 ## Maven 多模块核心逻辑关系

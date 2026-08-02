@@ -1,7 +1,7 @@
 # 中台架构 - extension 扩展点定义层规范
 
 ## 职责
-定义扩展点 SPI（`ExtensionPoint`）及扩展入参对象（`Input`/`BO`），并提供默认空白实现（`Blank*Ext`）。是 domain 与 extension-apps 之间的契约层，使核心领域可被业务变体插件扩展而无需修改。
+定义扩展点 SPI(`ExtensionPoint`)及扩展入参对象(`Input`/`BO`)，并提供默认空白实现(`Blank*Ext`)。是 domain 与 extension-apps 之间的契约层，使核心领域可被业务变体插件扩展而无需修改。
 
 ## 包结构
 | 包路径 | 说明 |
@@ -15,7 +15,7 @@
 | 概念 | 命名 | 示例 |
 |---|---|---|
 | 扩展点接口 | `{Name}ExtPt extends ExtensionPoint` | `OrderExtPt` |
-| 扩展入参（BO） | `{Name}{Action}Input extends BaseInput` | `OrderCreateInput` |
+| 扩展入参(BO) | `{Name}{Action}Input extends BaseInput` | `OrderCreateInput` |
 | 默认空白实现 | `Blank{Name}Ext @Extension` | `BlankOrderExt` |
 
 ## 规则

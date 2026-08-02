@@ -1,6 +1,6 @@
 # 领域模型架构开发规范
 
-领域模型架构（DDD）= 严格分层 + 富领域模型 + 端口适配器（依赖倒置）。业务逻辑内聚在聚合根，领域层通过端口接口声明对外依赖，基础设施层提供实现
+领域模型架构(DDD)= 严格分层 + 富领域模型 + 端口适配器(依赖倒置)。业务逻辑内聚在聚合根，领域层通过端口接口声明对外依赖，基础设施层提供实现
 
 ## Maven 多模块分层规范
 
@@ -9,7 +9,7 @@
 | domain 领域层 | 聚合根/值对象/领域服务/领域事件/Repository 接口/动态配置(KV、开关等)，业务逻辑内聚 | `ai/config/rules/java/ddd/java-ddd-domain-guidelines.md` |
 | application 应用编排层 | 领域编排，无业务逻辑 | `ai/config/rules/java/ddd/java-ddd-application-guidelines.md` |
 | interface 接口层 | Web接口/RPC服务/MQ监听/定时任务等 | `ai/config/rules/java/ddd/java-ddd-interface-guidelines.md` |
-| client 开放层 | 对外发布 API jar（接口 + DTO），无 Lombok，供外部消费 | `ai/config/rules/java/ddd/java-ddd-client-guidelines.md` |
+| client 开放层 | 对外发布 API jar(接口 + DTO)，无 Lombok，供外部消费 | `ai/config/rules/java/ddd/java-ddd-client-guidelines.md` |
 | infrastructure 基础设施层 | Repository 实现/Dao/DO/Converter/多数据源/缓存 等 | `ai/config/rules/java/ddd/java-ddd-infrastructure-guidelines.md` |
 | facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/ddd/java-ddd-facade-guidelines.md` |
 | starter 启动层 | Application 主类、多环境配置、测试 | `ai/config/rules/java/ddd/java-ddd-starter-guidelines.md` |

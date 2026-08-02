@@ -1,7 +1,7 @@
 # 微服务 - starter 启动层规范
 
 ## 职责
-启动与装配：`Application` 主类、多环境配置（`application*.properties`/`logback-spring.xml`）、集成测试基类
+启动与装配：`Application` 主类、多环境配置(`application*.properties`/`logback-spring.xml`)、集成测试基类
 
 ## 包结构
 | 包路径 | 说明 |
@@ -10,7 +10,7 @@
 | `{package}.(test).BaseTest` | @SpringBootTest 基类 |
 | `{package}.(test).TestApplication` | @ActiveProfiles("testing") 测试启动 |
 | `{package}.(test).{biz}.{*}.{Name}Test` | 测试 |
-| `src/main/resources/application*.properties` | 应用配置（application.properties / application-{env}.properties） |
+| `src/main/resources/application*.properties` | 应用配置(application.properties / application-{env}.properties) |
 | `src/main/resources/logback-spring.xml` | 日志配置 |
 
 ## 命名约定

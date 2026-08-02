@@ -7,7 +7,7 @@
 | 包路径 | 说明 |
 |---|---|
 | `{package}.{biz}.service` | 开放服务接口 {Name}OpenService |
-| `{package}.{biz}.dto` | 开放 DTO（{Name}DTO / {Name}Query / {Name}Command） |
+| `{package}.{biz}.dto` | 开放 DTO({Name}DTO / {Name}Query / {Name}Command) |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
@@ -18,7 +18,7 @@
 | 开放写入 | `{Name}Command extends Command` | `InventoryCommand` |
 
 ## 规则
-- 【强制】禁止引入 Lombok（不污染消费方 classpath），getter/setter 手写
+- 【强制】禁止引入 Lombok(不污染消费方 classpath)，getter/setter 手写
 - 【强制】依赖最小化，仅依赖 `*-component-common`，禁止新增二/三方依赖
 - 【强制】接口方法返回 `SingleResponse`/`PageResponse`
 - 【强制】独立版本号管理，向后兼容；接口签名变更须 `@Deprecated` 渐进

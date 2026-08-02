@@ -1,7 +1,7 @@
 # 中台架构 - extension-apps 扩展实现层规范
 
 ## 职责
-业务变体插件：按 bizCode 实现各扩展点 `{Name}ExtPt`。每个业务线（如淘宝/京东）一个独立 app 子模块，声明 `App`（bizCode 解析器）与 `{Name}Ext`（扩展实现）。是「对扩展开放」的落地层。
+业务变体插件：按 bizCode 实现各扩展点 `{Name}ExtPt`。每个业务线(如淘宝/京东)一个独立 app 子模块，声明 `App`(bizCode 解析器)与 `{Name}Ext`(扩展实现)。是「对扩展开放」的落地层。
 
 ## 包结构
 | 包路径 | 说明 |
@@ -10,7 +10,7 @@
 | `{package}.app.{bizline}.App` | @AutoService(App.class) bizCode 解析器 |
 | `{package}.app.{bizline}.common.Constants` | BIZ_CODE 常量 |
 
-每个业务线一个 Maven 子模块（如 `{artifactId}-taobao-app`、`{artifactId}-jingdong-app`）。
+每个业务线一个 Maven 子模块(如 `{artifactId}-taobao-app`、`{artifactId}-jingdong-app`)。
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
@@ -23,8 +23,8 @@
 - 【强制】每个 app 子模块实现一个业务线的全部扩展点；bizCode 在 `Constants` 中定义为常量。
 - 【强制】`App` 须 `@AutoService(App.class)`，通过 `parseBizCode(Input)` 从输入上下文解析出 bizCode。
 - 【强制】`{Name}Ext` 须 `@Extension(bizCode=...)` 并实现对应 `{Name}ExtPt`，bizCode 与 `App` 解析结果一致。
-- 【强制】本层只依赖 `extension`（契约），禁止依赖 domain/application/infrastructure。
-- 【推荐】新增业务线只新增 app 子模块，不改核心领域（开闭原则）。
+- 【强制】本层只依赖 `extension`(契约)，禁止依赖 domain/application/infrastructure。
+- 【推荐】新增业务线只新增 app 子模块，不改核心领域(开闭原则)。
 
 ## 示例
 ```java

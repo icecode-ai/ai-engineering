@@ -1,34 +1,34 @@
 # 微服务 - application 应用编排层规范
 
 ## 职责
-流程编排层：将 Command 与 DO 互转（**无领域实体中间层**），调用 Repository 持久化，发送消息与领域事件，返回 DTO。与 DDD/BMP 的区别：业务逻辑较薄，事务脚本式编排，直接操作 `*DO`
+流程编排层：将 Command 与 DO 互转(**无领域实体中间层**)，调用 Repository 持久化，发送消息与领域事件，返回 DTO。与 DDD/BMP 的区别：业务逻辑较薄，事务脚本式编排，直接操作 `*DO`
 
 ## 包结构
 | 包路径 | 说明 |
 |---|---|
 | `{package}.{biz}.module` | {Name}Module @Component |
 | `{package}.{biz}.policy` | 存放设计模式，比如 策略工厂 等 |
-| `{package}.{biz}.assembler` | {Name}Assembler @Mapper（Command ↔ DO，直接转换） |
+| `{package}.{biz}.assembler` | {Name}Assembler @Mapper(Command ↔ DO，直接转换) |
 | `{package}.{biz}.dto` | {Name}Command / {Name}Query / {Name}DTO |
 | `{package}.{biz}.event` | {Name}Event record implements Event |
-| `{package}.{biz}.types` | 值对象（application 层专用的枚举/相关值对象） |
-| `{package}.common.assembler` | PageAssembler（分页转换） |
+| `{package}.{biz}.types` | 值对象(application 层专用的枚举/相关值对象) |
+| `{package}.common.assembler` | PageAssembler(分页转换) |
 
 ## 命名约定
 | 概念 | 命名 | 示例 |
 |---|---|---|
-| 编排服务 | `{Name}Module @Component`（不用 Service/ApplicationService） | `OrderModule` |
-| 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand`（如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义） |
-| 查询 | `{Name}SearchQuery extends PageQuery` | `OrderSearchQuery`（如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义） |
-| 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO`（如果来自 facade 层直接可用，不用在此层定义） |
+| 编排服务 | `{Name}Module @Component`(不用 Service/ApplicationService) | `OrderModule` |
+| 命令 | `{Name}{Action}Command extends Command` | `OrderCreateCommand`(如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义) |
+| 查询 | `{Name}SearchQuery extends PageQuery` | `OrderSearchQuery`(如果需要透传到 infrastructure层 或 facade 层，则在infrastructure层 或 facade 层定义) |
+| 结果 DTO | `{Name}DTO extends DTO` | `OrderDTO`(如果来自 facade 层直接可用，不用在此层定义) |
 | 领域事件 | `{Name}Event record implements Event` | `OrderEvent` |
-| 转换器 | `{Name}Assembler @Mapper`（Command↔DO） | `OrderAssembler` |
+| 转换器 | `{Name}Assembler @Mapper`(Command↔DO) | `OrderAssembler` |
 
 ## 规则
-- 【强制】`Assembler` 直接做 Command↔DO 转换（无领域聚合根中间层），与 DDD/BMP 的 Command↔领域实体不同
-- 【强制】尽量返回 DTO/基本类型/Optional，不要包装 `Result`（`SingleResponse` 仅在 interface 层），`PageResponse` 除外
-- 【强制】异常走拦截器统一拦截，不 try-catch（弱依赖除外）
-- 【强制】Command/Query 字段用基本类型（避免 null 判断）；DTO 字段用包装类型
+- 【强制】`Assembler` 直接做 Command↔DO 转换(无领域聚合根中间层)，与 DDD/BMP 的 Command↔领域实体不同
+- 【强制】尽量返回 DTO/基本类型/Optional，不要包装 `Result`(`SingleResponse` 仅在 interface 层)，`PageResponse` 除外
+- 【强制】异常走拦截器统一拦截，不 try-catch(弱依赖除外)
+- 【强制】Command/Query 字段用基本类型(避免 null 判断)；DTO 字段用包装类型
 - 【强制】跨域异步处理用 `@EventHandler(name=...)` 订阅领域事件，禁止跨域直接调用
 - 【推荐】转换用 MapStruct `@Mapper`，`INSTANCE = Mappers.getMapper(...)`
 - 【强制】{Name}Module 内不使用私有静态方法组装参数，方法内流程编排禁止一堆setter属性值的逻辑，统一用 Assembler，保证流程清晰

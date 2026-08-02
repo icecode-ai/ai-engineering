@@ -1,13 +1,13 @@
 # 中台架构 - interface 接口层规范
 
 ## 职责
-入站适配器：REST Controller、RPC/Dubbo 服务实现、MQ 监听、定时任务、Web 过滤器。仅做传输协议与应用 `Module` 之间的翻译，无业务逻辑。`Result` 包装（`SingleResponse`）仅在本层产生
+入站适配器：REST Controller、RPC/Dubbo 服务实现、MQ 监听、定时任务、Web 过滤器。仅做传输协议与应用 `Module` 之间的翻译，无业务逻辑。`Result` 包装(`SingleResponse`)仅在本层产生
 
 ## 包结构
 | 包路径 | 说明 |
 |---|---|
 | `{package}.{biz}.web` | {Name}Controller @RestController |
-| `{package}.{biz}.service` | {Name}Service / {Name}ServiceImpl / {Name}OpenServiceImpl（implements client {Name}OpenService） |
+| `{package}.{biz}.service` | {Name}Service / {Name}ServiceImpl / {Name}OpenServiceImpl(implements client {Name}OpenService) |
 | `{package}.{biz}.messaging` | {Name}MessageListener |
 | `{package}.{biz}.task` | {Name}Job |
 | `{package}.common.web.filter` | Web 过滤器 |
@@ -17,7 +17,7 @@
 |---|---|---|
 | REST 控制器 | `{Name}Controller @RestController @RequestMapping("/{biz}")` | `OrderController` |
 | RPC服务接口 | `{Name}Service` | `InventoryService` |
-| RPC服务实现 | `{Name}ServiceImpl`（@DubboService 可选） | `InventoryServiceImpl` |
+| RPC服务实现 | `{Name}ServiceImpl`(@DubboService 可选) | `InventoryServiceImpl` |
 | MQ 监听 | `{Name}MessageListener` | `OrderMessageListener` |
 | 定时任务 | `{Name}Job` | `OrderJob` |
 
@@ -25,9 +25,9 @@
 
 - 【强制】RPC、HTTP 接口方法入参，必须用 `Command` 或 `Query` 包装，不需要参数时，也要构造一个空的类，也就是这些方法有且只有 `1个` 入参。原因：避免接口升级时兼容性问题
 - 【强制】无业务逻辑，仅调用 application `Module` 并包装结果
-- 【强制】`Result` 包装（`SingleResponse`）只在本层返回，application 返回裸 DTO
-- 【强制】异常走拦截器统一拦截，不 try-catch（弱依赖除外）
-- 【强制】入参用 `@Valid` 触发校验，Command/Query 校验注解（`@Min`/`@Max`/`@Pattern`）
+- 【强制】`Result` 包装(`SingleResponse`)只在本层返回，application 返回裸 DTO
+- 【强制】异常走拦截器统一拦截，不 try-catch(弱依赖除外)
+- 【强制】入参用 `@Valid` 触发校验，Command/Query 校验注解(`@Min`/`@Max`/`@Pattern`)
 - 【强制】当存在 client OpenService时，RPC 暴露实现 client 的 `{Name}OpenService` 接口，签名与 client 一致
 - 【推荐】Controller `@RequestMapping("/{biz}")` 统一路径前缀
 

@@ -1,15 +1,15 @@
 # 微服务 - facade 防腐层规范
 
 ## 职责
-防腐层（ACL）：隔离二/三方服务依赖。封装外部 HTTP/RPC 调用，将外部 DTO 转换为内部 DTO。无业务逻辑、可移植、可被其他项目直接拷贝复用。所有二/三方库依赖只在本层引入，不污染根 POM 与架构
+防腐层(ACL)：隔离二/三方服务依赖。封装外部 HTTP/RPC 调用，将外部 DTO 转换为内部 DTO。无业务逻辑、可移植、可被其他项目直接拷贝复用。所有二/三方库依赖只在本层引入，不污染根 POM 与架构
 
 ## 包结构
 | 包路径 | 说明 |
 |---|---|
 | `{package}.{partner}.facade` | {Name}Facade @Component |
-| `{package}.{partner}.assembler` | {Name}Assembler（MapStruct，外部 DTO ↔ 内部 DTO） |
-| `{package}.{partner}.dto` | 外部 DTO（{Name}DTO / {Name}Query / {Name}Command / ResultDTO / PageResponseDTO 等） |
-| `{package}.{partner}.types` | 值对象（外部DTO子属性 / 枚举 等） |
+| `{package}.{partner}.assembler` | {Name}Assembler(MapStruct，外部 DTO ↔ 内部 DTO) |
+| `{package}.{partner}.dto` | 外部 DTO({Name}DTO / {Name}Query / {Name}Command / ResultDTO / PageResponseDTO 等) |
+| `{package}.{partner}.types` | 值对象(外部DTO子属性 / 枚举 等) |
 | `{package}.{partner}.config` | {Name}Configuration @Configuration |
 
 ## 命名约定
