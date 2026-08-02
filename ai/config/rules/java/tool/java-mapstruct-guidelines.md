@@ -28,6 +28,8 @@ public interface BlockAssembler {
 }
 ```
 
+使用 Mapper 的地方，直接用 `{ClassName}.INSTANCE.{method}`
+
 ### 显式映射（仅映射声明字段）
 
 `@BeanMapping(ignoreByDefault = true)` 关闭自动映射，只保留 `@Mapping` 显式声明的字段，且不告警：
