@@ -44,3 +44,7 @@ public static List<UserDTO> query() {
     // ...
 }
 ```
+
+## MapStruct 使用规范
+
+参考 `ai/config/rules/java/util/java-mapstruct-guidelines.md`
