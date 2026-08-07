@@ -261,6 +261,7 @@ After completing all artifacts, summarize:
 - (Dependency reading and write-then-verify are mandated in step 5 above — do not skip them)
 
 ## Guardrails
+- **Always create exactly ONE change** regardless of how large the requirement is. Never suggest splitting a requirement into multiple changes, and never ask the user whether to split. A large requirement simply produces more tasks in a single change — that is expected and correct.
 - Create ALL artifacts needed for implementation (proposal, specs, design, tasks)
 - Always read dependency artifacts before creating a new one
 - If a change with that name already exists, ask if user wants to continue it or create a new one

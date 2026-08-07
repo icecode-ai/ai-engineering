@@ -103,6 +103,8 @@ Root-level files (`package.json`, `tsconfig.json`, …) are intentionally not ro
 
 Dispatch independent implementers **concurrently within each wave**, review them concurrently, then repeat for the next wave. `Parallelizable: yes` tasks with no file overlap and satisfied dependencies run in parallel; `Parallelizable: no` tasks run alone. **Waves are sequential** — no cross-wave overlap (do not start the next wave's implementers until this wave's reviews finish). The parallelism comes from within-wave concurrent implementers + concurrent reviewers.
 
+**Execute ALL tasks continuously — never ask the user how many tasks to run, whether to execute a subset first, or whether to defer some to later.** Large task counts (10+, 20+, even 50+) are normal and expected; the wave loop handles them all in sequence. The only valid reason to stop mid-run is a genuine blocker (see Guardrails) — never workload size.
+
 #### 7a. Build the ready set + form a parallel batch
 
 Read the ledger (step 4) to know which tasks are complete. Compute the **ready set**: pending tasks (marked `- [ ]` in `tasks.md`, not in the ledger) whose `Consumes:` dependencies are ALL satisfied (every task they consume is complete in the ledger).
@@ -309,6 +311,6 @@ What would you like to do?
 - Never re-dispatch a task the ledger marks complete; trust the ledger over recollection on resume.
 - Never write "don't flag X" or pre-rate severity in a review dispatch.
 - Never re-dispatch a change whose state is `ALL_DONE`.
-- Keep going through waves until done or blocked; pause on errors/blockers/unclear requirements — don't guess.
+- Keep going through waves until ALL tasks are done or genuinely blocked. **Large task count is NOT a blocker** — never pause, defer, or suggest "continuing in a later session" because the remaining workload looks big. The durable ledger (step 4) survives context compaction by design; if compaction occurs mid-run, resume from the ledger automatically — do not proactively stop. The ONLY valid pause reasons are: (a) a task reports `BLOCKED` and the controller cannot resolve it by adding context, splitting, or re-dispatching (bad plan — escalate to user); (b) a spec ambiguity the controller cannot resolve (ask the user). "Many tasks remaining" and "approaching context limits" are NOT pause reasons.
 - If implementation reveals a design issue, pause and suggest updating artifacts (`/ai-spec-propose` or edit `design.md`/`tasks.md`).
 - No per-task model selection is performed (intentionally not implemented).

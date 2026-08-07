@@ -118,4 +118,5 @@ Read and follow `ai/config/skills/goal-spec-archive/SKILL.md`, passing the chang
 
 - **No user prompts**: make reasonable decisions autonomously; do not ask the user during the flow.
 - **Carry context between steps**: the explored requirement flows into propose; the change name flows into apply, push, release, testing, report, and archive.
+- **Steps 3 and 4 run to completion**: do not pause, defer, or suggest resuming in a later session. If the requirement is large, produce ONE change with many tasks and implement them all in the current session.
 - **Skip gracefully**: if an optional business skill is not found, skip that step and continue — do not block.

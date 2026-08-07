@@ -120,4 +120,5 @@ After writing, print the report path to the user.
 - **Two kinds of user interaction**: step 1 (explore) asks open-ended clarifying questions to refine the requirement; confirmation gates (yes/no whether to proceed) occur only at steps 2 (infrastructure), 5 (git push), 6 (release), and 9 (archive). Steps 3, 4, and 7 proceed without asking.
 - **Carry context between steps**: the explored requirement flows into propose; the change name flows into apply, push, release, testing, report, and archive.
 - **Respect user declines**: if the user declines git push, release, or archive, skip that step and continue.
+- **Steps 3 and 4 run to completion**: do not pause, defer, or suggest resuming in a later session. If the requirement is large, produce ONE change with many tasks and implement them all in the current session — never ask the user whether to split the change or execute a subset of tasks first.
 - **Skip gracefully**: if an optional business skill is not found, skip that step and continue — do not block.
