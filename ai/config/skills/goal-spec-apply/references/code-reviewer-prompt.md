@@ -22,6 +22,7 @@ You are the **final whole-branch code reviewer**. Review the entire change branc
 - **Production readiness (whole-branch)**: are migrations applied consistently across tasks? Any breaking API/signature changes without a backward-compatible transition path? Are behavior changes that affect callers or operators documented? Is config/env handled?
 - **Accumulated Minor findings**: triage each — must-fix-before-merge vs. acceptable.
 - **Whole-branch quality**: dead code from aborted approaches, leftover debug, inconsistent error handling across tasks, integration regressions that per-task reviews can't see.
+- **Standards compliance (whole-branch)**: does the entire change comply with the development standards in `ai/config/rules/` for each affected module's tech stack? Read the relevant rule file(s) if you haven't.
 
 ## Output format
 

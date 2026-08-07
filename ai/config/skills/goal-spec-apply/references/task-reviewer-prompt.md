@@ -27,7 +27,7 @@ Treat the implementer's report as unverified claims about the code. It may be in
 
 Your review is **read-only** — do not mutate the working tree, index, or branch. Do not crawl the broader codebase. Inspect code outside the diff only to evaluate a concrete risk you can name — one focused check per named risk, and name both the risk and what you checked in your report. Cross-cutting changes are legitimate named risks: if the diff changes a function or API contract, shared mutable state, or lock ordering, checking the call sites is the right method.
 
-## Your two verdicts
+## Your three verdicts
 
 ### 1. Spec compliance
 
@@ -59,6 +59,17 @@ Review the diff for: YAGNI violations, test hygiene, magic numbers, duplicated l
 #### plan-mandated findings
 
 If the task brief or Global Constraints EXPLICITLY mandates something this rubric would otherwise call a defect (e.g. the plan says to duplicate a block, or to use a magic number that matches a spec value), report it as **Important, `plan-mandated`** — do not silently approve it, and do not downgrade it. The plan's author does not grade their own work; the human decides whether the plan itself should change.
+
+### 3. Standards compliance
+
+Does the code comply with the development standards in `ai/config/rules/` for the affected module's tech stack? Read the relevant rule file(s) if you haven't.
+
+Severity for standards deviations:
+- **Critical**: violation causes data loss, security hole, or crash (e.g. ignoring a security standard)
+- **Important**: violation breaks a core architectural pattern or design principle mandated by the standard (e.g. wrong layering, missing required abstraction)
+- **Minor**: naming, formatting, code style, or other detail-level deviations — defer to the final review
+
+Most standards deviations are Minor. Only flag as Important when the deviation fundamentally contradicts the standard's intent, not when it's a style detail.
 
 ## Output format
 

@@ -204,6 +204,8 @@ bash "ai/config/skills/goal-spec-apply/scripts/files-overlap.sh" "$change_dir/sd
 
 Do not move to the next wave while a task has open Critical/Important issues. Once every task in the wave passes (or is re-dispatched fresh and passes), mark them complete (7g) and proceed to the next wave (7a).
 
+**Fix-re-review cycle limit**: if a task has been through 3 fix-re-review cycles and still has open Critical/Important issues, stop cycling — record the remaining issues in the ledger, mark the task as blocked, and escalate to the user. Do not keep dispatching fix subagents indefinitely.
+
 #### 7g. Mark task complete + update ledger
 
 For each passing task, in the same turn the review passes:

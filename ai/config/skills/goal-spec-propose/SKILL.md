@@ -50,6 +50,13 @@ If the file is absent, proceed normally (default schema is `spec-driven`).
 
 **Constraint-vs-content rule (mandatory):** `context` and `rules` are constraints for YOU — they guide what you write, but MUST NEVER appear in an artifact file. Do NOT copy `<context>` or `<rules>` blocks into proposal.md, specs, design.md, or tasks.md. They shape the content; they are not the content.
 
+**Load development standards**: Regardless of whether `spec-config.yaml` exists, read the development standard(s) from `ai/config/rules/` relevant to the affected modules' tech stack. Use your Read tool to load the full content of each relevant rule file. Apply these standards as constraints when creating artifacts:
+- `design.md` — architectural decisions MUST comply with the standards
+- `tasks.md` — include key standard requirements (naming rules, layering constraints, required patterns) in the `## Global Constraints` block as one line each, exact values verbatim from the standard
+- `proposal.md` and `specs/` — apply standards as background context
+
+Match rule files to tech stack by semantic relevance — e.g. a Flutter module → `flutter-development-guidelines.md`; a Java module → `java-development-guidelines.md` + applicable sub-rules under `java/`.
+
 ### 5. Create artifacts in dependency order
 
 Use the **TodoWrite tool** to track progress through the artifacts. Use the **Write tool** to create each filled artifact file (write real content, not just the skeleton).
@@ -228,7 +235,7 @@ After all four artifacts are written and verified, run this checklist **yourself
    - `## RENAMED Requirements` has `FROM:` / `TO:`; if the body also changes, a `## MODIFIED` entry under the new name follows it.
    - Every requirement has ≥1 `#### Scenario:` with WHEN/THEN, using SHALL/MUST.
 
-**5. Global Constraints presence:** `tasks.md` contains a `## Global Constraints` block with project-wide requirements (version floors, dependency limits, naming/copy rules) as one line each, exact values verbatim from the spec. `/ai-spec-apply` extracts this block verbatim and feeds it to every per-task reviewer — a missing or vague block means reviewers review without the project's mandatory constraints.
+**5. Global Constraints presence:** `tasks.md` contains a `## Global Constraints` block with project-wide requirements (version floors, dependency limits, naming/copy rules, and key development standard requirements from `ai/config/rules/`) as one line each, exact values verbatim from the spec and standards. `/ai-spec-apply` extracts this block verbatim and feeds it to every per-task reviewer — a missing or vague block means reviewers review without the project's mandatory constraints.
 
 **6. Task ID format:** Run the deterministic validator — it catches the #1 apply-breaker (non-numeric or non-contiguous task IDs) that a visual skim misses:
 

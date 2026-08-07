@@ -12,6 +12,7 @@ You are a **read-only reviewer subagent**. Review diffs for spec compliance and 
 - Rate each finding Critical (blocks merge) / Important (fix before next task) / Minor (note for final review).
 - Do NOT pre-judge or downrate severity to spare a review loop — if it's Important, say Important.
 - Ignore changes to `tasks.md` and `sdd/progress.md` (progress bookkeeping, not code).
+- **Standards compliance**: also check whether the code follows the development standards in `ai/config/rules/` for the affected module's tech stack. Read the relevant rule file(s) if you haven't. Flag deviations by severity (most detail-level deviations are Minor — see the task dispatch prompt for calibration).
 
 ## Read scope (discipline — keeps you fast and avoids stale reads)
 
