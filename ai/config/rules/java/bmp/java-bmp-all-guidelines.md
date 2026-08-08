@@ -13,7 +13,7 @@
 | interface 接口层 | Web接口/RPC服务/MQ监听/定时任务等 | `ai/config/rules/java/bmp/java-bmp-interface-guidelines.md` |
 | client 开放层 | 对外发布 API jar(接口 + DTO)，无 Lombok，供外部消费 | `ai/config/rules/java/bmp/java-bmp-client-guidelines.md` |
 | infrastructure 基础设施层 | Repository 实现/Dao/DO/Converter/多数据源/缓存 等 | `ai/config/rules/java/bmp/java-bmp-infrastructure-guidelines.md` |
-| facade 防腐层 | 二/三方服务隔离，返回 DTO，可移植 | `ai/config/rules/java/bmp/java-bmp-facade-guidelines.md` |
+| facade 防腐层 | 相当于 Anti-corruption Layer，对项目依赖的二/三方服务进行隔离，非对外开放服务，返回 DTO，可移植到其他项目复用 | `ai/config/rules/java/bmp/java-bmp-facade-guidelines.md` |
 | starter 启动层 | Application 主类、多环境配置、测试 | `ai/config/rules/java/bmp/java-bmp-starter-guidelines.md` |
 
 ## Maven 多模块核心逻辑关系
@@ -36,6 +36,7 @@
 - 【强制】二/三方服务依赖，比如依赖的 RPC、HTTP 服务等，统一放在 `facade 防腐层`，注意在 `facade 防腐层 pom.xml` properties 中定义版本号
 - 【强制】如果要引入 `非二/三方服务依赖`，必须先在 `主pom.xml` dependencyManagement 中定义依赖和 properties 中定义版本号，然后再在 `子模块 pom.xml` 中引用
 - 【强制】如果用户需求中，没有明确说明需要开放接口，不要在 `client 开放层` 定义接口，接口放在 `interface 接口层`，`interface 接口层` 需要的出入参 `Query`、`Command`、`DTO` 放在 `application 应用编排层`
+- 【强制】`client 开放层` 定义的接口，在 `interface 接口层` 实现，而不是在 `facade 防腐层` 实现
 - 【强制】所有测试放在 `starter 启动层`
 
 ## Assert 使用规范
@@ -55,4 +56,4 @@ public static List<UserDTO> query() {
 
 ## MapStruct 使用规范
 
-参考 `ai/config/rules/java/tool/java-mapstruct-guidelines.md`
+- 【强制】用到 MapStruct 的地方，阅读 MapStruct MapStruct 使用指南 `ai/config/rules/java/tool/java-mapstruct-guidelines.md`

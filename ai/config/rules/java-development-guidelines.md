@@ -39,10 +39,14 @@
 
 ### 注释风格
 
-- 【强制】类/属性/方法注释，用 Javadoc(`/** */`)，不用 `//`；注释用一句话描述，应包含业务含义，简洁易懂，保留重点；注释不包含spec和冗余的解释性描述；注释结尾不要加任何标点符号
-
+- 【强制】类/属性/方法注释，用 Javadoc(`/** */`)，不用 `//`；方法内的注释才用 `//`
 - 【强制】属性注释用单行 Javadoc(`/** */`)，@Resource 依赖注入的属性不用加注释，其他都加
 - 【强制】枚举字段，用单行 Javadoc(`/** */`)，注释说明用途
+
+- 【强制】注释用一句话描述，应包含业务含义，简洁易懂，保留重点
+- 【强制】注释内禁止添加 spec 描述和冗余的解释性描述
+- 【强制】注释结尾不要加任何标点符号。反例：`{描述}。`
+
 - 【强制】方法注释，不要省略 入参、出参 注释，私有(private)方法也不要省略；`@Override` 的方法，不用加注释，因为其父类已经加了
 - 【强制】抽象方法、接口方法必须加 Javadoc，说明做什么、实现要求、调用注意
 - 【强制】方法内单行注释在被注释语句上方另起一行用 `//`；如果有多步骤逻辑，加上序号比如 `// 1. {注释}`
@@ -316,3 +320,9 @@ public class DoubleColorBallFacade {
 | 中台架构 | 包含 `{artifactId}-application`、`{artifactId}-client`、`{artifactId}-domain`、`{artifactId}-extension`、`{artifactId}-facade`、`{artifactId}-infrastructure`、`{artifactId}-interface`、`{artifactId}-starter` 模块 | `ai/config/rules/java/bmp/java-bmp-all-guidelines.md` |
 | DDD架构 | 包含 `{artifactId}-application`、`{artifactId}-client`、`{artifactId}-domain`、`{artifactId}-facade`、`{artifactId}-infrastructure`、`{artifactId}-interface`、`{artifactId}-starter` 模块，不包含 `{artifactId}-extension` 模块 | `ai/config/rules/java/ddd/java-ddd-all-guidelines.md` |
 | 微服务架构 | 包含 `{artifactId}-application`、`{artifactId}-client`、`{artifactId}-facade`、`{artifactId}-infrastructure`、`{artifactId}-interface`、`{artifactId}-starter` 模块，不包含 `{artifactId}-domain`、`{artifactId}-extension` 模块 | `ai/config/rules/java/ms/java-ms-all-guidelines.md` |
+
+当识别到架构模式时，需要注意的点
+- 【强制】不得引入外部 DDD 教科书概念（如 Port 端口、Anti-corruption Layer 防腐层等通用术语的“教科书定义”）覆盖本规范条文。本规范已对每个分层/概念的定位给出定义，以本定义为准
+- 【强制】分层职责以本定义为准。如：`facade` = 防腐层，隔离本服务依赖的外部二/三方服务，**非**对外开放层
+- 【强制】命名规范以本规范为准，不得自创规范未出现的后缀。反例：自创 `XxxPort` / `XxxPortImpl` 后缀
+- 【强制】本规范未明确规定的情形，参照同层代码的既有命名与模式实现，如果最后没有的话，再套用外部架构理论“补全”
